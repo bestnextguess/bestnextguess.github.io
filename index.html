@@ -156,7 +156,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> most daily answers are words never used before, so never-used words share about 89% and repeats about 11% (about 1 in 10 recent answers was a repeat). For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that leaves the fewest possible answers on average.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Stats</a></p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a></p>
 </footer>
 </main>
 
@@ -294,7 +294,7 @@ function update(){
 const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span class="tile b">${c}</span>`).join('')+'</div>';
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
-  if(!rows.length){ box.innerHTML='<p class="empty">Add your first guess and your next move appears here.</p>'; return; }
+  if(!rows.length){ box.innerHTML=`<p class="k">Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word. Already have a favorite opener? <a href="stats.html">See how it ranks</a>.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button>`; wire(); return; }
   if(!cands.length){ box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){ box.innerHTML='<p class="empty">Solved. Nicely done.</p>'; return; }
