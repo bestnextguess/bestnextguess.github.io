@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Best Next Guess · free Wordle helper, no ads</title>
-<meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in hard mode and knows which answers were already used.">
+<meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
-<meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in hard mode.">
+<meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
 <meta property="og:image" content="https://bestnextguess.github.io/logo-512.png">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
@@ -100,6 +100,9 @@ td.p{text-align:right;font-weight:700}
   .count{gap:18px} .count b{font-size:28px}
   td{padding:7px 4px} .pill{font-size:12px}
 }
+.optrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}
+.optrow .ol{font-size:14px;color:var(--soft);width:58px}
+.optrow #reset{margin-left:auto}
 </style>
 </head>
 <body>
@@ -123,10 +126,13 @@ td.p{text-align:right;font-weight:700}
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
       <button class="btn" id="add">Add guess</button>
     </div>
-    <div class="opts">
-      <button class="chip" id="hard" aria-pressed="true">Hard mode</button>
-      <button class="chip" data-m="today">Today's puzzle</button>
-      <button class="chip" data-m="archive">Older puzzle</button>
+    <div class="optrow" role="group" aria-label="Game mode"><span class="ol">Mode</span>
+      <button class="chip" data-h="0">Normal</button>
+      <button class="chip" data-h="1">Hard</button>
+    </div>
+    <div class="optrow" role="group" aria-label="Which puzzle"><span class="ol">Puzzle</span>
+      <button class="chip" data-m="today">Today's</button>
+      <button class="chip" data-m="archive">Older</button>
       <button class="chip" id="reset">New puzzle</button>
     </div>
     <p class="note">Tap a tile to change its color: gray, yellow, green.</p>
@@ -178,10 +184,11 @@ function flush(tries=0){
 function track(name, once=true){ if(once && sent.has(name)) return; sent.add(name); queue.push(name); flush(); }
 
 // ---------- state ----------
-let rows = [], hard = true, mode = 'today';
+let rows = [], hard = false, mode = 'today';
+try{ hard = localStorage.getItem('bng-hard')==='1'; }catch(e){}
 const KEY = 'bng-state-v1';
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({rows,hard,mode,day:new Date().toDateString()})); }catch(e){} }
-function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; hard=s.hard!==false; mode=s.mode||'today'; } }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('bng-hard',hard?'1':'0'); }catch(e){} }
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; mode=s.mode||'today'; } }catch(e){} }
 
 // ---------- feedback ----------
 function fb(g,t){
@@ -240,7 +247,7 @@ const pct=p=>p>=0.995?'100%':p>=0.01?Math.round(p*100)+'%':p>0?'<1%':'0%';
 let job=0;
 function update(){
   save(); renderBoard();
-  const hb=document.getElementById('hard'); hb.classList.toggle('on',hard); hb.setAttribute('aria-pressed',hard);
+  document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
 
   const solvedBox=document.getElementById('solved');
@@ -349,7 +356,7 @@ function addGuess(){
 document.getElementById('add').onclick=addGuess;
 inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); });
-document.getElementById('hard').onclick=()=>{ hard=!hard; update(); };
+document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; if(mode==='archive') track('archive-mode'); update(); });
 document.getElementById('reset').onclick=()=>{ rows=[]; update(); inp.focus(); };
 
