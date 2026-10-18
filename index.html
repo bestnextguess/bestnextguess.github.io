@@ -111,7 +111,7 @@ td.p{text-align:right;font-weight:700}
   <div class="side">
     <span class="free">Free. No ads. Always.</span>
     <p>Enter your guesses and colors. See every possible answer and your smartest next move.</p>
-    <nav><a href="stats.html">See what <span id="nRev">1,946</span> answers reveal</a></nav>
+    <nav><a href="stats.html">See what <span id="nRev">1,947</span> answers reveal</a></nav>
   </div>
 </header>
 
@@ -361,6 +361,6 @@ fetch('past.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():Promise.reject()).the
 
 load(); update();
 </script>
-<script>(function(){ const t=new Date(); const n=Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5)-1; if(n>1946) document.getElementById('nRev').textContent=n.toLocaleString('en-US'); })();</script>
+<script>(function(){ const t=new Date(); const n=Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5); if(n>1947) document.getElementById('nRev').textContent=n.toLocaleString('en-US'); /* answers revealed = #0..yesterday = today's puzzle number */ })();</script>
 </body>
 </html>

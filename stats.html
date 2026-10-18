@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>What 1,946 Wordle answers reveal · Best Next Guess</title>
+<title>What 1,947 Wordle answers reveal · Best Next Guess</title>
 <meta name="description" content="How good is your Wordle opener? Check its rank against every answer, see how often answers repeat, and meet the hard-mode traps that break streaks. Free, no ads.">
 <meta property="og:title" content="How good is your Wordle opener?">
-<meta property="og:description" content="Type your starting word and see how it ranks against every Wordle answer. Plus repeats, streak-killers and letter facts from 1,946 puzzles.">
+<meta property="og:description" content="Type your starting word and see how it ranks against every Wordle answer. Plus repeats, streak-killers and letter facts from every puzzle so far.">
 <meta property="og:image" content="https://bestnextguess.github.io/logo-512.png">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
@@ -130,8 +130,8 @@ td .top1{color:var(--g)}
   </div>
 </header>
 
-<h2 class="title">What <span class="dN">1,946</span> Wordle answers reveal</h2>
-<p class="lede">How your opener stacks up, how often answers repeat, and the hard-mode traps that break streaks. Every number comes from the full list of answers, up to puzzle #<span class="dN">1,946</span>, updated every day.</p>
+<h2 class="title">What <span class="dC">1,947</span> Wordle answers reveal</h2>
+<p class="lede">How your opener stacks up, how often answers repeat, and the hard-mode traps that break streaks. Every number comes from the full list of answers, through yesterday's puzzle (#<span class="dN">1,946</span>), updated every day.</p>
 
 <section class="card checker" aria-label="Opener checker">
   <h2>How good is your opener?</h2>
@@ -152,7 +152,7 @@ td .top1{color:var(--g)}
 </section>
 
 <div class="cards">
-  <div class="stat"><b class="dN">1,946</b><span>puzzles so far</span></div>
+  <div class="stat"><b class="dC">1,947</b><span>answers so far</span></div>
   <div class="stat y"><b id="dRep">27</b><span>repeats since #1,689 (Feb 2026)</span></div>
   <div class="stat bl"><b id="dOne">1 in 10</b><span>recent answers is a repeat</span></div>
   <div class="stat g"><b id="dUnused">453</b><span>answers never used yet</span></div>
@@ -234,7 +234,8 @@ function drawRepeats(latest,reps){
 }
 function refresh(latest,reps,unused){
   document.querySelectorAll('.dN').forEach(e=>e.textContent=fmtN(latest));
-  document.title=`What ${fmtN(latest)} Wordle answers reveal · Best Next Guess`;
+  document.querySelectorAll('.dC').forEach(e=>e.textContent=fmtN(latest+1)); // puzzles start at #0
+  document.title=`What ${fmtN(latest+1)} Wordle answers reveal · Best Next Guess`;
   document.getElementById('dRep').textContent=reps.length;
   document.getElementById('dOne').textContent='1 in '+Math.round((latest-S.repStart+1)/reps.length);
   document.getElementById('dUnused').textContent=unused;
