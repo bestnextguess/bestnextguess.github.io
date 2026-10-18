@@ -124,9 +124,16 @@ const REPEAT_RATE = 0.11;
 
 // ---------- analytics (anonymous) ----------
 const sent = new Set();
+const queue = [];
+function flush(tries=0){
+  const gc = window.goatcounter;
+  if(gc && typeof gc.count === 'function'){
+    while(queue.length){ const n=queue.shift(); try{ gc.count({path:'event/'+n, title:n, event:true}); }catch(e){} }
+  } else if(queue.length && tries<40){ setTimeout(()=>flush(tries+1), 500); }  // wait up to 20 s for the stats script
+}
 function track(name, once=true){
   if(once && sent.has(name)) return; sent.add(name);
-  try{ if(window.goatcounter && window.goatcounter.count) window.goatcounter.count({path:'event/'+name, title:name, event:true}); }catch(e){}
+  queue.push(name); flush();
 }
 
 // ---------- state ----------
