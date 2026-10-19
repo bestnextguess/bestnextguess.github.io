@@ -288,6 +288,7 @@ function check(){
 }
 document.getElementById('check').onclick=check;
 op.addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
+{ const w=new URLSearchParams(location.search).get('w'); if(w&&/^[a-z]{5}$/i.test(w)){ op.value=w.toUpperCase(); check(); } }
 op.addEventListener('input',()=>{ op.value=op.value.replace(/[^a-zA-Z]/g,'').slice(0,5); op.setCustomValidity(''); });
 document.getElementById('share').onclick=()=>{
   if(!last) return;

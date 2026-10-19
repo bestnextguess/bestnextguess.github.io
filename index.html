@@ -103,6 +103,10 @@ td.p{text-align:right;font-weight:700}
 .optrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}
 .optrow .ol{font-size:14px;color:var(--soft);width:58px}
 .optrow #reset{margin-left:auto}
+.solvedHead{font-size:22px;font-weight:700;color:var(--g);margin:0}
+.solvedNext{margin-top:14px;background:var(--blueT);border:2px solid var(--ink);border-radius:10px;padding:14px 16px}
+.solvedNext p{margin:4px 0 12px}
+.solvedNext a.use{display:inline-block;text-decoration:none;color:var(--ink);margin-top:0}
 </style>
 </head>
 <body>
@@ -304,7 +308,15 @@ async function suggest(cands,P,my){
   if(!rows.length){ box.innerHTML=`<p class="k">Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word. Already have a favorite opener? <a href="stats.html">See how it ranks</a>.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button>`; wire(); return; }
   if(!cands.length){ box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   const last=rows[rows.length-1];
-  if(last.c.every(v=>v===2)){ box.innerHTML='<p class="empty">Solved. Nicely done.</p>'; return; }
+  if(last.c.every(v=>v===2)){
+    const op=rows[0].w.toUpperCase(), n=rows.length;
+    box.innerHTML=`<p class="solvedHead">Solved in ${n}. Nicely done! 🎉</p>
+      <div class="solvedNext"><b>How good was your opener?</b>
+      <p>See where <b>${op}</b> ranks out of 6,591 words, plus repeats and word traps from every Wordle so far.</p>
+      <a class="use" href="stats.html?w=${op.toLowerCase()}" id="toStats">Check ${op} →</a></div>
+      <p class="note">Come back tomorrow: the site updates itself every day.</p>`;
+    document.getElementById('toStats').onclick=()=>track('stats-from-solved',false);
+    return; }
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
     box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${pct(P.get(best))} chance it's the answer${cands.length===2?'. If not, the other word is it.':'.'}</p><button class="use" data-use="${best}" data-kind="only">Use this guess</button>`;
