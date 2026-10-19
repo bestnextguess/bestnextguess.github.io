@@ -237,7 +237,7 @@ function probs(cands){
   const P=new Map(); let fr, rr;
   if(mode==='archive'){
     if(rep.length){ fr=0; rr=1; } else { fr=1; rr=0; }
-  } else { fr = rep.length ? 1-REPEAT_RATE : 1; rr = fresh.length ? REPEAT_RATE : 1; }
+  } else { fr = !fresh.length ? 0 : rep.length ? 1-REPEAT_RATE : 1; rr = !rep.length ? 0 : fresh.length ? REPEAT_RATE : 1; }
   fresh.forEach(w=>P.set(w, fresh.length? fr/fresh.length:0)); rep.forEach(w=>P.set(w, rep.length? rr/rep.length:0));
   return {P,fresh,rep,fr,rr};
 }
@@ -270,7 +270,7 @@ function update(){
   document.getElementById('nLeft').textContent=cands.length;
   document.getElementById('nFresh').textContent=backup?'–':fresh.length;
   document.getElementById('nRep').textContent=backup?'–':rep.length;
-  const fw=backup?0:Math.round(pr.fr*100), rw=backup?0:100-fw;
+  const fw=backup?0:Math.round(pr.fr*100), rw=(backup||!(pr.fr+pr.rr))?0:100-fw;
   document.getElementById('bar').innerHTML=backup?'<i style="width:100%;background:var(--x)"></i>':`<i style="width:${fw}%;background:var(--g)"></i><i style="width:${rw}%;background:var(--y)"></i>`;
   document.getElementById('legend').textContent = backup ? 'Rarer words all share the odds equally.'
      : mode==='archive' ? 'Older puzzle: its answer was already used, so only repeats get odds.'
