@@ -7,7 +7,8 @@
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
-<meta property="og:image" content="https://bestnextguess.github.io/logo-512.png">
+<meta property="og:image" content="https://bestnextguess.com/logo-512.png">
+<link rel="canonical" href="https://bestnextguess.com/">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
 <style>
@@ -260,7 +261,7 @@ function update(){
     const grid=rows.map(r=>r.c.map(v=>['⬜','🟨','🟩'][v]).join('')).join('\n');
     solvedBox.innerHTML=`<div class="solved"><b>Solved in ${rows.length}!</b><button class="use" id="share">Copy result to share</button></div>`;
     document.getElementById('share').onclick=()=>{
-      const txt=`Solved in ${rows.length} with Best Next Guess (free, no ads)\n${grid}\nhttps://bestnextguess.github.io`;
+      const txt=`Solved in ${rows.length} with Best Next Guess (free, no ads)\n${grid}\nhttps://bestnextguess.com`;
       (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{document.getElementById('share').textContent='Copied!'; track('shared',false);}).catch(()=>prompt('Copy this:',txt));
     };
     track('solved'); track('solved-in-'+rows.length);

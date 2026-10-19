@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bestnextguess.github.io/sitemap.xml
+Sitemap: https://bestnextguess.com/sitemap.xml

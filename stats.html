@@ -7,7 +7,8 @@
 <meta name="description" content="How good is your Wordle opener? Check its rank against every answer, see how often answers repeat, and meet the word traps that break streaks. Free, no ads.">
 <meta property="og:title" content="How good is your Wordle opener?">
 <meta property="og:description" content="Type your starting word and see how it ranks against every Wordle answer. Plus repeats, streak-killers and letter facts from every puzzle so far.">
-<meta property="og:image" content="https://bestnextguess.github.io/logo-512.png">
+<meta property="og:image" content="https://bestnextguess.com/logo-512.png">
+<link rel="canonical" href="https://bestnextguess.com/stats.html">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
 <style>
@@ -292,7 +293,7 @@ op.addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
 op.addEventListener('input',()=>{ op.value=op.value.replace(/[^a-zA-Z]/g,'').slice(0,5); op.setCustomValidity(''); });
 document.getElementById('share').onclick=()=>{
   if(!last) return;
-  const txt=`My Wordle opener ${last.w} ranks #${last.r.toLocaleString()} of ${S.scores.length.toLocaleString()} (${last.v.toLowerCase()}, better than ${last.better}% of words). How does yours rank?\nhttps://bestnextguess.github.io/stats.html`;
+  const txt=`My Wordle opener ${last.w} ranks #${last.r.toLocaleString()} of ${S.scores.length.toLocaleString()} (${last.v.toLowerCase()}, better than ${last.better}% of words). How does yours rank?\nhttps://bestnextguess.com/stats.html`;
   (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{document.getElementById('share').textContent='Copied!'; track('opener-shared',false);}).catch(()=>prompt('Copy this:',txt));
 };
 </script>
