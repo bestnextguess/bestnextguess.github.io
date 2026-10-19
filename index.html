@@ -309,11 +309,20 @@ async function suggest(cands,P,my){
   if(!cands.length){ box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){
-    const op=rows[0].w.toUpperCase(), n=rows.length;
-    box.innerHTML=`<p class="solvedHead">Solved in ${n}. Nicely done! 🎉</p>
-      <div class="solvedNext"><b>How good was your opener?</b>
-      <p>See where <b>${op}</b> ranks out of 6,591 words, plus repeats and word traps from every Wordle so far.</p>
-      <a class="use" href="stats.html?w=${op.toLowerCase()}" id="toStats">Check ${op} →</a></div>
+    const op=rows[0].w.toUpperCase(), n=rows.length, ans=last.w.toLowerCase();
+    let card;
+    if(op!=='RAISE'){
+      card=`<b>How good was your opener?</b>
+      <p>See where <b>${op}</b> ranks out of 6,591 words. (RAISE is #1.)</p>
+      <a class="use" href="stats.html?w=${op.toLowerCase()}" id="toStats">Check ${op} →</a>`;
+    } else if(mode==='today'){
+      card = PAST.has(ans)
+        ? `<b>Today's answer was a repeat!</b><p>It had been used before. Only about 1 in 10 answers is a repeat, and they come from deep in the archive.</p><a class="use" href="stats.html#repeats" id="toStats">See every repeat →</a>`
+        : `<b>Today's answer was a brand-new word</b><p>Like about 9 in 10 answers. See the patterns behind every Wordle so far.</p><a class="use" href="stats.html" id="toStats">See what the answers reveal →</a>`;
+    } else {
+      card=`<b>Curious about the patterns?</b><p>Repeats, word traps and the most common letters from every Wordle so far.</p><a class="use" href="stats.html" id="toStats">See what the answers reveal →</a>`;
+    }
+    box.innerHTML=`<p class="solvedHead">Solved in ${n}. Nicely done! 🎉</p><div class="solvedNext">${card}</div>
       <p class="note">Come back tomorrow: the site updates itself every day.</p>`;
     document.getElementById('toStats').onclick=()=>track('stats-from-solved',false);
     return; }
