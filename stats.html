@@ -246,6 +246,8 @@ function refresh(latest,reps,unused){
   document.getElementById('dDate').textContent=d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});
   drawRepeats(latest,reps);
 }
+// yesterday's puzzle number from the visitor's own date (puzzle #0 was June 19, 2021), so counts match the NYT number even before the 5:30 AM log update
+function dateLatest(){ const t=new Date(); return Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5)-1; }
 drawRepeats(S.latest,S.repeats);
 fetch('log.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():'').then(t=>{
   const past=new Set(S.pastWords), reps=S.repeats.slice(); let latest=S.latest;
@@ -253,8 +255,9 @@ fetch('log.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():'').then(t=>{
   const seen=new Set();
   for(const [n,w] of rows){ if(n<=S.latest||seen.has(n)) continue; seen.add(n); if(past.has(w)) reps.push([w.toUpperCase(),null,n]); else past.add(w); latest=Math.max(latest,n); }
   const unused=S.ans.filter(w=>!past.has(w)).length;
-  if(latest>S.latest) refresh(latest,reps,unused);
-}).catch(()=>{});
+  const n=Math.max(latest,dateLatest());
+  if(n>S.latest) refresh(n,reps,unused);
+}).catch(()=>{ const n=dateLatest(); if(n>S.latest) refresh(n,S.repeats.slice(),S.ans.filter(w=>!S.pastWords.includes(w)).length); });
 
 // traps
 document.getElementById('traps').innerHTML=S.traps.slice(0,6).map(([p,n,ws])=>`<div class="trap"><div class="pat">${p}</div><span class="n">${n} words</span><div class="ws">${ws.join(', ')}</div></div>`).join('');
