@@ -9,6 +9,9 @@
 <meta property="og:description" content="Free. No ads. Always. How it works, how well it plays, and who made it.">
 <meta property="og:image" content="https://bestnextguess.com/logo-512.png">
 <link rel="canonical" href="https://bestnextguess.com/about.html">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2B5CD6">
+<meta name="apple-mobile-web-app-title" content="Best Next Guess">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
 <style>
@@ -126,6 +129,17 @@ ul.plain li{margin:4px 0}
     <p class="note">The engine runs right in your browser, on your own phone or computer, so suggestions appear within a second or so.</p>
   </section>
 
+  <section class="card wide" id="install" aria-label="Put it on your home screen">
+    <h2>Put it on your home screen</h2>
+    <p>Best Next Guess works like an app. Add it to your home screen and it opens full-screen with its own icon, even without internet.</p>
+    <ul class="plain">
+      <li><b>iPhone or iPad (Safari):</b> tap the <b>Share</b> button (the square with an arrow), then <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      <li><b>Android (Chrome):</b> tap <b>Install app</b> at the top of the main page, or open the menu (⋮) and choose <b>Install app</b> or <b>Add to Home screen</b>. In Samsung Internet: menu (≡), <b>Add page to</b>, <b>Home screen</b>.</li>
+      <li><b>Computer (Chrome or Edge):</b> click the install icon at the right end of the address bar.</li>
+    </ul>
+    <p class="note">No app store, no download and nothing to update: it always runs the latest version.</p>
+  </section>
+
   <section class="card" aria-label="Who made it">
     <h2>Who made it</h2>
     <p>Best Next Guess was made by Ayman Mikhail, a daily Wordle player who isn't a programmer. It started as a spreadsheet that filtered the word list by greens and yellows, and grew into this site with help from Claude, an AI assistant.</p>
@@ -152,6 +166,7 @@ ul.plain li{margin:4px 0}
   <p><a href="./">The solver</a> · <a href="stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.0.1</p>
 </footer>
 </main>
+<script>if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://bestnextguess.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>

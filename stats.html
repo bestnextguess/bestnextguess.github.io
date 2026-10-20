@@ -9,6 +9,9 @@
 <meta property="og:description" content="Type your starting word and see how it ranks against every Wordle answer. Plus repeats, streak-killers and letter facts from every puzzle so far.">
 <meta property="og:image" content="https://bestnextguess.com/logo-512.png">
 <link rel="canonical" href="https://bestnextguess.com/stats.html">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2B5CD6">
+<meta name="apple-mobile-web-app-title" content="Best Next Guess">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
 <style>
@@ -297,5 +300,6 @@ document.getElementById('share').onclick=()=>{
   (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{document.getElementById('share').textContent='Copied!'; track('opener-shared',false);}).catch(()=>prompt('Copy this:',txt));
 };
 </script>
+<script>if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>

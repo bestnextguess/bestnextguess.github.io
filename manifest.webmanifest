@@ -1,0 +1,16 @@
+{
+  "name": "Best Next Guess",
+  "short_name": "Best Next Guess",
+  "description": "Free, ad-free Wordle helper: every possible answer, the odds, and your best next guess.",
+  "id": "/",
+  "start_url": "/?ref=app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F2F9FF",
+  "theme_color": "#2B5CD6",
+  "icons": [
+    { "src": "logo-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "logo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "logo-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
