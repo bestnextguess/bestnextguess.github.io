@@ -1,3 +1,4 @@
 1946 gaffe
 1947 adorn
 1948 stink
+1949 wrest
