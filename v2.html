@@ -7,7 +7,13 @@
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
-<meta property="og:image" content="https://bestnextguess.com/logo-512.png">
+<meta property="og:image" content="https://bestnextguess.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Best Next Guess: every word that still fits, and your smartest next move. Free, no ads.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bestnextguess.com/v2.html">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="robots" content="noindex">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="logo-180.png">
@@ -159,7 +165,7 @@ td.p{text-align:right;font-weight:700}
     <div class="cy"><b id="nRep">–</b><span>would be a repeat</span></div>
   </div>
   <div class="oddsbar" id="bar"><i style="width:89%;background:var(--g)"></i><i style="width:11%;background:var(--y)"></i></div>
-  <div class="legend" id="legend">Never-used words share 89% of the odds, repeats share 11%.</div>
+  <div class="legend" id="legend">Estimated odds: never-used words share 89%, repeats 11% (about 1 in 10 answers since Feb 2, 2026 was a repeat).</div>
   <div id="banner"></div>
   <div style="overflow-x:auto"><table><tbody id="list"></tbody></table></div>
   <div class="more" id="more"></div>
@@ -167,7 +173,7 @@ td.p{text-align:right;font-weight:700}
 
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
-  <p><b>How the odds work:</b> most daily answers are words never used before, so never-used words share about 89% and repeats about 11% (about 1 in 10 recent answers was a repeat). For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that leaves the fewest possible answers on average.</p>
+  <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that leaves the fewest possible answers on average.</p>
   <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
@@ -307,7 +313,7 @@ function update(){
   document.getElementById('bar').innerHTML=backup?'<i style="width:100%;background:var(--x)"></i>':`<i style="width:${fw}%;background:var(--g)"></i><i style="width:${rw}%;background:var(--y)"></i>`;
   document.getElementById('legend').textContent = backup ? 'Rarer words all share the odds equally.'
      : mode==='archive' ? 'Older puzzle: its answer was already used, so only repeats get odds.'
-     : (fresh.length&&rep.length) ? `Never-used words share ${fw}% of the odds, repeats share ${rw}%.` : fresh.length ? 'Only never-used words fit.' : rep.length ? 'Only repeats fit.' : '';
+     : (fresh.length&&rep.length) ? `Estimated odds: never-used words share ${fw}%, repeats ${rw}% (about 1 in 10 answers since Feb 2, 2026 was a repeat).` : fresh.length ? 'Only never-used words fit, so they share all the odds.' : rep.length ? 'Only repeats fit, so they share all the odds.' : '';
   const ban=document.getElementById('banner');
   if(rows.length && !cands.length) ban.innerHTML='<div class="banner">No word fits these colors. Check each tile and tap to fix any that are wrong.</div>';
   else if(backup) ban.innerHTML='<div class="banner">No usual answer fits. Showing rarer words (plurals, past tenses, uncommon words). The answer may be a newly added word.</div>';
@@ -357,7 +363,7 @@ async function suggest(cands,P,my){
     return; }
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
-    box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${pct(P.get(best))} chance it's the answer${cands.length===2?'. If not, the other word is it.':'.'}</p><button class="use" data-use="${best}" data-kind="only">Use this guess</button>`;
+    box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${cands.length===1?'The only word that fits.':pct(P.get(best))+' estimated chance it\'s the answer. If not, the other word is it.'}</p><button class="use" data-use="${best}" data-kind="only">Use this guess</button>`;
     wire(); return;
   }
   box.innerHTML='<p class="empty">Thinking 1.5 moves ahead…</p>';
@@ -412,10 +418,10 @@ async function suggest(cands,P,my){
   if(my!==job) return;
   const bw=ALLW[best.gi], tot=1+best.E;
   const fmtG=x=>`about ${x.toFixed(1)} guesses`;
-  const chance = best.pw>=0.005 ? `${Math.round(best.pw*100)}% chance it's the answer.` : best.pw>0 ? 'Small chance it\'s the answer.' : 'It can\'t be the answer, but it sets up the fastest finish.';
+  const chance = best.pw>=0.005 ? `${Math.round(best.pw*100)}% estimated chance it's the answer.` : best.pw>0 ? 'Small estimated chance it\'s the answer.' : 'It can\'t be the answer, but it sets up the fastest finish.';
   let html=`<p class="k">Best next guess (looks 1.5 moves ahead)</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(tot)}</b> on average, counting this one. ${chance}</p><button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
   if(bestWin && bestWin.gi!==best.gi && bestWin.pw>best.pw)
-    html+=`<div class="alt">Best shot to win now: <b>${ALLW[bestWin.gi].toUpperCase()}</b>, ${Math.round(bestWin.pw*100)}% chance.<br><button class="use" data-use="${ALLW[bestWin.gi]}" data-kind="win">Use ${ALLW[bestWin.gi].toUpperCase()}</button></div>`;
+    html+=`<div class="alt">Best shot to win now: <b>${ALLW[bestWin.gi].toUpperCase()}</b>, ${Math.round(bestWin.pw*100)}% estimated chance.<br><button class="use" data-use="${ALLW[bestWin.gi]}" data-kind="win">Use ${ALLW[bestWin.gi].toUpperCase()}</button></div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter.</p>';
   box.innerHTML=html; wire();
 }
