@@ -219,7 +219,7 @@ td.p{text-align:right;font-weight:700}
       <button class="chip" data-m="archive">Older</button>
       <button class="chip" id="reset">Start over</button>
     </div>
-    <p class="note">Tap a tile to change its color: gray, yellow, green.</p>
+    <p class="note">Tap a tile to change its color: gray, yellow, green.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
     <div id="solved"></div>
   </section>
 
@@ -552,11 +552,12 @@ const pct=p=>p>=0.995?'100%':p>=0.01?Math.round(p*100)+'%':p>0?'<1%':'0%';
 // ---------- main update ----------
 let job=0;
 function update(){
-  if(demo && !rows.length) demo=false;
+  if(demo && !rows.length){ demo=false; rows=ownRows||[]; ownRows=null; }   // example cleared: back to the player's own game
   save(); renderBoard();
   document.body.classList.toggle('demo',demo);
   document.getElementById('howto').hidden = howtoDone || rows.length>0 || demo;
-  document.getElementById('demoNote').innerHTML = demo ? '<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">start your own game</button>.</div>' : '';
+  document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
+  document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
@@ -613,7 +614,7 @@ async function suggest(cands,P,my){
   if(!rows.length){ box.innerHTML=`<p class="k">Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word. Already have a favorite opener? <a href="stats.html">See how it ranks</a>.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button><p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button> with an example game. Already played today? Type in your whole game to get your game report.</p>`; wire(); document.getElementById('demoBtn2').onclick=startDemo; return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){
-    if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">Start your own game</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
+    if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     showReport(box); return; }
   if(!cands.length){ box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   if(cands.length<=2){
@@ -688,7 +689,7 @@ function addGuess(){
   if(!/^[a-z]{5}$/.test(w)){ inp.setCustomValidity('Type a 5-letter word'); inp.reportValidity(); return; }
   inp.setCustomValidity('');
   if([...document.querySelectorAll('[data-use]')].some(b=>b.dataset.use===w)) track('entered-suggestion',false);
-  if(demo){ demo=false; rows=[]; }
+  if(demo){ demo=false; const o=ownRows||[]; ownRows=null; const l=o[o.length-1], done=o.length>=6 || (l && l.c.every(v=>v===2)); rows = done ? [] : o; }
   doneHowto();
   rows.push({w,c:[0,0,0,0,0]}); inp.value=''; update();
 }
@@ -697,16 +698,20 @@ inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); });
 document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; if(mode==='archive') track('archive-mode'); update(); });
-document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; update(); inp.focus(); };
+document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; update(); inp.focus(); };
 document.getElementById('demoBtn1').onclick=startDemo;
+document.getElementById('demoBtn3').onclick=startDemo;
 document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
 
 // ---------- example game ----------
+let ownRows=null;                            // the player's own game, kept while the example is showing
+const hasOwn=()=>!!(ownRows && ownRows.length);
 function startDemo(){
+  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice()}));
   demo=true; rows=[{w:'raise',c:[2,2,0,0,0]}]; track('demo',false); update();
   const g=document.querySelector('.grid'); if(g && g.scrollIntoView) g.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function exitDemo(){ demo=false; rows=[]; update(); inp.focus(); }
+function exitDemo(){ demo=false; rows=ownRows||[]; ownRows=null; update(); inp.focus(); }
 
 // ---------- game report (after a solved game) ----------
 function fitsRows(rs,list){ return list.filter(w=>rs.every(r=>fb(r.w,w)===code(r.c))); }
