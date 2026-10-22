@@ -117,6 +117,23 @@ td.p{text-align:right;font-weight:700}
 .solvedNext{margin-top:14px;background:var(--blueT);border:2px solid var(--ink);border-radius:10px;padding:14px 16px}
 .solvedNext p{margin:4px 0 12px}
 .solvedNext a.use{display:inline-block;text-decoration:none;color:var(--ink);margin-top:0}
+.howto{margin:0 0 18px;background:var(--blueT);border:2px solid var(--ink);border-radius:12px;padding:14px 44px 14px 18px;position:relative}
+.howto b{font-size:18px}
+.howto ol{margin:8px 0;padding-left:22px}
+.howto li{margin:3px 0}
+.howto p{margin:6px 0 10px;color:#2A3A5C;font-size:15px}
+.howto .x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:24px;color:var(--soft);cursor:pointer;line-height:1;padding:4px}
+.demoNote{margin:0 0 10px;background:var(--yT);border:2px solid var(--ink);border-radius:8px;padding:8px 12px;font-size:15px}
+.linkbtn{background:none;border:none;padding:0;color:var(--blue);text-decoration:underline;cursor:pointer;font:inherit}
+.demo #pick .use[data-use]{display:none}
+.replay ol{list-style:none;margin:8px 0 0;padding:0}
+.replay li{border-top:1px solid var(--rule);padding:9px 0}
+.replay .st{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:.05em}
+.replay .ln{margin-top:2px}
+.replay .wd{font-weight:700;letter-spacing:.08em}
+.replay .ok{color:var(--g);font-weight:700}
+.replay .sum{margin-top:12px;background:var(--gT);border:2px solid var(--ink);border-radius:8px;padding:10px 12px}
+.replay .sum p{margin:4px 0}
 </style>
 </head>
 <body>
@@ -132,9 +149,22 @@ td.p{text-align:right;font-weight:700}
   </div>
 </header>
 
+<div class="howto" id="howto" hidden>
+  <button class="x" id="howtoX" aria-label="Hide these tips">×</button>
+  <b>How to use it with today's Wordle</b>
+  <ol>
+    <li>Play your first guess in Wordle. RAISE is a great start.</li>
+    <li>Type the same word here, then tap the tiles to match your colors.</li>
+    <li>Play the suggested word in Wordle, and repeat until you solve it.</li>
+  </ol>
+  <p>Already played today? Type in your whole game, then tap <b>Replay your game</b> to see where the smartest move could have saved you a guess.</p>
+  <button class="use" id="demoBtn1">See it in action</button>
+</div>
+
 <div class="grid">
   <section class="card" aria-label="Your guesses">
     <h2>Your guesses</h2>
+    <div id="demoNote"></div>
     <div id="board"></div>
     <div class="entry" id="entryWrap">
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
@@ -378,10 +408,12 @@ function flush(tries=0){
 function track(name, once=true){ if(once && sent.has(name)) return; sent.add(name); queue.push(name); flush(); }
 
 // ---------- state ----------
-let rows = [], hard = false, mode = 'today';
+let rows = [], hard = false, mode = 'today', demo = false, replayOn = false;
 try{ hard = localStorage.getItem('bng-hard')==='1'; }catch(e){}
 const KEY = 'bng-state-v1';
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('bng-hard',hard?'1':'0'); }catch(e){} }
+let howtoDone=false; try{ const s0=JSON.parse(localStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('bng-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
+function doneHowto(){ if(howtoDone) return; howtoDone=true; try{ localStorage.setItem('bng-howto','1'); }catch(e){} }
+function save(){ if(demo) return; try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('bng-hard',hard?'1':'0'); }catch(e){} }
 function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; mode=s.mode||'today'; } }catch(e){} }
 
 // ---------- feedback ----------
@@ -444,7 +476,12 @@ const pct=p=>p>=0.995?'100%':p>=0.01?Math.round(p*100)+'%':p>0?'<1%':'0%';
 // ---------- main update ----------
 let job=0;
 function update(){
+  if(demo && !rows.length) demo=false;
   save(); renderBoard();
+  document.body.classList.toggle('demo',demo);
+  document.getElementById('howto').hidden = howtoDone || rows.length>0 || demo;
+  document.getElementById('demoNote').innerHTML = demo ? '<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">start your own game</button>.</div>' : '';
+  if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
 
@@ -452,13 +489,14 @@ function update(){
   const last=rows[rows.length-1];
   if(last && last.c.every(v=>v===2)){
     const grid=rows.map(r=>r.c.map(v=>['⬜','🟨','🟩'][v]).join('')).join('\n');
-    solvedBox.innerHTML=`<div class="solved"><b>Solved in ${rows.length}!</b><button class="use" id="share">Copy result to share</button></div>`;
+    solvedBox.innerHTML=`<div class="solved"><b>Solved in ${rows.length}!</b><button class="use" id="share">Copy result to share</button>${(rows.length>=2&&!demo)?' <button class="use" id="replayBtn">Replay your game</button>':''}</div>`;
+    const rb=document.getElementById('replayBtn'); if(rb) rb.onclick=openReplay;
     document.getElementById('share').onclick=()=>{
       const txt=`Solved in ${rows.length} with Best Next Guess (free, no ads)\n${grid}\nhttps://bestnextguess.com`;
       (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{document.getElementById('share').textContent='Copied!'; track('shared',false);}).catch(()=>prompt('Copy this:',txt));
     };
-    track('solved'); track('solved-in-'+rows.length);
-  } else solvedBox.innerHTML='';
+    if(!demo){ track('solved'); track('solved-in-'+rows.length); }
+  } else { solvedBox.innerHTML=''; replayOn=false; }
 
   let cands=ANS.filter(fits), backup=false;
   if(rows.length && cands.length===0){ cands=BAK.filter(fits); backup=true; if(cands.length) track('backup-used'); }
@@ -491,7 +529,7 @@ function update(){
     if(more.firstChild) more.firstChild.onclick=()=>{shown=sorted.length; drawList();};
   }
   drawList();
-  if(rows.length) track('used');
+  if(rows.length && !demo) track('used');
   suggest(cands,P,++job);
 }
 
@@ -499,10 +537,11 @@ function update(){
 const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span class="tile b">${c}</span>`).join('')+'</div>';
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
-  if(!rows.length){ box.innerHTML=`<p class="k">Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word. Already have a favorite opener? <a href="stats.html">See how it ranks</a>.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button>`; wire(); return; }
+  if(!rows.length){ box.innerHTML=`<p class="k">Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word. Already have a favorite opener? <a href="stats.html">See how it ranks</a>.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button><p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button> with an example game. Already played today? Type in your whole game to replay it.</p>`; wire(); document.getElementById('demoBtn2').onclick=startDemo; return; }
   if(!cands.length){ box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){
+    if(replayOn && !demo && rows.length>=2){ showReplay(box); return; }
     const op=rows[0].w.toUpperCase(), n=rows.length, ans=last.w.toLowerCase();
     let card;
     if(op!=='RAISE'){
@@ -512,13 +551,15 @@ async function suggest(cands,P,my){
     } else if(mode==='today'){
       card = PAST.has(ans)
         ? `<b>Today's answer was a repeat!</b><p>It had been used before. Only about 1 in 10 answers is a repeat, and they come from deep in the archive.</p><a class="use" href="stats.html#repeats" id="toStats">See every repeat →</a>`
-        : `<b>Today's answer was a brand-new word</b><p>Like about 9 in 10 answers. See the patterns behind every Wordle so far.</p><a class="use" href="stats.html" id="toStats">See what the answers reveal →</a>`;
+        : `<b>Today's answer was a brand-new word</b><p>Like about 9 in 10 answers. See how your opener ranks, every repeat so far, and the word traps that break streaks.</p><a class="use" href="stats.html" id="toStats">Check your opener and see every repeat →</a>`;
     } else {
-      card=`<b>Curious about the patterns?</b><p>Repeats, word traps and the most common letters from every Wordle so far.</p><a class="use" href="stats.html" id="toStats">See what the answers reveal →</a>`;
+      card=`<b>Curious about the patterns?</b><p>Repeats, word traps and the most common letters from every Wordle so far.</p><a class="use" href="stats.html" id="toStats">Check your opener and see every repeat →</a>`;
     }
     box.innerHTML=`<p class="solvedHead">Solved in ${n}. Nicely done! 🎉</p><div class="solvedNext">${card}</div>
+      ${(n>=2&&!demo)?'<p class="note"><button class="linkbtn" id="replayLink">Replay your game</button> to see, step by step, where the smartest move could have saved a guess.</p>':''}
       <p class="note">Come back tomorrow: the site updates itself every day.</p>`;
     document.getElementById('toStats').onclick=()=>track('stats-from-solved',false);
+    const rl=document.getElementById('replayLink'); if(rl) rl.onclick=openReplay;
     return; }
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
@@ -592,6 +633,8 @@ function addGuess(){
   if(!/^[a-z]{5}$/.test(w)){ inp.setCustomValidity('Type a 5-letter word'); inp.reportValidity(); return; }
   inp.setCustomValidity('');
   if([...document.querySelectorAll('[data-use]')].some(b=>b.dataset.use===w)) track('entered-suggestion',false);
+  if(demo){ demo=false; rows=[]; }
+  doneHowto();
   rows.push({w,c:[0,0,0,0,0]}); inp.value=''; update();
 }
 document.getElementById('add').onclick=addGuess;
@@ -599,7 +642,81 @@ inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); });
 document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; if(mode==='archive') track('archive-mode'); update(); });
-document.getElementById('reset').onclick=()=>{ rows=[]; update(); inp.focus(); };
+document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; replayOn=false; update(); inp.focus(); };
+document.getElementById('demoBtn1').onclick=startDemo;
+document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
+
+// ---------- example game ----------
+function startDemo(){
+  demo=true; replayOn=false; rows=[{w:'raise',c:[2,2,0,0,0]}]; track('demo',false); update();
+  const g=document.querySelector('.grid'); if(g && g.scrollIntoView) g.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function exitDemo(){ demo=false; rows=[]; update(); inp.focus(); }
+
+// ---------- replay a finished game ----------
+let rp={sig:null,html:null,busy:false};
+const boardSig=()=>JSON.stringify([rows,hard,mode]);
+function openReplay(){ replayOn=true; track('replay',false); update(); const m=document.querySelector('.move'); if(m && m.scrollIntoView) m.scrollIntoView({behavior:'smooth',block:'start'}); }
+function closeReplay(){ replayOn=false; update(); }
+function fitsRows(rs,list){ return list.filter(w=>rs.every(r=>fb(r.w,w)===code(r.c))); }
+function candsFor(rs){ let c=fitsRows(rs,ANS), backup=false; if(rs.length && !c.length){ c=fitsRows(rs,BAK); backup=true; } return {c,backup}; }
+async function pickAt(rs,c,backup){          // the page's own suggestion for a board (undefined = cancelled)
+  if(!rs.length) return 'raise';
+  if(!c.length) return null;
+  const P = backup ? new Map(c.map(w=>[w,1/c.length])) : probs(c).P;
+  if(c.length<=2) return [...c].sort((a,b)=>P.get(b)-P.get(a))[0];
+  if(rs.length>=6) return null;
+  const res=await runEngine({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)),
+    hist:rs.map(r=>({w:r.w,c:r.c.slice()})), hard, left:6-rs.length});
+  return res && res.word ? res.word : undefined;
+}
+const colorsOf=p=>[p%3,Math.floor(p/3)%3,Math.floor(p/9)%3,Math.floor(p/27)%3,Math.floor(p/81)%3];
+async function simFrom(m,ans){                // follow the suggestions from the first m rows to the answer
+  const rs=rows.slice(0,m).map(r=>({w:r.w,c:r.c.slice()}));
+  if(m && rs[m-1].w===ans) return m;
+  while(rs.length<7){
+    const {c,backup}=candsFor(rs);
+    const g=await pickAt(rs,c,backup); if(g===undefined) return undefined; if(g===null) return 7;
+    rs.push({w:g,c:colorsOf(fb(g,ans))}); if(g===ans) return rs.length;
+  }
+  return 7;
+}
+async function buildReplay(){
+  const n=rows.length, ans=rows[n-1].w, U=w=>w.toUpperCase();
+  const leftTxt=x=>x===0?'solved!':x===1?'1 word left':`${x.toLocaleString('en-US')} words left`;
+  let items='';
+  for(let k=0;k<n;k++){
+    const rs=rows.slice(0,k), {c,backup}=candsFor(rs), you=rows[k].w;
+    const sug=await pickAt(rs,c,backup); if(sug===undefined) return undefined;
+    const leftOf=g=>g===ans?0:c.filter(w=>fb(g,w)===fb(g,ans)).length;
+    items+=`<li><div class="st">Guess ${k+1}</div><div class="ln">You played <span class="wd">${U(you)}</span>: ${leftTxt(leftOf(you))}</div>`+
+      (!sug ? '' : sug===you ? `<div class="ln ok">Same as the ${k?'suggestion':'suggested opener'} ✓</div>`
+                  : `<div class="ln">${k?'Suggested':'Suggested opener'} <span class="wd">${U(sug)}</span>: ${leftTxt(leftOf(sug))}</div>`)+`</li>`;
+  }
+  const after=await simFrom(1,ans); if(after===undefined) return undefined;
+  const fromRaise = rows[0].w==='raise' ? after : await simFrom(0,ans); if(fromRaise===undefined) return undefined;
+  const g=x=>x>6?'more than 6 guesses':x===1?'1 guess':`${x} guesses`;
+  let sum = after<n ? `<p><b>The suggestions would have saved you ${n-after===1?'a guess':(n-after)+' guesses'}.</b> Following them after your opener solves it in ${g(after)}; you took ${n}.</p>`
+          : after===n ? `<p><b>You matched the suggestions.</b> Following them after your opener also solves it in ${g(after)}.</p>`
+          : `<p><b>You beat the suggestions!</b> Following them after your opener would have taken ${g(after)}; you took ${n}.</p>`;
+  if(rows[0].w!=='raise') sum+=`<p>Starting with RAISE and following every suggestion: ${g(fromRaise)}.</p>`;
+  sum+='<p class="note">The suggestions never see the answer; they only use the colors. On any single day, luck plays a part.</p>';
+  return `<div class="replay"><p class="k">Your game, step by step</p><ol>${items}</ol><div class="sum">${sum}</div>
+    <p class="note"><button class="linkbtn" id="replayBack">Back</button></p></div>`;
+}
+async function showReplay(box){
+  const sig=boardSig();
+  if(rp.sig===sig && rp.html){ box.innerHTML=rp.html; document.getElementById('replayBack').onclick=closeReplay; return; }
+  box.innerHTML='<p class="empty">Working out your replay…</p>';
+  if(rp.sig===sig && rp.busy) return;
+  rp={sig,html:null,busy:true};
+  const html=await buildReplay();
+  if(rp.sig!==sig) return;
+  rp.busy=false;
+  if(html===undefined){ rp.sig=null; return; }
+  rp.html=html;
+  if(replayOn && boardSig()===sig){ const b=document.getElementById('pick'); b.innerHTML=html; document.getElementById('replayBack').onclick=closeReplay; }
+}
 
 // ---------- past answers (updated daily on the site) ----------
 fetch('past.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():Promise.reject()).then(t=>{
