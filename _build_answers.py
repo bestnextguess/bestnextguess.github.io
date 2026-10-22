@@ -31,7 +31,6 @@ def build(now=None, out='answers.html'):
     for n in sorted(hist): uses.setdefault(hist[n], []).append(n)
     since = [n for n in hist if n >= REPEATS_FROM]
     reps = sum(1 for n in since if uses[hist[n]][0] < n)
-    one_in = round(len(since) / reps) if reps else 0
     # answer list for "could it still be picked?" (taken from the main page's own data)
     ans = []
     try:
@@ -56,7 +55,7 @@ def build(now=None, out='answers.html'):
     rep = {
         '__COUNT__': f'{len(hist):,}', '__WORDS__': f'{len(uses):,}', '__LATEST__': f'{latest:,}',
         '__LATESTDATE__': fmt(latest), '__REPN__': str(reps), '__REPTOTAL__': str(len(since)),
-        '__ONEIN__': str(one_in), '__LETTERS__': ' '.join(letters), '__LIST__': '\n'.join(parts),
+        '__PCT__': str(round(100 * reps / len(since))) if since else '0', '__LETTERS__': ' '.join(letters), '__LIST__': '\n'.join(parts),
         '__DATA__': json.dumps(data, separators=(',', ':')),
     }
     t = open('_answers.tpl.html', encoding='utf-8').read()

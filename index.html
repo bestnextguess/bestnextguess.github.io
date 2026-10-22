@@ -145,7 +145,7 @@ td.p{text-align:right;font-weight:700}
   <div class="side">
     <span class="free">Free. No ads. Always.</span>
     <p>Enter your guesses and colors. See every possible answer and your smartest next move.</p>
-    <nav><a href="stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="about.html">About</a><span id="installWrap" hidden> · <a href="about.html#install" id="installBtn">Install app</a></span></nav>
+    <nav><a href="stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a><span id="installWrap"> · <a href="about.html#install" id="installBtn">Install app</a></span></nav>
   </div>
 </header>
 
@@ -206,7 +206,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="about.html">About</a> · Version 2.0.1 · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · Version 2.0.1 · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -613,7 +613,7 @@ function runEngine(req){
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 (function(){
   const wrap=document.getElementById('installWrap'), btn=document.getElementById('installBtn');
-  if(matchMedia('(display-mode: standalone)').matches || navigator.standalone){ track('app-open'); return; }
+  if(matchMedia('(display-mode: standalone)').matches || navigator.standalone){ wrap.hidden=true; track('app-open'); return; }
   let evt=null;
   window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); evt=e; wrap.hidden=false; });
   if(/iphone|ipad|ipod/i.test(navigator.userAgent)) wrap.hidden=false;   // iPhone: the link explains Share > Add to Home Screen
