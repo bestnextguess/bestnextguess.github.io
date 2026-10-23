@@ -1926,3 +1926,4 @@ zesty
 adorn
 wrest
 penny
+reset
