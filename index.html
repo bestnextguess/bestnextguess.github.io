@@ -123,6 +123,14 @@ td.p{text-align:right;font-weight:700}
 .howto ol{margin:8px 0;padding-left:22px}
 .howto li{margin:3px 0}
 .howto p{margin:6px 0 10px;color:#2A3A5C;font-size:15px}
+.ways{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 4px}
+.way{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 12px}
+.way b{font-size:16px}
+.way p{margin:4px 0 0}
+.way .use{margin-top:8px}
+.howto p.more{margin:8px 0 0}
+.checknote{margin:8px 0 0;background:var(--blueT);border-radius:8px;padding:8px 10px;font-size:15px;color:#2A3A5C}
+@media (max-width:640px){.ways{grid-template-columns:1fr}}
 .howto .x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:24px;color:var(--soft);cursor:pointer;line-height:1;padding:4px}
 .demoNote{margin:0 0 10px;background:var(--yT);border:2px solid var(--ink);border-radius:8px;padding:8px 12px;font-size:15px}
 .linkbtn{background:none;border:none;padding:0;color:var(--blue);text-decoration:underline;cursor:pointer;font:inherit}
@@ -192,14 +200,20 @@ td.p{text-align:right;font-weight:700}
 
 <div class="howto" id="howto" hidden>
   <button class="x" id="howtoX" aria-label="Hide these tips">×</button>
-  <b>How to use it with today's Wordle</b>
-  <ol>
-    <li>Play your first guess in Wordle. RAISE is a great start.</li>
-    <li>Type the same word here, then tap the tiles to match your colors.</li>
-    <li>Play the suggested word in Wordle, and repeat until you solve it.</li>
-  </ol>
-  <p>Already played today? Type in your whole game to get your game report: skill and luck scores, and where the smartest move could have saved you a guess.</p>
-  <button class="use" id="demoBtn1">See it in action</button>
+  <b>Two ways to use it</b>
+  <div class="ways">
+    <div class="way">
+      <b>Playing today's Wordle now?</b>
+      <p>Type each guess here and tap the tiles to match your colors. Play the word it suggests, and repeat.</p>
+      <button class="use" id="wayPlay">Start with my first guess</button>
+    </div>
+    <div class="way">
+      <b>Already played today?</b>
+      <p>Type in your whole game for your game report: skill, luck, and where the smartest move could have saved you a guess.</p>
+      <button class="use" id="wayCheck">Check my game</button>
+    </div>
+  </div>
+  <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
 </div>
 
 <div class="grid">
@@ -207,6 +221,7 @@ td.p{text-align:right;font-weight:700}
     <h2>Your guesses</h2>
     <div id="demoNote"></div>
     <div id="board"></div>
+    <p class="checknote" id="checkNote" hidden>Type each guess from your game, in order, and tap the tiles to match its colors. Your game report appears when you add the winning word.</p>
     <div class="entry" id="entryWrap">
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
       <button class="btn" id="add">Add guess</button>
@@ -490,6 +505,7 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
 let rows = [], hard = false, mode = 'today', demo = false;
 try{ hard = localStorage.getItem('bng-hard')==='1'; }catch(e){}
 const KEY = 'bng-state-v1';
+let checkMode=false;   // visitor chose "Already played today? Check my game"
 let howtoDone=false; try{ const s0=JSON.parse(localStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('bng-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
 function doneHowto(){ if(howtoDone) return; howtoDone=true; try{ localStorage.setItem('bng-howto','1'); }catch(e){} }
 function save(){ if(demo) return; try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('bng-hard',hard?'1':'0'); }catch(e){} }
@@ -562,6 +578,7 @@ function update(){
   save(); renderBoard();
   document.body.classList.toggle('demo',demo);
   document.getElementById('howto').hidden = howtoDone || rows.length>0 || demo;
+  { const l=rows[rows.length-1]; document.getElementById('checkNote').hidden = !checkMode || demo || mode!=='today' || (l && l.c.every(v=>v===2)); }
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
@@ -708,6 +725,9 @@ document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null
 document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
 document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
+document.getElementById('wayPlay').onclick=()=>{ track('way-play'); inp.focus(); inp.scrollIntoView({block:'center',behavior:'smooth'}); };
+document.getElementById('wayCheck').onclick=()=>{ track('way-check'); checkMode=true; update(); inp.focus(); inp.scrollIntoView({block:'center',behavior:'smooth'}); };
+document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false); const b=document.getElementById('installBtn'); if(!document.getElementById('installWrap').hidden){ e.preventDefault(); b.click(); } };
 
 // ---------- example game ----------
 let ownRows=null;                            // the player's own game, kept while the example is showing
