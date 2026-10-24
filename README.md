@@ -9,3 +9,5 @@ Past answers update automatically every day (see `.github/workflows/update-past.
 Not affiliated with The New York Times.
 
 © 2026 Ayman Mikhail. All rights reserved.
+
+Site updates are published by Claude only after the owner approves each change, then checked on the live site.
