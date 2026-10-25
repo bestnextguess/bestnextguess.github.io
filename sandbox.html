@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX version 2.11 · Best Next Guess</title>
+<title>SANDBOX version 2.10 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -150,10 +150,6 @@ td.p{text-align:right;font-weight:700}
 .way .use{margin-top:8px}
 .use.blue{background:var(--blue);border-color:var(--blue);color:#fff}
 .way .or{display:block;margin-top:8px;font-size:14px}
-.shotbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 rgba(31,42,68,.12);padding:10px 14px;margin:0 0 16px}
-.shotbar[hidden]{display:none}
-.shotbar b{font-size:16px}
-.shotbar .use{margin-top:0}
 .played{margin-top:14px;border-top:1px solid #E3EAF5;padding-top:12px}
 .played b{display:block;font-size:16px;margin-bottom:8px}
 .played .use{margin-top:0}
@@ -211,27 +207,6 @@ td.p{text-align:right;font-weight:700}
 .replay .off .soft{font-weight:400}
 .replay .lk{font-size:14px;color:var(--soft)}
 .report .replay .note{font-size:13px}
-.walk .k{margin-bottom:2px}
-.wk{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 0}
-.wcol{border:2px solid var(--rule);border-radius:10px;padding:8px 10px;min-width:0}
-.wcol.hp{background:var(--blueT);border-color:#C9D6EA}
-.wl{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--soft);margin:0}
-.ww{font-weight:700;letter-spacing:.06em;font-size:18px;margin:6px 0 0;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.ww .mini{margin-right:4px}
-.wn{font-size:14px;color:var(--soft);margin:3px 0 0}
-.wsub{font-size:12px;color:var(--soft);margin:2px 0 0}
-.arr{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:12.5px;color:var(--soft)}
-.ww small{font-size:13px;color:var(--soft);margin-right:4px;letter-spacing:0}
-.arr button{border:1.5px solid #C9D6EA;background:#fff;border-radius:5px;width:28px;height:26px;cursor:pointer;color:var(--blue);font-size:12px;padding:0}
-.arr button:disabled{opacity:.35;cursor:default}
-.wv{font-weight:700;margin:10px 0 0}
-.wlk{font-size:14px;color:var(--soft);margin:4px 0 0}
-.wbtns{display:flex;gap:10px;align-items:center;margin-top:14px}
-.wbtns .use,.wbtns .chip{margin-top:0}
-.wskip{font-size:14px;margin-top:10px;display:inline-block}
-.wagain{display:inline-block;margin:2px 0 6px;font-size:15px}
-#board .tile:disabled{cursor:default;opacity:1;color:#fff}
-@media (max-width:380px){.ww{font-size:16px}.wcol{padding:7px 8px}}
 .ops{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0}
 .ops td{padding:5px 4px;border-bottom:1px solid #E3EAF3}
 .ops td.wd{font-weight:700;letter-spacing:.08em;white-space:nowrap;width:1%}
@@ -247,7 +222,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.11, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.10, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -279,8 +254,6 @@ td.p{text-align:right;font-weight:700}
   <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
 </div>
 
-<div class="shotbar" id="shotBar" hidden><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>
-
 <div class="grid">
   <section class="card" aria-label="Your guesses">
     <h2>Your guesses</h2>
@@ -301,7 +274,7 @@ td.p{text-align:right;font-weight:700}
       <button class="chip" data-m="archive">Older</button>
       <button class="chip" id="reset">Start over</button>
     </div>
-    <p class="note" id="tapNote">Tap a tile, then pick its color.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
+    <p class="note">Tap a tile, then pick its color.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
     <div id="solved"></div>
   </section>
 
@@ -328,7 +301,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.11</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.10</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -586,10 +559,6 @@ let rows = [], hard = false, mode = 'today', demo = false;
 try{ hard = localStorage.getItem('sbx-hard')==='1'; }catch(e){}
 const KEY = 'sbx-state-v1';
 let checkMode=false;   // visitor chose "Already played today? Check my game"
-let walk=null, walkSeen=null;   // v2.10: step through a finished game one guess at a time ({step, sig}); step===rows.length is the summary
-const gameSig=()=>JSON.stringify(rows.map(r=>[r.w,r.c]));
-const inWalk=()=>!!(walk && walk.step<rows.length);
-const vrows=()=>inWalk()?rows.slice(0,walk.step+1):rows;   // the rows on view: during a walk, only up to the current guess
 let howtoDone=false; try{ const s0=JSON.parse(localStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('sbx-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
 function doneHowto(){ if(howtoDone) return; howtoDone=true; try{ localStorage.setItem('sbx-howto','1'); }catch(e){} }
 function save(){ if(demo) return; try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('sbx-hard',hard?'1':'0'); }catch(e){} }
@@ -603,7 +572,7 @@ function fb(g,t){
   return r[0]+3*r[1]+9*r[2]+27*r[3]+81*r[4];
 }
 const code=c=>c[0]+3*c[1]+9*c[2]+27*c[3]+81*c[4];
-function fits(w){ for(const r of vrows()){ if(fb(r.w,w)!==code(r.c)) return false; } return true; }
+function fits(w){ for(const r of rows){ if(fb(r.w,w)!==code(r.c)) return false; } return true; }
 function hardOk(g){
   for(const r of rows){
     const need={};
@@ -625,22 +594,20 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const board=document.getElementById('board');
 function renderBoard(){
   picker=null; board.innerHTML='';
-  const ro=inWalk();   // v2.10: walking through a finished game: show the rows so far, no editing
-  vrows().forEach((r,ri)=>{
+  rows.forEach((r,ri)=>{
     const d=document.createElement('div'); d.className='row'+(ri===rows.length-1 && r.c.every(v=>v===0)?' fresh':'');
     r.w.split('').forEach((ch,i)=>{
       const b=document.createElement('button'); b.className='tile '+['x','y','g'][r.c[i]]; b.textContent=ch;
       b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to pick a color`);
-      if(ro){ b.disabled=true; b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}`); }
-      else b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
+      b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
       d.appendChild(b);
     });
     const fresh = ri===rows.length-1 && r.c.every(v=>v===0);   // v2.9: newest guess, no colors set yet: show a clear Remove button
     const x=document.createElement('button'); x.className='del'+(fresh?' rm':''); x.textContent=fresh?'Remove':'×'; x.title='Remove this guess'; x.setAttribute('aria-label','Remove this guess');
     x.onclick=()=>{ rows.splice(ri,1); update(); };
-    if(!ro) d.appendChild(x); board.appendChild(d);
+    d.appendChild(x); board.appendChild(d);
   });
-  document.getElementById('entryWrap').style.display = (rows.length>=6 || ro) ? 'none':'flex';
+  document.getElementById('entryWrap').style.display = rows.length>=6 ? 'none':'flex';
 }
 
 // v2.8: the color picker (Yellow, Green, Gray), placed under the tapped tile and kept inside the board
@@ -683,20 +650,12 @@ const pct=p=>p>=0.995?'100%':p>=0.095?Math.round(p*100)+'%':p>=0.001?(Math.round
 let job=0;
 function update(){
   if(demo && !rows.length){ demo=false; rows=ownRows||[]; ownRows=null; }   // example cleared: back to the player's own game
-  { const l=rows[rows.length-1], done=!!(l && l.c.every(v=>v===2)), sig=gameSig();   // v2.10: a finished game entered after playing starts at guess 1
-    if(walk && walk.sig!==sig) walk=null;
-    if(!rows.length) walkSeen=null;   // a new game (Start over) can be walked through again
-    const okGame = done && rows.every(r=>fb(r.w,l.w)===code(r.c)) && USUAL.indexOf(l.w)>=0;   // colors match the answer and it's a listed word
-    if(walk && !okGame) walk=null;
-    if(!walk && checkMode && okGame && !demo && walkSeen!==sig){ walk={step:0,sig}; walkSeen=sig; track('walk-start'); } }
   save(); renderBoard();
   document.body.classList.toggle('demo',demo);
   document.getElementById('howto').hidden = true;   // v2.10: the main card now offers both ways to everyone
   { const l=rows[rows.length-1]; document.getElementById('checkNote').hidden = !checkMode || demo || mode!=='today' || (l && l.c.every(v=>v===2)); }
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
-  document.getElementById('tapNote').hidden = inWalk();
-  document.getElementById('shotBar').hidden = !!(rows.length || demo || mode!=='today');   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
@@ -704,7 +663,7 @@ function update(){
   const solvedBox=document.getElementById('solved');
   const last=rows[rows.length-1], isSolved=!!(last && last.c.every(v=>v===2));
   document.getElementById('moveH').textContent = (isSolved && !demo) ? 'Your game report' : 'Your next move';
-  if(isSolved && !inWalk()){
+  if(isSolved){
     solvedBox.innerHTML = demo ? '<div class="solved"><b>Solved!</b>This is the example game. Start your own game to get a game report.</div>'
       : `<div class="solved"><b>Solved in ${rows.length}!</b><button class="linkbtn" id="toReport">See your game report</button></div>`;
     const tr=document.getElementById('toReport'); if(tr) tr.onclick=()=>{ const m=document.querySelector('.move'); if(!m) return; if(m.scrollIntoView) m.scrollIntoView({behavior:'smooth',block:'start'}); m.classList.add('flash'); setTimeout(()=>m.classList.remove('flash'),1600); };
@@ -751,8 +710,11 @@ const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span c
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
   if(!rows.length){   // v2.10: two choices for every visitor: playing now, or already played (screenshot / type it in)
-    box.innerHTML=`<p class="k">${mode==='today'?'Playing now? ':''}Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button><p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button></p>`;
+    const played = mode==='today' ? `<div class="played"><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn or" id="typeBtn">or type it in</button><p class="note">Screenshot your finished Wordle; we read it and show your game report.</p></div>` : '';
+    box.innerHTML=`<p class="k">${mode==='today'?'Playing now? ':''}Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button>${played}<p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button></p>`;
     wire(); document.getElementById('demoBtn2').onclick=startDemo;
+    const sb=document.getElementById('shotBtn'); if(sb) sb.onclick=pickShot;
+    const tb=document.getElementById('typeBtn'); if(tb) tb.onclick=()=>{ track('type-game'); pickWay(true); };
     return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){
@@ -961,8 +923,6 @@ document.getElementById('modeInfoBtn').onclick=()=>{ const m=document.getElement
 document.getElementById('wayPlay').onclick=()=>{ track('way-play'); pickWay(false); };
 document.getElementById('wayCheck').onclick=()=>{ track('way-check'); pickWay(true); };
 document.getElementById('wayShot').onclick=()=>{ track('way-shot'); pickShot(); };
-document.getElementById('shotBtn').onclick=pickShot;
-document.getElementById('typeBtn').onclick=()=>{ track('type-game'); pickWay(true); };
 document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false); const b=document.getElementById('installBtn'); if(!document.getElementById('installWrap').hidden){ e.preventDefault(); b.click(); } };
 
 // ---------- example game ----------
@@ -1079,10 +1039,9 @@ function showReport(box){
     loadHistory().then(by=>{ const t=puzzleToday(); R.uses=(by.get(R.ans)||[]).filter(n=>n<t); redraw(); });
     fillReport(R,alive,redraw).then(ok=>{ if(!alive() || ok===undefined) return; R.ready=true; saveGame(R); track('report-ready'); redraw(); });
   }
-  drawAny(box,RP.R);
+  renderReport(box,RP.R);
 }
-function drawAny(box,R){ if(inWalk() && R.ok) renderWalk(box,R); else renderReport(box,R); }
-function drawReport(){ const last=rows[rows.length-1]; if(!demo && last && last.c.every(v=>v===2)) drawAny(document.getElementById('pick'),RP.R); }
+function drawReport(){ const last=rows[rows.length-1]; if(!demo && last && last.c.every(v=>v===2)) renderReport(document.getElementById('pick'),RP.R); }
 
 function baseReport(){                       // everything that doesn't need the engine
   const rs=rows.map(r=>({w:r.w,c:r.c.slice()})), n=rs.length, ans=rs[n-1].w;
@@ -1218,97 +1177,6 @@ function histHtml(R){
     (vs.length?`<p>Against the helper: <b>${b}</b> better · <b>${t}</b> tied · <b>${vs.length-b-t}</b> behind</p>`:'')+
     `<div class="dist" aria-label="Guesses per game">${dist.map((c,i)=>`<div><span>${i+1}</span><i class="${R.mode==='today' && td===i+1?'on':''}" style="width:${Math.max(4,Math.round(100*c/mx))}%">${c}</i></div>`).join('')}</div>`+note;
 }
-// ---------- v2.10: step through a finished game, one guess at a time ----------
-const OPENER_ALTS=['raise','arise','irate','arose','saner','alter','later','snare','stare','slate'];
-function hardOkR(g,rs){
-  for(const r of rs){ const need={};
-    for(let i=0;i<5;i++){ if(r.c[i]===2 && g[i]!==r.w[i]) return false; if(r.c[i]>0) need[r.w[i]]=(need[r.w[i]]||0)+1; }
-    for(const k in need){ let n=0; for(const ch of g) if(ch===k) n++; if(n<need[k]) return false; } }
-  return true;
-}
-function leftAfter(g,c,ans){ if(g===ans) return 0; const p=fb(g,ans); let n=0; for(const w of c) if(fb(g,w)===p) n++; return n; }
-function altsFor(R,st){                       // the helper's pick first, then other strong guesses by the quick estimate
-  if(st.alts) return st.alts;
-  if(st.sug==null || !st.decide) return null;
-  const c=st.cands, P=st.P, rs=R.rows.slice(0,st.k);
-  let pool;
-  if(st.k===0) pool=OPENER_ALTS;
-  else {
-    if(c.length<=2) pool=[];
-    else {
-    const played=new Set(rs.map(r=>r.w));
-    pool=(c.length<=300?ALLW:USUAL).filter(g=>!played.has(g));
-    if(R.hard) pool=pool.filter(g=>hardOkR(g,rs));
-    if(pool.length>(c.length>40?80:300)){   // cheap first cut: words whose letters split the words left most evenly
-      const f=new Map(); for(const w of c) for(const ch of new Set(w)) f.set(ch,(f.get(ch)||0)+1);
-      pool=pool.map(g=>{ let sc=0; for(const ch of new Set(g)){ const v=f.get(ch)||0; sc+=Math.min(v,c.length-v); } return [g,sc]; }).sort((a,b)=>b[1]-a[1]).slice(0,c.length>40?80:150).map(x=>x[0]);
-      if(c.length<=40) for(const w of c) if(!played.has(w) && !pool.includes(w) && (!R.hard || hardOkR(w,rs))) pool.push(w);   // the words left are always in the running
-    }
-    let cs=c; if(c.length>400){ const k=Math.ceil(c.length/400); cs=c.filter((w,i)=>i%k===0); }   // rank on a spread-out sample of the words left; counts below stay exact
-    pool=pool.map(g=>[g,quickCost(g,cs,P)]).sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).slice(0,8).map(x=>x[0]);
-    }
-  }
-  const list=[st.sug, ...pool.filter(g=>g!==st.sug)].slice(0,5);
-  st.alts=list.map(g=>({w:g,left:leftAfter(g,c,R.ans)}));
-  return st.alts;
-}
-function walkTo(step){ if(!walk) return; walk.step=Math.max(0,Math.min(rows.length,step)); update();
-  const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); }
-function stepVerdict(R,st){
-  const N=x=>x.toLocaleString('en-US');
-  if(!st.decide) return 'Only one word was left, and you played it.';
-  if(st.left===0){ return st.sug===st.g ? 'Solved! It was also the helper\'s pick.' : 'Solved!'; }
-  if(st.sug==null) return '';
-  const same=st.sug===st.g, what=st.k?'pick':'opener';
-  if(same) return `Same as the helper's ${what}.`+(st.left===1?' You narrowed it down to one word.':'');
-  if(st.sugLeft===0) return `The helper's ${what}, ${U(st.sug)}, would have solved it right here.`;
-  if(st.sugLeft<st.left) return `The helper's ${what}, ${U(st.sug)}, would have left ${N(st.sugLeft)} instead of ${N(st.left)}.`;
-  if(st.loss!=null && st.loss<0.1) return `About as good as the helper's ${what}, ${U(st.sug)}.`;
-  if(st.sugLeft>st.left) return `Your guess worked out better this time: ${U(st.sug)} would have left ${N(st.sugLeft)}. On average, though, the helper's ${what} finishes faster.`;
-  return `Same number of words left, but the helper's ${what}, ${U(st.sug)}, finishes faster on average.`;
-}
-function luckNote(R,st){
-  const N=x=>x.toLocaleString('en-US');
-  if(R.n===1) return `A hole in one! That was about a 1 in ${N(st.nc)} shot.`;
-  if(st.k===R.n-1 && st.k>0 && st.decide && st.nc>=4) return `Lucky: it was a 1 in ${N(st.nc)} shot.`;
-  if(st.left>0 && st.luck!=null && st.luck>=0.9) return `Lucky colors: only ${N(st.hits)} of the ${N(st.nc)} ${st.k?'words left':'possible answers'} ${st.hits===1?'gives':'give'} these.`;
-  if(st.left>0 && st.luck!=null && st.luck<=0.15 && st.nc>=6) return 'Unlucky colors: most words would have left fewer.';
-  return '';
-}
-function renderWalk(box,R){
-  const k=walk.step, st=R.steps[k], n=R.n, N=x=>x.toLocaleString('en-US');
-  if(walk.pick==null || walk.pickFor!==k){ walk.pick=0; walk.pickFor=k; }
-  let alts=st.alts||null;
-  if(!alts && st.decide && st.sug!=null){   // work out the other picks just after drawing, so Next responds at once
-    if(!st.altsBusy){ st.altsBusy=true; setTimeout(()=>{ altsFor(R,st); st.altsBusy=false; if(inWalk() && walk.step===k && RP.R===R) renderWalk(document.getElementById('pick'),R); },30); }
-  }
-  let helper;
-  if(!st.decide) helper=`<p class="ww">${U(st.g)}</p><p class="wn">the only word left</p>`;
-  else if(!alts) helper = st.sug==null ? `<p class="wn">Working it out…</p>` : `<p class="ww">${U(st.sug)}</p><p class="wn">${st.sugLeft===0?'would solve it':st.sugLeft!=null?'would leave '+nW(st.sugLeft):''}${st.sug===st.g?' · your guess':''}</p><div class="arr"><span>Finding other picks…</span></div>`;
-  else {
-    const i=Math.min(walk.pick,alts.length-1), a=alts[i];
-    helper=`<p class="ww">${i===0?'':'<small>#'+(i+1)+'</small>'}${U(a.w)}</p>`+
-      `<p class="wn">${a.left===0?'would solve it':'would leave '+nW(a.left)}${a.w===st.g?' · your guess':''}</p>`+
-      (alts.length<2?'':`<div class="arr"><button id="pkUp" aria-label="The helper's previous pick" ${i===0?'disabled':''}>▲</button><span>${i===0?'Top pick':i+1+' of '+alts.length}</span><button id="pkDn" aria-label="The helper's next pick" ${i>=alts.length-1?'disabled':''}>▼</button></div>`);
-  }
-  const v=stepVerdict(R,st), lk=luckNote(R,st);
-  box.innerHTML=`<div class="walk">
-    <p class="k">Guess ${k+1} of ${n}${R.hard?' · Hard mode':''}</p>
-    <div class="wk">
-      <div class="wcol"><p class="wl">Your guess</p><p class="ww">${miniTiles(st.c)}${U(st.g)}</p><p class="wn">${st.left===0?'solved!':nW(st.left)+' left'}${st.k && st.left>0 && st.nc>st.left?` (from ${N(st.nc)})`:''}</p></div>
-      <div class="wcol hp"><p class="wl">${st.k?'Helper\'s picks':'Helper\'s openers'}</p>${helper}</div>
-    </div>
-    ${v?`<p class="wv">${v}</p>`:''}${lk?`<p class="wlk">${lk}</p>`:''}
-    <div class="wbtns">${k>0?'<button class="chip" id="wkBack">‹ Back</button>':''}<button class="use blue" id="wkNext">${k<n-1?'Next ›':'See your summary ›'}</button></div>
-    <button class="linkbtn wskip" id="wkSkip">Skip to summary</button>
-  </div>`;
-  const b=document.getElementById('wkBack'); if(b) b.onclick=()=>walkTo(k-1);
-  document.getElementById('wkNext').onclick=()=>{ track(k<n-1?'walk-next':'walk-summary'); walkTo(k+1); };
-  document.getElementById('wkSkip').onclick=()=>{ track('walk-skip'); walkTo(n); };
-  const up=document.getElementById('pkUp'), dn=document.getElementById('pkDn');
-  if(up) up.onclick=()=>{ walk.pick=Math.max(0,walk.pick-1); renderWalk(box,R); };
-  if(dn) dn.onclick=()=>{ walk.pick=walk.pick+1; track('walk-picks'); renderWalk(box,R); };
-}
 function renderReport(box,R){
   const today=R.mode==='today', wait=R.ok && !R.ready;
   let verdict='';
@@ -1322,7 +1190,6 @@ function renderReport(box,R){
   box.innerHTML=`<div class="report">
     <p class="solvedHead">Solved in ${R.n} 🎉${R.hard?' <small>Hard mode</small>':''}</p>
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
-    ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
     <div class="rsecs">${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
   </div>`;
@@ -1330,7 +1197,6 @@ function renderReport(box,R){
     const id=d.dataset.sec; if(d.open){ openSecs.add(id); track(id==='steps'?'replay':'report-'+id); } else openSecs.delete(id);
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
-  const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); };
   const ch=document.getElementById('clearHist');
   if(ch) ch.onclick=()=>{ if(ch.dataset.sure){ try{ localStorage.removeItem(HKEY); }catch(e){} track('history-cleared',false); renderReport(box,R); } else { ch.dataset.sure='1'; ch.textContent='Tap again to clear your history'; } };
 }
