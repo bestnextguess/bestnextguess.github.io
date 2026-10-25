@@ -176,14 +176,6 @@ td .top1{color:var(--g)}
   <div class="replist" id="replist"></div>
 </section>
 
-<section class="card" aria-label="Best openers">
-  <h2>The best first guesses</h2>
-  <p class="note">Average number of answers still possible after your first guess, out of 2,377. Shorter bars are better.</p>
-  <div class="bars" id="topbars"></div>
-  <p class="sub">Some famous openers for comparison</p>
-  <div class="bars" id="fambars"></div>
-</section>
-
 <section class="card" aria-label="Streak-killers">
   <h2>The streak-killers</h2>
   <p class="note">Patterns where many answers share four letters. Guess them one at a time and you can run out of tries, and in hard mode you may have no other choice.</p>
@@ -226,11 +218,10 @@ const MAX = 190;
 function barHtml(label,val,cls,extra){ return `<div class="bar ${cls}"><span class="lbl">${label}</span><span class="track"><span class="fill" style="width:${Math.min(100,val/MAX*100).toFixed(0)}%"></span></span><span class="val">${val.toFixed(1)}${extra||''}</span></div>`; }
 
 // top + famous
-document.getElementById('topbars').innerHTML = S.topAns.map(([w,v,r])=>barHtml(w,v,'',` · #${r}`)).join('');
 function famous(you){
   let h=S.famous.map(([w,v,r])=>barHtml(w,v,'fam',` · #${r}`)).join('');
   if(you) h+=barHtml(you.w,you.s,'you',` · #${you.r}`);
-  document.getElementById('fambars').innerHTML=h;
+  const fb=document.getElementById('fambars'); if(fb) fb.innerHTML=h;   // the best-openers box was removed Oct 25
 }
 famous(null);
 
