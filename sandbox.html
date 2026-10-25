@@ -679,6 +679,7 @@ function update(){
   if(demo && !rows.length){ demo=false; rows=ownRows||[]; ownRows=null; }   // example cleared: back to the player's own game
   { const l=rows[rows.length-1], done=!!(l && l.c.every(v=>v===2)), sig=gameSig();   // v2.10: a finished game entered after playing starts at guess 1
     if(walk && walk.sig!==sig) walk=null;
+    if(!rows.length) walkSeen=null;   // a new game (Start over) can be walked through again
     const okGame = done && rows.every(r=>fb(r.w,l.w)===code(r.c)) && USUAL.indexOf(l.w)>=0;   // colors match the answer and it's a listed word
     if(walk && !okGame) walk=null;
     if(!walk && checkMode && okGame && !demo && walkSeen!==sig){ walk={step:0,sig}; walkSeen=sig; track('walk-start'); } }
@@ -1229,13 +1230,16 @@ function altsFor(R,st){                       // the helper's pick first, then o
   else {
     if(c.length<=2) pool=[];
     else {
-    pool=(c.length<=300?ALLW:USUAL);
+    const played=new Set(rs.map(r=>r.w));
+    pool=(c.length<=300?ALLW:USUAL).filter(g=>!played.has(g));
     if(R.hard) pool=pool.filter(g=>hardOkR(g,rs));
-    if(pool.length>300 && c.length>40){   // cheap first cut: words whose letters split the words left most evenly
+    if(pool.length>(c.length>40?80:300)){   // cheap first cut: words whose letters split the words left most evenly
       const f=new Map(); for(const w of c) for(const ch of new Set(w)) f.set(ch,(f.get(ch)||0)+1);
-      pool=pool.map(g=>{ let sc=0; for(const ch of new Set(g)){ const v=f.get(ch)||0; sc+=Math.min(v,c.length-v); } return [g,sc]; }).sort((a,b)=>b[1]-a[1]).slice(0,300).map(x=>x[0]);
+      pool=pool.map(g=>{ let sc=0; for(const ch of new Set(g)){ const v=f.get(ch)||0; sc+=Math.min(v,c.length-v); } return [g,sc]; }).sort((a,b)=>b[1]-a[1]).slice(0,c.length>40?80:150).map(x=>x[0]);
+      if(c.length<=40) for(const w of c) if(!played.has(w) && !pool.includes(w) && (!R.hard || hardOkR(w,rs))) pool.push(w);   // the words left are always in the running
     }
-    pool=pool.map(g=>[g,quickCost(g,c,P)]).sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).slice(0,8).map(x=>x[0]);
+    let cs=c; if(c.length>400){ const k=Math.ceil(c.length/400); cs=c.filter((w,i)=>i%k===0); }   // rank on a spread-out sample of the words left; counts below stay exact
+    pool=pool.map(g=>[g,quickCost(g,cs,P)]).sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).slice(0,8).map(x=>x[0]);
     }
   }
   const list=[st.sug, ...pool.filter(g=>g!==st.sug)].slice(0,5);
@@ -1268,10 +1272,13 @@ function luckNote(R,st){
 function renderWalk(box,R){
   const k=walk.step, st=R.steps[k], n=R.n, N=x=>x.toLocaleString('en-US');
   if(walk.pick==null || walk.pickFor!==k){ walk.pick=0; walk.pickFor=k; }
-  const alts=altsFor(R,st);
+  let alts=st.alts||null;
+  if(!alts && st.decide && st.sug!=null){   // work out the other picks just after drawing, so Next responds at once
+    if(!st.altsBusy){ st.altsBusy=true; setTimeout(()=>{ altsFor(R,st); st.altsBusy=false; if(inWalk() && walk.step===k && RP.R===R) renderWalk(document.getElementById('pick'),R); },30); }
+  }
   let helper;
   if(!st.decide) helper=`<p class="ww">${U(st.g)}</p><p class="wn">the only word left</p>`;
-  else if(!alts) helper=`<p class="wn">Working it out…</p>`;
+  else if(!alts) helper = st.sug==null ? `<p class="wn">Working it out…</p>` : `<p class="ww">${U(st.sug)}</p><p class="wn">${st.sugLeft===0?'would solve it':st.sugLeft!=null?'would leave '+nW(st.sugLeft):''}${st.sug===st.g?' · your guess':''}</p><div class="arr"><span>Finding other picks…</span></div>`;
   else {
     const i=Math.min(walk.pick,alts.length-1), a=alts[i];
     helper=`<p class="ww">${i===0?'':'<small>#'+(i+1)+'</small>'}${U(a.w)}</p>`+
