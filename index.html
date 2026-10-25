@@ -57,7 +57,7 @@ main{max-width:920px;margin:0 auto;padding:28px 24px 44px}
 .oddsbar{display:flex;height:14px;border-radius:999px;overflow:hidden;margin:16px 0 4px;background:var(--rule)} .oddsbar i{display:block}
 footer{margin-top:26px;color:#3E4A63;font-size:14px}
 footer p{margin:6px 0}
-@media (max-width:720px){
+@media (max-width:799px){
   main{padding:20px 14px 36px}
   .top h1{font-size:32px} .top .logo{width:36px;height:36px}
   .top .side{margin-left:0;align-items:flex-start;text-align:left;width:100%}
@@ -105,8 +105,8 @@ td.p{text-align:right;font-weight:700}
 .more{margin-top:12px}
 .solved{margin-top:14px;background:var(--gT);border:2px solid var(--ink);border-radius:8px;padding:12px}
 .solved b{display:block;font-size:19px}
-@media (max-width:720px){
-  .grid{grid-template-columns:1fr;gap:18px}
+@media (max-width:799px){
+  .grid{grid-template-columns:minmax(0,1fr);gap:18px}   /* v2.7.1: minmax(0,…) lets the cards shrink to narrow phones instead of overflowing */
   .big .tile{width:48px;height:48px;font-size:24px}
   .count{gap:18px} .count b{font-size:28px}
   td{padding:7px 4px} .pill{font-size:12px}
@@ -131,6 +131,8 @@ td.p{text-align:right;font-weight:700}
 .howto p.more{margin:8px 0 0}
 .checknote{margin:8px 0 0;background:var(--blueT);border-radius:8px;padding:8px 10px;font-size:15px;color:#2A3A5C}
 @media (max-width:640px){.ways{grid-template-columns:1fr}}
+@media (max-width:400px){.entry input{letter-spacing:.1em;font-size:17px;padding:9px 8px}}
+@media (max-width:340px){.entry input{letter-spacing:.04em;font-size:16px}}   /* v2.7.1: the TYPE GUESS placeholder fits narrow phones */
 .howto .x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:24px;color:var(--soft);cursor:pointer;line-height:1;padding:4px}
 .demoNote{margin:0 0 10px;background:var(--yT);border:2px solid var(--ink);border-radius:8px;padding:8px 12px;font-size:15px}
 .linkbtn{background:none;border:none;padding:0;color:var(--blue);text-decoration:underline;cursor:pointer;font:inherit}
@@ -262,7 +264,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.7</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.7.1</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
