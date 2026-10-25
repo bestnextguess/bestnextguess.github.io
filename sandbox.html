@@ -231,7 +231,8 @@ td.p{text-align:right;font-weight:700}
 .wbtns{display:flex;gap:10px;align-items:center;margin-top:14px}
 .wbtns .use,.wbtns .chip{margin-top:0}
 .wskip{font-size:14px;margin-top:10px;display:inline-block}
-.wagain{display:inline-block;margin:2px 0 6px;font-size:15px}
+.wagain{display:inline-block;margin:6px 0 10px;font-size:18px;font-weight:700}
+.replay .opstat{margin:10px 0 0;font-size:15px}
 #board .tile:disabled{cursor:default;opacity:1;color:#fff}
 @media (max-width:380px){.ww{font-size:16px}.wcol{padding:7px 8px}}
 .ops{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0}
@@ -1189,7 +1190,8 @@ function stepsHtml(R){                       // v2.10: the report's main view: e
   }).join('');
   const g=x=>x>6?'more than 6 guesses':nG(x);
   const aft=(R.rows[0].w!=='raise' && R.after!=null) ? `<p class="note">Following the helper after your opener: ${g(R.after)}.</p>` : '';
-  return `<div class="replay"><ol>${items}</ol>${aft}<p class="note">Words left counts every possible answer that still fits. The helper never sees the answer; it only uses the colors.</p></div>`;
+  const op=R.rows[0].w;
+  return `<div class="replay"><ol>${items}</ol>${aft}<p class="note">Words left counts every possible answer that still fits. The helper never sees the answer; it only uses the colors.</p><p class="opstat"><a href="sandbox-stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p></div>`;
 }
 function wordHtml(R){
   const A=U(R.ans), uses=R.uses||[], when=uses.map(n=>`${dateOf(n)} (#${n.toLocaleString('en-US')})`).join(' and ');
@@ -1207,7 +1209,7 @@ function wordHtml(R){
 function openersHtml(R){
   const op=R.rows[0].w, mx=Math.max(1,...R.openers.map(o=>o.left));
   const tr=R.openers.map(o=>`<tr class="${o.w===op?'me':''}"><td class="wd">${U(o.w)}${o.w===op?' <small>yours</small>':''}</td><td class="bar"><i style="width:${Math.max(3,Math.round(100*o.left/mx))}%"></i></td><td class="num">${o.left===0?'solved!':nW(o.left)}</td></tr>`).join('');
-  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common). Fewer is better.</p><table class="ops">${tr}</table><p><a href="sandbox-stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
+  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common). Fewer is better.</p><table class="ops">${tr}</table>`;
 }
 function histHtml(R){
   const G=loadGames(), games=Object.keys(G).sort().map(k=>G[k]).filter(x=>x && x.n>=1 && x.n<=6);
