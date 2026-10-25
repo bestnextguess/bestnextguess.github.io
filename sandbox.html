@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX version 2.11.1 · Best Next Guess</title>
+<title>SANDBOX version 2.12 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -249,7 +249,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.11.1, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.12, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -258,7 +258,7 @@ td.p{text-align:right;font-weight:700}
   <div class="side">
     <span class="free">Free. No ads. Always.</span>
     <p>Enter your guesses and colors. See every possible answer and your smartest next move.</p>
-    <nav><a href="stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a><span id="installWrap"> · <a href="about.html#install" id="installBtn">Install app</a></span></nav>
+    <nav><a href="sandbox-stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a><span id="installWrap"> · <a href="sandbox-about.html#install" id="installBtn">Install app</a></span></nav>
   </div>
 </header>
 
@@ -278,7 +278,7 @@ td.p{text-align:right;font-weight:700}
       <button class="linkbtn or" id="wayCheck">or type your game in</button>
     </div>
   </div>
-  <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
+  <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="sandbox-about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
 </div>
 
 <div class="shotbar" id="shotBar" hidden><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>
@@ -330,7 +330,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.11.1</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.12</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -592,10 +592,10 @@ let walk=null, walkSeen=null;   // v2.10: step through a finished game one guess
 const gameSig=()=>JSON.stringify(rows.map(r=>[r.w,r.c]));
 const inWalk=()=>!!(walk && walk.step<rows.length);
 const vrows=()=>inWalk()?rows.slice(0,walk.step+1):rows;   // the rows on view: during a walk, only up to the current guess
-let howtoDone=false; try{ const s0=JSON.parse(localStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('sbx-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
+let howtoDone=false; try{ const s0=JSON.parse(sessionStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('sbx-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
 function doneHowto(){ if(howtoDone) return; howtoDone=true; try{ localStorage.setItem('sbx-howto','1'); }catch(e){} }
-function save(){ if(demo) return; try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('sbx-hard',hard?'1':'0'); }catch(e){} }
-function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; mode=s.mode||'today'; } }catch(e){} }
+function save(){ if(demo) return; try{ sessionStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('sbx-hard',hard?'1':'0'); }catch(e){} }   // v2.12: the board lives only while the tab is open (survives a refresh); closing the browser or app starts fresh
+function load(){ try{ localStorage.removeItem(KEY); }catch(e){} try{ const s=JSON.parse(sessionStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; mode=s.mode||'today'; } }catch(e){} }
 
 // ---------- feedback ----------
 function fb(g,t){
@@ -1202,12 +1202,12 @@ function wordHtml(R){
   const al=R.alike;
   const p2 = al.length ? `<p><b>Look-alikes:</b> ${al.length===1?'1 other possible answer is':al.length+' other possible answers are'} one letter away: ${al.slice(0,8).map(U).join(', ')}${al.length>8?' and more':''}.${al.length>=4?' Words like these break streaks.':''}</p>`
                        : `<p><b>No look-alikes:</b> no other possible answer is just one letter away.</p>`;
-  return p1+p2+'<p><a href="answers.html" id="toAnswers">See every past answer with dates →</a></p>';
+  return p1+p2+'<p><a href="sandbox-answers.html" id="toAnswers">See every past answer with dates →</a></p>';
 }
 function openersHtml(R){
   const op=R.rows[0].w, mx=Math.max(1,...R.openers.map(o=>o.left));
   const tr=R.openers.map(o=>`<tr class="${o.w===op?'me':''}"><td class="wd">${U(o.w)}${o.w===op?' <small>yours</small>':''}</td><td class="bar"><i style="width:${Math.max(3,Math.round(100*o.left/mx))}%"></i></td><td class="num">${o.left===0?'solved!':nW(o.left)}</td></tr>`).join('');
-  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common). Fewer is better.</p><table class="ops">${tr}</table><p><a href="stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
+  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common). Fewer is better.</p><table class="ops">${tr}</table><p><a href="sandbox-stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
 }
 function histHtml(R){
   const G=loadGames(), games=Object.keys(G).sort().map(k=>G[k]).filter(x=>x && x.n>=1 && x.n<=6);
