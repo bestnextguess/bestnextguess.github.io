@@ -202,6 +202,11 @@ td.p{text-align:right;font-weight:700}
 .rsecs .replay ol{margin-top:0}
 .replay .soft{color:var(--soft)}
 .replay .miss{color:#A3471B;font-weight:700}
+.report .verdict{margin:8px 0 4px;font-size:17px}
+.replay .off{color:#A3471B;font-weight:700}
+.replay .off .soft{font-weight:400}
+.replay .lk{font-size:14px;color:var(--soft)}
+.report .replay .note{font-size:13px}
 .ops{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0}
 .ops td{padding:5px 4px;border-bottom:1px solid #E3EAF3}
 .ops td.wd{font-weight:700;letter-spacing:.08em;white-space:nowrap;width:1%}
@@ -1117,25 +1122,30 @@ function insights(R){
   }
   return out.slice(0,2);
 }
-function stepsHtml(R){
-  if(!R.ok) return '<p>Fix the colors on the left and the step-by-step appears here.</p>';
-  const big=bigMiss(R), g=x=>x>6?'more than 6 guesses':nG(x);
+function stepsHtml(R){                       // v2.10: the report's main view: each guess vs the helper's pick
+  if(!R.ok) return '';
+  const N=x=>x.toLocaleString('en-US'), fin=R.n-1;
   const items=R.steps.map(st=>{
-    const sc=[]; if(st.decide && st.skill!=null) sc.push('Skill '+st.skill); if(st.luck!=null) sc.push('Luck '+Math.round(99*st.luck));
     const pick=st.k?'pick':'opener';
-    const l2 = !st.decide ? '<div class="ln soft">The only word left.</div>'
-      : st.sug==null ? (R.ready?'':'<div class="ln soft">Working it out…</div>')
-      : st.sug===st.g ? `<div class="ln ok">Same as the helper's ${pick} ✓</div>`
-      : `<div class="ln">Helper's ${pick}: <span class="wd">${U(st.sug)}</span>, ${leftTxt(st.sugLeft)}</div>`;
-    const miss = big && big.k===st.k ? `<div class="ln miss">Your biggest miss: ${lossTxt(st.loss)} on average.</div>` : '';
-    return `<li><div class="st">Guess ${st.k+1}${sc.length?' · '+sc.join(' · '):''}</div><div class="ln">${miniTiles(st.c)}<span class="wd">${U(st.g)}</span>, ${leftTxt(st.left)}</div>${l2}${miss}</li>`;
+    let l2='';
+    if(!st.decide) l2='<div class="ln soft">The only word left.</div>';
+    else if(st.sug==null) l2=R.ready?'':'<div class="ln soft">Working it out…</div>';
+    else if(st.sug===st.g) l2=`<div class="ln ok">✓ The helper's ${pick}</div>`;
+    else if(st.left===0) l2='';               // the winning guess: no need to second-guess it
+    else if(st.sugLeft===0) l2=`<div class="ln off">✗ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> <span class="soft">· would solve it</span></div>`;
+    else if(st.sugLeft!=null && st.sugLeft<st.left) l2=`<div class="ln off">✗ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> <span class="soft">· would leave ${N(st.sugLeft)}</span></div>`;
+    else if(st.loss!=null && st.loss<0.1) l2=`<div class="ln soft">≈ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> · about as good</div>`;
+    else l2=`<div class="ln off">✗ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> <span class="soft">· better on average</span></div>`;
+    let lk='';
+    if(R.n===1) lk=`<div class="ln lk">A hole in one! That was about a 1 in ${N(st.nc)} shot.</div>`;
+    else if(st.k===fin && st.k>0 && st.decide && st.nc>=4) lk=`<div class="ln lk">Lucky: it was a 1 in ${N(st.nc)} shot.</div>`;
+    else if(st.left>0 && st.luck!=null && st.luck>=0.9) lk=`<div class="ln lk">Lucky colors: only ${N(st.hits)} of the ${N(st.nc)} ${st.k?'words left':'possible answers'} ${st.hits===1?'gives':'give'} these.</div>`;
+    else if(st.left>0 && st.luck!=null && st.luck<=0.15 && st.nc>=6) lk=`<div class="ln lk">Unlucky colors: most words would have left fewer.</div>`;
+    return `<li><div class="ln">${miniTiles(st.c)}<span class="wd">${U(st.g)}</span> <span class="soft">· ${leftTxt(st.left)}</span></div>${l2}${lk}</li>`;
   }).join('');
-  let sum='';
-  if(R.helper!=null){
-    if(R.rows[0].w!=='raise' && R.after!=null) sum+=`<p>Following the helper after your opener: ${g(R.after)}.</p>`;
-    sum+=`<p>The helper on its own, starting with RAISE: ${g(R.helper)}. You took ${R.n}.</p>`;
-  }
-  return `<div class="replay"><ol>${items}</ol>${sum?`<div class="sum">${sum}</div>`:''}<p class="note">Words left counts every possible answer that still fits. The helper never sees the answer; it only uses the colors.</p></div>`;
+  const g=x=>x>6?'more than 6 guesses':nG(x);
+  const aft=(R.rows[0].w!=='raise' && R.after!=null) ? `<p class="note">Following the helper after your opener: ${g(R.after)}.</p>` : '';
+  return `<div class="replay"><ol>${items}</ol>${aft}<p class="note">Words left counts every possible answer that still fits. The helper never sees the answer; it only uses the colors.</p></div>`;
 }
 function wordHtml(R){
   const A=U(R.ans), uses=R.uses||[], when=uses.map(n=>`${dateOf(n)} (#${n.toLocaleString('en-US')})`).join(' and ');
@@ -1162,37 +1172,26 @@ function histHtml(R){
   if(games.length===1) return '<p>Your first game saved on this device. Come back tomorrow and your stats start adding up here: average guesses, how often you beat the helper, and more.</p>'+note;
   const avg=(games.reduce((a,x)=>a+x.n,0)/games.length).toFixed(1);
   const vs=games.filter(x=>x.h!=null), b=vs.filter(x=>x.h>6 || x.n<x.h).length, t=vs.filter(x=>x.n===x.h).length;
-  const sks=games.filter(x=>x.s!=null).map(x=>x.s), lks=games.filter(x=>x.l!=null).map(x=>x.l), mean=a=>Math.round(a.reduce((p,q)=>p+q,0)/a.length);
   const dist=[1,2,3,4,5,6].map(i=>games.filter(x=>x.n===i).length), mx=Math.max(1,...dist), td=(G[localDay()]||{}).n;
   return `<p><b>${games.length} games</b> · average <b>${avg}</b> guesses</p>`+
     (vs.length?`<p>Against the helper: <b>${b}</b> better · <b>${t}</b> tied · <b>${vs.length-b-t}</b> behind</p>`:'')+
-    (sks.length?`<p>Average skill <b>${mean(sks)}</b>${lks.length?` · average luck <b>${mean(lks)}</b>`:''}</p>`:'')+
     `<div class="dist" aria-label="Guesses per game">${dist.map((c,i)=>`<div><span>${i+1}</span><i class="${R.mode==='today' && td===i+1?'on':''}" style="width:${Math.max(4,Math.round(100*c/mx))}%">${c}</i></div>`).join('')}</div>`+note;
 }
 function renderReport(box,R){
-  const today=R.mode==='today', wait=R.ok && !R.ready, dots='<span class="dots">…</span>';
-  const tile=(cls,v,lab)=>`<div class="t3 ${cls}"><b>${v}</b><span>${lab}</span></div>`;
-  const skV=R.skill!=null?R.skill:wait?dots:'–', lkV=R.luck!=null?R.luck:'–', hpV=R.helper!=null?(R.helper>6?'✗':R.helper):wait?dots:'–';
+  const today=R.mode==='today', wait=R.ok && !R.ready;
   let verdict='';
   if(!R.ok) verdict = R.why==='colors' ? 'Some colors don\'t match the final word, so this game can\'t be scored. Check the tiles on the left.' : 'This word isn\'t on the usual answer list, so this game can\'t be scored.';
-  else if(R.helper==null) verdict = wait ? 'Working out your skill score…' : '';
-  else if(followed(R)) verdict='You played the helper\'s pick every time.';
+  else if(R.helper==null) verdict = wait ? 'Working out how the helper would do…' : '';
   else if(R.helper>6) verdict='You beat the helper! It wouldn\'t have solved this one in 6.';
   else if(R.n<R.helper) verdict=`You beat the helper by ${nG(R.helper-R.n)}!`;
-  else if(R.n===R.helper) verdict=`You tied the helper: it would also take ${nG(R.n)}.`;
+  else if(R.n===R.helper) verdict = R.n===1 ? 'You tied the helper.' : `You tied the helper: ${R.n} guesses each.`;
   else verdict=`The helper would have solved it in ${R.helper}.`;
   const sec=(id,title,body)=>`<details data-sec="${id}"${openSecs.has(id)?' open':''}><summary>${title}</summary><div class="in">${body}</div></details>`;
   box.innerHTML=`<div class="report">
     <p class="solvedHead">Solved in ${R.n} 🎉${R.hard?' <small>Hard mode</small>':''}</p>
-    <div class="tiles3">${tile('sk',skV,'Skill')}${tile('lk',lkV,'Luck')}${tile('hp',hpV,'Helper')}</div>
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
-    ${insights(R).map(x=>`<p class="insight">${x}</p>`).join('')}
-    <details class="what"${openSecs.has('what')?' open':''} data-sec="what"><summary>What do these numbers mean?</summary>
-      <p><b>Skill</b> (0 to 99): how close your guesses came to the helper's pick, on average. 99 means you matched it every time.</p>
-      <p><b>Luck</b> (0 to 99): how lucky you got with your colors. 50 is average; higher means your colors cut down the list of possible answers more than usual.</p>
-      <p><b>Helper</b>: how many guesses the helper would take on its own, starting with RAISE.</p>
-      <p>Worked out on your device from the word odds. Your words never leave your device.</p></details>
-    <div class="rsecs">${sec('steps','Step by step',stepsHtml(R))}${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
+    ${stepsHtml(R)}
+    <div class="rsecs">${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
   </div>`;
   box.querySelectorAll('details[data-sec]').forEach(d=>d.addEventListener('toggle',()=>{
     const id=d.dataset.sec; if(d.open){ openSecs.add(id); track(id==='steps'?'replay':'report-'+id); } else openSecs.delete(id);
