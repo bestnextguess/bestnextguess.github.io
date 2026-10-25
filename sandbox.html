@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX version 2.11 · Best Next Guess</title>
+<title>SANDBOX version 2.11.1 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -247,7 +247,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.11, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.11.1, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -328,7 +328,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.11</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.11.1</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -696,7 +696,8 @@ function update(){
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   document.getElementById('tapNote').hidden = inWalk();
-  document.getElementById('shotBar').hidden = !!(rows.length || demo || mode!=='today');   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
+  document.getElementById('shotBar').hidden = !!(rows.length || demo);   // v2.11.1: shown for older puzzles too
+  document.querySelector('#shotBar b').textContent = mode==='today' ? 'Already played today?' : 'Already played this puzzle?';   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
