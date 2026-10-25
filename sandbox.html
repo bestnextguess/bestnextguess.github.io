@@ -59,8 +59,10 @@ footer{margin-top:26px;color:#3E4A63;font-size:14px}
 footer p{margin:6px 0}
 @media (max-width:799px){
   main{padding:20px 14px 36px}
-  .top h1{font-size:32px} .top .logo{width:36px;height:36px}
-  .top .side{margin-left:0;align-items:flex-start;text-align:left;width:100%}
+  .top{gap:10px;padding-bottom:10px} .top h1{font-size:28px} .top .logo{width:30px;height:30px}   /* v2.11.1: compact header on phones so more of the page fits on the first screen */
+  .top .side{margin-left:0;flex-direction:row;flex-wrap:wrap;align-items:center;text-align:left;width:100%;gap:4px 10px}
+  .top .side p{display:none} .free{font-size:13px;padding:2px 10px} .top nav{font-size:14px}
+  main{padding-top:10px} .grid{margin-top:12px;gap:14px} .shotbar{margin-top:12px} .card{padding:14px}
   .tile{width:46px;height:46px;font-size:22px}
   .card{padding:16px}
 }
