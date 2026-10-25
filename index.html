@@ -231,7 +231,7 @@ td.p{text-align:right;font-weight:700}
 .wbtns{display:flex;gap:10px;align-items:center;margin-top:14px}
 .wbtns .use,.wbtns .chip{margin-top:0}
 .wskip{font-size:14px;margin-top:10px;display:inline-block}
-.wagain{display:inline-block;margin:2px 0 6px;font-size:15px}
+.wagain{display:inline-block;margin:6px 0 10px;font-size:18px;font-weight:700}
 #board .tile:disabled{cursor:default;opacity:1;color:#fff}
 @media (max-width:380px){.ww{font-size:16px}.wcol{padding:7px 8px}}
 .ops{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0}
@@ -329,7 +329,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.11.1</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.12</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -591,10 +591,10 @@ let walk=null, walkSeen=null;   // v2.10: step through a finished game one guess
 const gameSig=()=>JSON.stringify(rows.map(r=>[r.w,r.c]));
 const inWalk=()=>!!(walk && walk.step<rows.length);
 const vrows=()=>inWalk()?rows.slice(0,walk.step+1):rows;   // the rows on view: during a walk, only up to the current guess
-let howtoDone=false; try{ const s0=JSON.parse(localStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('bng-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
+let howtoDone=false; try{ const s0=JSON.parse(sessionStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('bng-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
 function doneHowto(){ if(howtoDone) return; howtoDone=true; try{ localStorage.setItem('bng-howto','1'); }catch(e){} }
-function save(){ if(demo) return; try{ localStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('bng-hard',hard?'1':'0'); }catch(e){} }
-function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; mode=s.mode||'today'; } }catch(e){} }
+function save(){ if(demo) return; try{ sessionStorage.setItem(KEY, JSON.stringify({rows,mode,day:new Date().toDateString()})); localStorage.setItem('bng-hard',hard?'1':'0'); }catch(e){} }   // v2.12: the board lives only while the tab is open (survives a refresh); closing the browser or app starts fresh
+function load(){ try{ localStorage.removeItem(KEY); }catch(e){} try{ const s=JSON.parse(sessionStorage.getItem(KEY)||'null'); if(s && s.day===new Date().toDateString()){ rows=s.rows||[]; mode=s.mode||'today'; } }catch(e){} }
 
 // ---------- feedback ----------
 function fb(g,t){
