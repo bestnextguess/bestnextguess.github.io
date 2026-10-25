@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX version 2.8 · Best Next Guess</title>
+<title>SANDBOX version 2.9 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -80,6 +80,8 @@ footer p{margin:6px 0}
 .picker.up:before{top:auto;bottom:-9px;border-left:0;border-top:0;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink)}
 .row .tile:active{transform:scale(.95)}
 .del{margin-left:4px;background:#fff;border:1px solid var(--rule);color:var(--soft);border-radius:6px;width:34px;height:34px;cursor:pointer}
+.del.rm{width:auto;padding:0 7px;border:2px solid #C0392B;color:#C0392B;font:400 11px Arial,Helvetica,sans-serif;white-space:nowrap}
+@media (max-width:440px){.row.fresh{position:relative;margin-bottom:38px} .row.fresh .del.rm{position:absolute;right:0;top:calc(100% + 6px);height:26px;margin:0}}   /* narrow phones: Remove sits under the newest guess so the tiles keep their size */
 .entry{display:flex;gap:8px;margin:14px 0 10px}
 .entry input{flex:1;min-width:0;font:inherit;font-size:19px;letter-spacing:.3em;text-transform:uppercase;padding:9px 12px;border:2px solid var(--ink);border-radius:6px;background:#fff;color:var(--ink)}
 .entry input::placeholder{color:var(--soft)}
@@ -197,7 +199,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.8, not the live site. <a href="/" style="color:#fff">Go to the live site</a></div>
+<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.9, not the live site. <a href="/" style="color:#fff">Go to the live site</a></div>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -274,7 +276,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.8</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.9</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -568,14 +570,15 @@ const board=document.getElementById('board');
 function renderBoard(){
   picker=null; board.innerHTML='';
   rows.forEach((r,ri)=>{
-    const d=document.createElement('div'); d.className='row';
+    const d=document.createElement('div'); d.className='row'+(ri===rows.length-1 && r.c.every(v=>v===0)?' fresh':'');
     r.w.split('').forEach((ch,i)=>{
       const b=document.createElement('button'); b.className='tile '+['x','y','g'][r.c[i]]; b.textContent=ch;
       b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to pick a color`);
       b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
       d.appendChild(b);
     });
-    const x=document.createElement('button'); x.className='del'; x.textContent='×'; x.title='Remove this guess'; x.setAttribute('aria-label','Remove this guess');
+    const fresh = ri===rows.length-1 && r.c.every(v=>v===0);   // v2.9: newest guess, no colors set yet: show a clear Remove button
+    const x=document.createElement('button'); x.className='del'+(fresh?' rm':''); x.textContent=fresh?'Remove':'×'; x.title='Remove this guess'; x.setAttribute('aria-label','Remove this guess');
     x.onclick=()=>{ rows.splice(ri,1); update(); };
     d.appendChild(x); board.appendChild(d);
   });
@@ -588,7 +591,8 @@ function closePicker(){ if(picker){ picker.remove(); picker=null; } document.que
 function openPicker(tile, done, cur){
   const reopen = picker && picker._tile===tile; closePicker(); if(reopen) return;
   const p=document.createElement('div'); p.className='picker'; p.setAttribute('role','group'); p.setAttribute('aria-label','Pick a color'); p._tile=tile;
-  [[1,'Yellow','py'],[2,'Green','pg'],[0,'Gray','px']].forEach(([v,lab,c])=>{ const o=document.createElement('button'); o.className=c+(v===cur?' cur':''); o.textContent=lab; o.setAttribute('aria-label',lab);
+  const opts=[[1,'Yellow','py'],[2,'Green','pg'],[0,'Gray','px']]; if(tile===tile.parentElement.querySelectorAll('.tile')[4]) opts.unshift(opts.pop());   // v2.9: on the 5th tile Gray goes far left (gray is the default; the colors stay under your finger)
+  opts.forEach(([v,lab,c])=>{ const o=document.createElement('button'); o.className=c+(v===cur?' cur':''); o.textContent=lab; o.setAttribute('aria-label',lab);
     o.onclick=e=>{ e.stopPropagation(); closePicker(); done(v); }; p.appendChild(o); });
   board.appendChild(p); tile.classList.add('picking');
   const bb=board.getBoundingClientRect(), tb=tile.getBoundingClientRect(), pw=p.offsetWidth;
@@ -751,17 +755,21 @@ function runEngine(req){
 })();
 function wire(){
   document.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{
-    inp.value=b.dataset.use.toUpperCase(); inp.focus(); track('picked-'+(b.dataset.kind||'only'),false);
+    if(Date.now()-lastAdd<600 || rows.length>=6) return;   // v2.9: ignore a fast double tap, and never add a 7th row
+    track('picked-'+(b.dataset.kind||'only'),false); inp.value=b.dataset.use.toUpperCase(); fromPick=true; addGuess(); fromPick=false;   // v2.9: adds the word to the board right away (no Add guess tap)
   });
 }
 
 // ---------- input ----------
 const inp=document.getElementById('guess');
+let lastAdd=0, fromPick=false;
 function addGuess(){
+  if(rows.length>=6) return;   // v2.9: six guesses is the limit
   const w=inp.value.trim().toLowerCase();
   if(!/^[a-z]{5}$/.test(w)){ inp.setCustomValidity('Type a 5-letter word'); inp.reportValidity(); return; }
   inp.setCustomValidity('');
-  if([...document.querySelectorAll('[data-use]')].some(b=>b.dataset.use===w)) track('entered-suggestion',false);
+  if(!fromPick && [...document.querySelectorAll('[data-use]')].some(b=>b.dataset.use===w)) track('entered-suggestion',false);   // typed the suggestion by hand
+  lastAdd=Date.now();
   if(demo){ demo=false; const o=ownRows||[]; ownRows=null; const l=o[o.length-1], done=o.length>=6 || (l && l.c.every(v=>v===2)); rows = done ? [] : o; }
   doneHowto();
   rows.push({w,c:[0,0,0,0,0]}); inp.value=''; update();
