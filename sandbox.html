@@ -148,6 +148,14 @@ td.p{text-align:right;font-weight:700}
 .way b{font-size:16px}
 .way p{margin:4px 0 0}
 .way .use{margin-top:8px}
+.use.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.way .or{display:block;margin-top:8px;font-size:14px}
+.played{margin-top:14px;border-top:1px solid #E3EAF5;padding-top:12px}
+.played b{display:block;font-size:16px;margin-bottom:8px}
+.played .use{margin-top:0}
+.played .or{margin-left:12px;font-size:14px}
+.played .note{margin-top:8px}
+.move .played + .note{margin-top:14px}
 .way.on{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue)}   /* v2.9: the way the visitor picked */
 .howto p.more{margin:8px 0 0}
 .checknote{margin:8px 0 0;background:var(--blueT);border-radius:8px;padding:8px 10px;font-size:15px;color:#2A3A5C}
@@ -233,8 +241,9 @@ td.p{text-align:right;font-weight:700}
     </div>
     <div class="way">
       <b>Already played today?</b>
-      <p>Type in your whole game for your game report: skill, luck, and where the smartest move could have saved you a guess.</p>
-      <button class="use" id="wayCheck">Check my game</button>
+      <p>Take a screenshot of your finished Wordle, then pick it here. We'll read your guesses and colors, then show your game report.</p>
+      <button class="use blue" id="wayShot">📷 Use a screenshot</button>
+      <button class="linkbtn or" id="wayCheck">or type your game in</button>
     </div>
   </div>
   <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
@@ -638,7 +647,7 @@ function update(){
   if(demo && !rows.length){ demo=false; rows=ownRows||[]; ownRows=null; }   // example cleared: back to the player's own game
   save(); renderBoard();
   document.body.classList.toggle('demo',demo);
-  document.getElementById('howto').hidden = howtoDone || rows.length>0 || demo;
+  document.getElementById('howto').hidden = true;   // v2.10: the main card now offers both ways to everyone
   { const l=rows[rows.length-1]; document.getElementById('checkNote').hidden = !checkMode || demo || mode!=='today' || (l && l.c.every(v=>v===2)); }
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
@@ -695,7 +704,13 @@ function update(){
 const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span class="tile b">${c}</span>`).join('')+'</div>';
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
-  if(!rows.length){ box.innerHTML=`<p class="k">Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word. Already have a favorite opener? <a href="stats.html">See how it ranks</a>.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button><p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button> with an example game. Already played today? <button class="linkbtn" id="shotBtn">Read your game from a screenshot</button>, or type it in, for your game report.</p>`; wire(); document.getElementById('demoBtn2').onclick=startDemo; document.getElementById('shotBtn').onclick=pickShot; return; }
+  if(!rows.length){   // v2.10: two choices for every visitor: playing now, or already played (screenshot / type it in)
+    const played = mode==='today' ? `<div class="played"><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn or" id="typeBtn">or type it in</button><p class="note">Screenshot your finished Wordle; we read it and show your game report.</p></div>` : '';
+    box.innerHTML=`<p class="k">${mode==='today'?'Playing now? ':''}Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average, the best of any word.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button>${played}<p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button></p>`;
+    wire(); document.getElementById('demoBtn2').onclick=startDemo;
+    const sb=document.getElementById('shotBtn'); if(sb) sb.onclick=pickShot;
+    const tb=document.getElementById('typeBtn'); if(tb) tb.onclick=()=>{ track('type-game'); pickWay(true); };
+    return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
@@ -902,6 +917,7 @@ function pickWay(check){ checkMode=check; document.getElementById('wayPlay').clo
 document.getElementById('modeInfoBtn').onclick=()=>{ const m=document.getElementById('modeInfo'), b=document.getElementById('modeInfoBtn'); m.hidden=!m.hidden; b.setAttribute('aria-expanded', String(!m.hidden)); if(!m.hidden) track('mode-info'); };
 document.getElementById('wayPlay').onclick=()=>{ track('way-play'); pickWay(false); };
 document.getElementById('wayCheck').onclick=()=>{ track('way-check'); pickWay(true); };
+document.getElementById('wayShot').onclick=()=>{ track('way-shot'); pickShot(); };
 document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false); const b=document.getElementById('installBtn'); if(!document.getElementById('installWrap').hidden){ e.preventDefault(); b.click(); } };
 
 // ---------- example game ----------
