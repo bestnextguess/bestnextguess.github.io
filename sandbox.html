@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX version 2.11 (step through your game) · Best Next Guess</title>
+<title>SANDBOX version 2.11 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -150,6 +150,10 @@ td.p{text-align:right;font-weight:700}
 .way .use{margin-top:8px}
 .use.blue{background:var(--blue);border-color:var(--blue);color:#fff}
 .way .or{display:block;margin-top:8px;font-size:14px}
+.shotbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 rgba(31,42,68,.12);padding:10px 14px;margin:0 0 16px}
+.shotbar[hidden]{display:none}
+.shotbar b{font-size:16px}
+.shotbar .use{margin-top:0}
 .played{margin-top:14px;border-top:1px solid #E3EAF5;padding-top:12px}
 .played b{display:block;font-size:16px;margin-bottom:8px}
 .played .use{margin-top:0}
@@ -243,7 +247,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.11 (step through your game), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.11, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -274,6 +278,8 @@ td.p{text-align:right;font-weight:700}
   </div>
   <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
 </div>
+
+<div class="shotbar" id="shotBar" hidden><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>
 
 <div class="grid">
   <section class="card" aria-label="Your guesses">
@@ -322,7 +328,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.10</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.11</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -689,7 +695,8 @@ function update(){
   { const l=rows[rows.length-1]; document.getElementById('checkNote').hidden = !checkMode || demo || mode!=='today' || (l && l.c.every(v=>v===2)); }
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
-  document.getElementById('tapNote').hidden = inWalk();   // v2.10: the board is read-only while stepping through
+  document.getElementById('tapNote').hidden = inWalk();
+  document.getElementById('shotBar').hidden = !!(rows.length || demo || mode!=='today');   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
@@ -744,11 +751,8 @@ const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span c
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
   if(!rows.length){   // v2.10: two choices for every visitor: playing now, or already played (screenshot / type it in)
-    const played = mode==='today' ? `<div class="played"><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn or" id="typeBtn">or type it in</button><p class="note">Screenshot your finished Wordle; we read it and show your game report.</p></div>` : '';
-    box.innerHTML=`<p class="k">${mode==='today'?'Playing now? ':''}Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button>${played}<p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button></p>`;
+    box.innerHTML=`<p class="k">${mode==='today'?'Playing now? ':''}Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button><p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button></p>`;
     wire(); document.getElementById('demoBtn2').onclick=startDemo;
-    const sb=document.getElementById('shotBtn'); if(sb) sb.onclick=pickShot;
-    const tb=document.getElementById('typeBtn'); if(tb) tb.onclick=()=>{ track('type-game'); pickWay(true); };
     return; }
   const last=rows[rows.length-1];
   if(last.c.every(v=>v===2)){
@@ -957,6 +961,8 @@ document.getElementById('modeInfoBtn').onclick=()=>{ const m=document.getElement
 document.getElementById('wayPlay').onclick=()=>{ track('way-play'); pickWay(false); };
 document.getElementById('wayCheck').onclick=()=>{ track('way-check'); pickWay(true); };
 document.getElementById('wayShot').onclick=()=>{ track('way-shot'); pickShot(); };
+document.getElementById('shotBtn').onclick=pickShot;
+document.getElementById('typeBtn').onclick=()=>{ track('type-game'); pickWay(true); };
 document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false); const b=document.getElementById('installBtn'); if(!document.getElementById('installWrap').hidden){ e.preventDefault(); b.click(); } };
 
 // ---------- example game ----------
