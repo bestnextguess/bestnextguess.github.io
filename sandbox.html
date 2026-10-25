@@ -224,8 +224,7 @@ td.p{text-align:right;font-weight:700}
 .wlk{font-size:14px;color:var(--soft);margin:4px 0 0}
 .wbtns{display:flex;gap:10px;align-items:center;margin-top:14px}
 .wbtns .use,.wbtns .chip{margin-top:0}
-.wskip{font-size:14px;margin-left:6px}
-#walkNav .wbtns{margin-top:14px;flex-wrap:wrap}
+.wskip{font-size:14px;margin-top:10px;display:inline-block}
 .wagain{display:inline-block;margin:2px 0 6px;font-size:15px}
 #board .tile:disabled{cursor:default;opacity:1;color:#fff}
 @media (max-width:380px){.ww{font-size:16px}.wcol{padding:7px 8px}}
@@ -281,7 +280,6 @@ td.p{text-align:right;font-weight:700}
     <h2>Your guesses</h2>
     <div id="demoNote"></div>
     <div id="board"></div>
-    <div id="walkNav"></div>
     <p class="checknote" id="checkNote" hidden>Type each guess from your game, in order, and tap the tiles to match its colors. Your game report appears when you add the winning word.</p>
     <div class="entry" id="entryWrap">
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
@@ -691,8 +689,7 @@ function update(){
   { const l=rows[rows.length-1]; document.getElementById('checkNote').hidden = !checkMode || demo || mode!=='today' || (l && l.c.every(v=>v===2)); }
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
-  document.getElementById('tapNote').hidden = inWalk();
-  if(!inWalk()) document.getElementById('walkNav').innerHTML='';   // v2.10: the board is read-only while stepping through
+  document.getElementById('tapNote').hidden = inWalk();   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
@@ -701,7 +698,8 @@ function update(){
   const last=rows[rows.length-1], isSolved=!!(last && last.c.every(v=>v===2));
   document.getElementById('moveH').textContent = (isSolved && !demo) ? 'Your game report' : 'Your next move';
   if(isSolved && !inWalk()){
-    solvedBox.innerHTML = demo ? '<div class="solved"><b>Solved!</b>This is the example game. Start your own game to get a game report.</div>' : '';   // v2.10: no "See your game report" box: the report sits right beside or below the board
+    solvedBox.innerHTML = demo ? '<div class="solved"><b>Solved!</b>This is the example game. Start your own game to get a game report.</div>'
+      : `<div class="solved"><b>Solved in ${rows.length}!</b><button class="linkbtn" id="toReport">See your game report</button></div>`;
     const tr=document.getElementById('toReport'); if(tr) tr.onclick=()=>{ const m=document.querySelector('.move'); if(!m) return; if(m.scrollIntoView) m.scrollIntoView({behavior:'smooth',block:'start'}); m.classList.add('flash'); setTimeout(()=>m.classList.remove('flash'),1600); };
     if(!demo){ track('solved'); track('solved-in-'+rows.length); }
   } else { solvedBox.innerHTML=''; }
@@ -1248,7 +1246,8 @@ function altsFor(R,st){                       // the helper's pick first, then o
   st.alts=list.map(g=>({w:g,left:leftAfter(g,c,R.ans)}));
   return st.alts;
 }
-function walkTo(step){ if(!walk) return; walk.step=Math.max(0,Math.min(rows.length,step)); update(); }
+function walkTo(step){ if(!walk) return; walk.step=Math.max(0,Math.min(rows.length,step)); update();
+  const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); }
 function stepVerdict(R,st){
   const N=x=>x.toLocaleString('en-US');
   if(!st.decide) return 'Only one word was left, and you played it.';
@@ -1294,8 +1293,9 @@ function renderWalk(box,R){
       <div class="wcol hp"><p class="wl">${st.k?'Helper\'s picks':'Helper\'s openers'}</p>${helper}</div>
     </div>
     ${v?`<p class="wv">${v}</p>`:''}${lk?`<p class="wlk">${lk}</p>`:''}
+    <div class="wbtns">${k>0?'<button class="chip" id="wkBack">‹ Back</button>':''}<button class="use blue" id="wkNext">${k<n-1?'Next ›':'See your summary ›'}</button></div>
+    <button class="linkbtn wskip" id="wkSkip">Skip to summary</button>
   </div>`;
-  document.getElementById('walkNav').innerHTML=`<div class="wbtns">${k>0?'<button class="chip" id="wkBack">‹ Back</button>':''}<button class="use blue" id="wkNext">${k<n-1?'Next ›':'See your summary ›'}</button><button class="linkbtn wskip" id="wkSkip">Skip to summary</button></div>`;
   const b=document.getElementById('wkBack'); if(b) b.onclick=()=>walkTo(k-1);
   document.getElementById('wkNext').onclick=()=>{ track(k<n-1?'walk-next':'walk-summary'); walkTo(k+1); };
   document.getElementById('wkSkip').onclick=()=>{ track('walk-skip'); walkTo(n); };
@@ -1324,7 +1324,7 @@ function renderReport(box,R){
     const id=d.dataset.sec; if(d.open){ openSecs.add(id); track(id==='steps'?'replay':'report-'+id); } else openSecs.delete(id);
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
-  const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const g=document.getElementById('board'); if(g && g.getBoundingClientRect().top<0 && g.scrollIntoView) g.scrollIntoView({block:'start'}); };
+  const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); };
   const ch=document.getElementById('clearHist');
   if(ch) ch.onclick=()=>{ if(ch.dataset.sure){ try{ localStorage.removeItem(HKEY); }catch(e){} track('history-cleared',false); renderReport(box,R); } else { ch.dataset.sure='1'; ch.textContent='Tap again to clear your history'; } };
 }
