@@ -123,8 +123,10 @@ td.p{text-align:right;font-weight:700}
   td{padding:7px 4px} .pill{font-size:12px}
 }
 .optrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}
-.optrow .ol{font-size:14px;color:var(--soft);width:58px}
+.optrow .ol{font-size:14px;color:var(--soft);width:64px;white-space:nowrap}
 .optrow #reset{margin-left:auto}
+.info{border:0;background:none;color:var(--blue);font-size:15px;padding:0 2px;cursor:pointer;vertical-align:1px}   /* v2.9: what the modes mean */
+.modeinfo{margin:6px 0 0;font-size:14px;color:#3E4A63;background:var(--blueT);border-radius:6px;padding:8px 10px}
 .solvedHead{font-size:22px;font-weight:700;color:var(--g);margin:0}
 .solvedNext{margin-top:14px;background:var(--blueT);border:2px solid var(--ink);border-radius:10px;padding:14px 16px}
 .solvedNext p{margin:4px 0 12px}
@@ -241,10 +243,11 @@ td.p{text-align:right;font-weight:700}
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
       <button class="btn" id="add">Add guess</button>
     </div>
-    <div class="optrow" role="group" aria-label="Game mode"><span class="ol">Mode</span>
-      <button class="chip" data-h="0">Normal</button>
-      <button class="chip" data-h="1">Hard</button>
+    <div class="optrow" role="group" aria-label="Game mode"><span class="ol">Mode <button class="info" id="modeInfoBtn" aria-label="What do Normal and Hard mean?" aria-expanded="false" aria-controls="modeInfo">ⓘ</button></span>
+      <button class="chip" data-h="0" title="Any word can be your next guess.">Normal</button>
+      <button class="chip" data-h="1" title="Like Wordle's Hard Mode: your next guess must reuse every green and yellow letter.">Hard</button>
     </div>
+    <p class="modeinfo" id="modeInfo" hidden><b>Normal:</b> Any word can be your next guess.<br><b>Hard:</b> Like Wordle's Hard Mode: your next guess must reuse every green and yellow letter.</p>
     <div class="optrow" role="group" aria-label="Which puzzle"><span class="ol">Puzzle</span>
       <button class="chip" data-m="today">Today's</button>
       <button class="chip" data-m="archive">Older</button>
@@ -709,7 +712,7 @@ async function suggest(cands,P,my){
   const fmtG=x=>`about ${x.toFixed(1)} guesses`;
   const chance = pw>=0.005 ? `${Math.round(pw*100)}% estimated chance it's the answer.` : pw>0 ? 'Small estimated chance it\'s the answer.' : 'It can\'t be the answer, but it sets up the fastest finish.';
   let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p><button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
-  if(bestWin && bestWin.w!==bw && bestWin.p>pw)
+  if(bestWin && bestWin.w!==bw && bestWin.p>pw && (bestWin.p>=0.25 || rows.length>=4))   // v2.9: only when it's a real shot (1 in 4 or better) or with 2 guesses left
     html+=`<div class="alt">Best shot to win now: <b>${bestWin.w.toUpperCase()}</b>, ${Math.round(bestWin.p*100)}% estimated chance.<br><button class="use" data-use="${bestWin.w}" data-kind="win">Use ${bestWin.w.toUpperCase()}</button></div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
   if(!demo) track('f-pick');   // v2.6.3 funnel: saw a real suggestion for their own board
@@ -785,6 +788,7 @@ document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
 document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
 function pickWay(check){ checkMode=check; document.getElementById('wayPlay').closest('.way').classList.toggle('on',!check); document.getElementById('wayCheck').closest('.way').classList.toggle('on',check); update(); inp.focus(); inp.scrollIntoView({block:'center',behavior:'smooth'}); }   // v2.9: the two ways toggle; the chosen one is outlined
+document.getElementById('modeInfoBtn').onclick=()=>{ const m=document.getElementById('modeInfo'), b=document.getElementById('modeInfoBtn'); m.hidden=!m.hidden; b.setAttribute('aria-expanded', String(!m.hidden)); if(!m.hidden) track('mode-info'); };
 document.getElementById('wayPlay').onclick=()=>{ track('way-play'); pickWay(false); };
 document.getElementById('wayCheck').onclick=()=>{ track('way-check'); pickWay(true); };
 document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false); const b=document.getElementById('installBtn'); if(!document.getElementById('installWrap').hidden){ e.preventDefault(); b.click(); } };
