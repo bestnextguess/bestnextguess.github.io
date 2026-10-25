@@ -86,7 +86,8 @@ footer p{margin:6px 0}
 .entry input{flex:1;min-width:0;font:inherit;font-size:19px;letter-spacing:.3em;text-transform:uppercase;padding:9px 12px;border:2px solid var(--ink);border-radius:6px;background:#fff;color:var(--ink)}
 .entry input::placeholder{color:var(--soft)}
 .opts{display:flex;gap:8px;flex-wrap:wrap}
-.move{border-left:8px solid var(--blue)}
+.move{border-left:8px solid var(--blue);scroll-margin-top:12px;transition:box-shadow .3s}
+.move.flash{box-shadow:0 0 0 5px var(--blue)}
 .move .k{font-size:14px;color:var(--soft);margin:0}
 .big{display:flex;gap:6px;margin:10px 0 12px}
 .big .tile{width:58px;height:58px;font-size:30px}
@@ -208,7 +209,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.10, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.10, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -651,7 +652,7 @@ function update(){
   if(isSolved){
     solvedBox.innerHTML = demo ? '<div class="solved"><b>Solved!</b>This is the example game. Start your own game to get a game report.</div>'
       : `<div class="solved"><b>Solved in ${rows.length}!</b><button class="linkbtn" id="toReport">See your game report</button></div>`;
-    const tr=document.getElementById('toReport'); if(tr) tr.onclick=()=>{ const m=document.querySelector('.move'); if(m && m.scrollIntoView) m.scrollIntoView({behavior:'smooth',block:'start'}); };
+    const tr=document.getElementById('toReport'); if(tr) tr.onclick=()=>{ const m=document.querySelector('.move'); if(!m) return; if(m.scrollIntoView) m.scrollIntoView({behavior:'smooth',block:'start'}); m.classList.add('flash'); setTimeout(()=>m.classList.remove('flash'),1600); };
     if(!demo){ track('solved'); track('solved-in-'+rows.length); }
   } else { solvedBox.innerHTML=''; }
 
