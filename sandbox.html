@@ -139,6 +139,7 @@ td.p{text-align:right;font-weight:700}
 .way b{font-size:16px}
 .way p{margin:4px 0 0}
 .way .use{margin-top:8px}
+.way.on{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue)}   /* v2.9: the way the visitor picked */
 .howto p.more{margin:8px 0 0}
 .checknote{margin:8px 0 0;background:var(--blueT);border-radius:8px;padding:8px 10px;font-size:15px;color:#2A3A5C}
 @media (max-width:640px){.ways{grid-template-columns:1fr}}
@@ -783,8 +784,9 @@ document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null
 document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
 document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
-document.getElementById('wayPlay').onclick=()=>{ track('way-play'); inp.focus(); inp.scrollIntoView({block:'center',behavior:'smooth'}); };
-document.getElementById('wayCheck').onclick=()=>{ track('way-check'); checkMode=true; update(); inp.focus(); inp.scrollIntoView({block:'center',behavior:'smooth'}); };
+function pickWay(check){ checkMode=check; document.getElementById('wayPlay').closest('.way').classList.toggle('on',!check); document.getElementById('wayCheck').closest('.way').classList.toggle('on',check); update(); inp.focus(); inp.scrollIntoView({block:'center',behavior:'smooth'}); }   // v2.9: the two ways toggle; the chosen one is outlined
+document.getElementById('wayPlay').onclick=()=>{ track('way-play'); pickWay(false); };
+document.getElementById('wayCheck').onclick=()=>{ track('way-check'); pickWay(true); };
 document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false); const b=document.getElementById('installBtn'); if(!document.getElementById('installWrap').hidden){ e.preventDefault(); b.click(); } };
 
 // ---------- example game ----------
