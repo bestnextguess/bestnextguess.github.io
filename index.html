@@ -69,6 +69,15 @@ footer p{margin:6px 0}
 .grid{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;margin-top:24px}
 .row{display:flex;gap:7px;margin-bottom:7px;align-items:center}
 .row .tile{cursor:pointer}
+/* v2.8: tap a tile, pick its color */
+#board{position:relative}
+.row .tile.picking{outline:3px solid var(--blue);outline-offset:2px}
+.picker{position:absolute;z-index:20;display:flex;gap:8px;padding:8px;background:#fff;border:2px solid var(--ink);border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.picker button{position:relative;z-index:1;width:64px;height:46px;border:0;border-radius:6px;color:#fff;font:700 14px Arial,Helvetica,sans-serif;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.picker .py{background:var(--y)} .picker .pg{background:var(--g)} .picker .px{background:var(--x)}
+.picker button.cur{outline:3px solid var(--ink);outline-offset:1px}
+.picker:before{content:'';position:absolute;top:-9px;left:var(--ax,24px);width:14px;height:14px;background:#fff;border-left:2px solid var(--ink);border-top:2px solid var(--ink);transform:rotate(45deg)}
+.picker.up:before{top:auto;bottom:-9px;border-left:0;border-top:0;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink)}
 .row .tile:active{transform:scale(.95)}
 .del{margin-left:4px;background:#fff;border:1px solid var(--rule);color:var(--soft);border-radius:6px;width:34px;height:34px;cursor:pointer}
 .entry{display:flex;gap:8px;margin:14px 0 10px}
@@ -237,7 +246,7 @@ td.p{text-align:right;font-weight:700}
       <button class="chip" data-m="archive">Older</button>
       <button class="chip" id="reset">Start over</button>
     </div>
-    <p class="note">Tap a tile to change its color: gray, yellow, green.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
+    <p class="note">Tap a tile, then pick its color.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
     <div id="solved"></div>
   </section>
 
@@ -264,7 +273,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.7.1</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.8</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -556,13 +565,13 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 // ---------- board ----------
 const board=document.getElementById('board');
 function renderBoard(){
-  board.innerHTML='';
+  picker=null; board.innerHTML='';
   rows.forEach((r,ri)=>{
     const d=document.createElement('div'); d.className='row';
     r.w.split('').forEach((ch,i)=>{
       const b=document.createElement('button'); b.className='tile '+['x','y','g'][r.c[i]]; b.textContent=ch;
-      b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to change`);
-      b.onclick=()=>{ r.c[i]=(r.c[i]+1)%3; if(!demo) track('f-colors'); update(); };   // v2.6.3 funnel: set a color
+      b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to pick a color`);
+      b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
       d.appendChild(b);
     });
     const x=document.createElement('button'); x.className='del'; x.textContent='×'; x.title='Remove this guess'; x.setAttribute('aria-label','Remove this guess');
@@ -571,6 +580,26 @@ function renderBoard(){
   });
   document.getElementById('entryWrap').style.display = rows.length>=6 ? 'none':'flex';
 }
+
+// v2.8: the color picker (Yellow, Green, Gray), placed under the tapped tile and kept inside the board
+let picker=null;
+function closePicker(){ if(picker){ picker.remove(); picker=null; } document.querySelectorAll('.row .tile.picking').forEach(t=>t.classList.remove('picking')); }
+function openPicker(tile, done, cur){
+  const reopen = picker && picker._tile===tile; closePicker(); if(reopen) return;
+  const p=document.createElement('div'); p.className='picker'; p.setAttribute('role','group'); p.setAttribute('aria-label','Pick a color'); p._tile=tile;
+  [[1,'Yellow','py'],[2,'Green','pg'],[0,'Gray','px']].forEach(([v,lab,c])=>{ const o=document.createElement('button'); o.className=c+(v===cur?' cur':''); o.textContent=lab; o.setAttribute('aria-label',lab);
+    o.onclick=e=>{ e.stopPropagation(); closePicker(); done(v); }; p.appendChild(o); });
+  board.appendChild(p); tile.classList.add('picking');
+  const bb=board.getBoundingClientRect(), tb=tile.getBoundingClientRect(), pw=p.offsetWidth;
+  let left=tb.left-bb.left+tb.width/2-pw/2; left=Math.max(0, Math.min(left, bb.width-pw));
+  const rowsEl=board.querySelectorAll('.row'), lastRow = tile.parentElement===rowsEl[rowsEl.length-1];   // last row: open above, so the type box and Add guess stay clear
+  if(lastRow && tb.top-p.offsetHeight-10>0){ p.classList.add('up'); p.style.top=(tb.top-bb.top-p.offsetHeight-10)+'px'; } else p.style.top=(tb.bottom-bb.top+10)+'px';
+  p.style.left=left+'px';
+  p.style.setProperty('--ax', Math.max(10, Math.min(pw-24, tb.left-bb.left+tb.width/2-left-7))+'px');
+  picker=p; p.querySelector('.cur, button').focus({preventScroll:true});
+}
+document.addEventListener('pointerdown',e=>{ if(picker && !picker.contains(e.target) && !(e.target.closest && e.target.closest('#board .tile'))) closePicker(); });   // pointerdown: iPhone Safari skips clicks on blank areas; tiles handle their own taps
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePicker(); });
 
 // ---------- odds ----------
 function probs(cands){
