@@ -84,7 +84,7 @@ footer p{margin:6px 0}
 .del{margin-left:4px;background:#fff;border:1px solid var(--rule);color:var(--soft);border-radius:6px;width:34px;height:34px;cursor:pointer}
 .del.rm{width:auto;padding:0 7px;border:2px solid #C0392B;color:#C0392B;font:400 11px Arial,Helvetica,sans-serif;white-space:nowrap}
 .del.ok{width:auto;padding:0 8px;border:2px solid var(--g);color:#fff;background:var(--g);font:700 12px Arial,Helvetica,sans-serif;white-space:nowrap}
-@media (max-width:440px){.row.fresh{position:relative;margin-bottom:38px} .row.fresh .del.rm,.row.fresh .del.ok{position:absolute;top:calc(100% + 6px);height:26px;margin:0} .row.fresh .del.rm{right:0} .row.fresh .del.ok{left:0}}   /* narrow phones: Remove sits under the newest guess so the tiles keep their size */
+@media (max-width:440px){.row.fresh{position:relative;margin-bottom:38px} .row.fresh .del.rm,.row.fresh .del.ok{position:absolute;top:calc(100% + 6px);height:26px;margin:0} .row.fresh .del.ok{right:0} .row.fresh .del.rm{left:0}}   /* narrow phones: Remove sits under the newest guess so the tiles keep their size */
 .entry{display:flex;gap:8px;margin:14px 0 10px}
 .entry input{flex:1;min-width:0;font:inherit;font-size:19px;letter-spacing:.3em;text-transform:uppercase;padding:9px 12px;border:2px solid var(--ink);border-radius:6px;background:#fff;color:var(--ink)}
 .entry input::placeholder{color:var(--soft)}
@@ -644,8 +644,9 @@ function renderBoard(){
     if(fresh && !ro){   // v2.13: one tap turns the whole row green when this guess was the answer
       const ok=document.createElement('button'); ok.className='del ok'; ok.textContent='Solved ✓'; ok.title='This guess was the answer: make every tile green'; ok.setAttribute('aria-label','This guess was the answer: make every tile green');
       ok.onclick=()=>{ r.c=[2,2,2,2,2]; if(!demo){ track('f-colors'); track('solved-tap',false); } update(); };
-      d.appendChild(ok); }
-    if(!ro) d.appendChild(x); board.appendChild(d);
+      if(!ro) d.appendChild(x); d.appendChild(ok); }   // Remove first, then Solved at the far end
+    else if(!ro) d.appendChild(x);
+    board.appendChild(d);
   });
   document.getElementById('entryWrap').style.display = (rows.length>=6 || ro) ? 'none':'flex';
 }
