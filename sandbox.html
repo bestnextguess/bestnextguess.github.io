@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX version 2.13 · Best Next Guess</title>
+<title>SANDBOX version 2.13.1 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -250,7 +250,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.13, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of version 2.13.1, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -331,7 +331,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.13</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.13.1</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -1185,6 +1185,7 @@ function stepsHtml(R){                       // v2.10: the report's main view: e
     else if(st.sugLeft===0) l2=`<div class="ln off">✗ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> <span class="soft">· would solve it</span></div>`;
     else if(st.sugLeft!=null && st.sugLeft<st.left) l2=`<div class="ln off">✗ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> <span class="soft">· would leave ${N(st.sugLeft)}</span></div>`;
     else if(st.loss!=null && st.loss<0.1) l2=`<div class="ln soft">≈ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> · about as good</div>`;
+    else if(st.loss!=null && st.loss<0.35) l2=`<div class="ln soft">Helper's ${pick}: <span class="wd">${U(st.sug)}</span> · a little better on average</div>`;   // v2.13.1: a close call isn't a mistake
     else l2=`<div class="ln off">✗ Helper's ${pick}: <span class="wd">${U(st.sug)}</span> <span class="soft">· better on average</span></div>`;
     let lk='';
     if(R.n===1) lk=`<div class="ln lk">A hole in one! That was about a 1 in ${N(st.nc)} shot.</div>`;
@@ -1273,6 +1274,7 @@ function stepVerdict(R,st){
   if(st.sugLeft===0) return `The helper's ${what}, ${U(st.sug)}, would have solved it right here.`;
   if(st.sugLeft<st.left) return `The helper's ${what}, ${U(st.sug)}, would have left ${N(st.sugLeft)} instead of ${N(st.left)}.`;
   if(st.loss!=null && st.loss<0.1) return `About as good as the helper's ${what}, ${U(st.sug)}.`;
+  if(st.loss!=null && st.loss<0.35 && st.sugLeft>=st.left) return `A good guess. The helper's ${what}, ${U(st.sug)}, finishes a little faster on average.`;
   if(st.sugLeft>st.left) return `Your guess worked out better this time: ${U(st.sug)} would have left ${N(st.sugLeft)}. On average, though, the helper's ${what} finishes faster.`;
   return `Same number of words left, but the helper's ${what}, ${U(st.sug)}, finishes faster on average.`;
 }
