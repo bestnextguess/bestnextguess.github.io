@@ -114,25 +114,27 @@ ul.plain li{margin:4px 0}
 
   <section class="card engine" aria-label="How it works">
     <h2>How it works</h2>
-    <p><b>The odds.</b> Wordle now sometimes reuses old answers, but only about 1 in 10 answers since February 2, 2026 has been a repeat. So the site estimates that words never used as the answer share about 89% of the odds and past answers about 11%, split again among whichever words still fit. The list of past answers updates itself every day.</p>
-    <p><b>The next move.</b> The engine (version 2.0.1) picks the guess that should finish the puzzle in the fewest guesses. It plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left. In hard mode, that steers you around the word families that break streaks.</p>
-    <p><b>Your choice.</b> When a different word has a better chance of being the answer right now, it shows that too, as the best shot to win now.</p>
+    <p><b>The odds.</b> Wordle now sometimes reuses old answers, but only about 1 in 10 answers since February 2, 2026 has been a repeat. So the site estimates that words never used as the answer share about 89% of the odds and past answers about 11%, split again among whichever words still fit. Less common words get a slice of the never-used odds that follows the last 60 days of answers, and common words get a little more weight than rare ones, because that is how the answers have actually been chosen. The list of past answers updates itself every day.</p>
+    <p><b>The next move.</b> The engine picks the guess that should finish the puzzle in the fewest guesses. It plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left. In hard mode, that steers you around the word families that break streaks.</p>
+    <p><b>Your choice.</b> When a different word has a real chance of being the answer right now, it shows that too, as the best shot to win now.</p>
+    <p><b>After your game.</b> Already played? Use a screenshot of your finished board, or type it in, and you get a game report: each guess next to what the helper would have played, how many words were left, and where luck came in. Step through it guess by guess, the way you'd replay a chess game.</p>
   </section>
 
-  <section class="card" aria-label="Best opener">
-    <h2>The best first guess</h2>
+  <section class="card" aria-label="Your opener">
+    <h2>Your first guess</h2>
     <div class="mini" aria-label="RAISE"><span class="tile b">R</span><span class="tile b">A</span><span class="tile b">I</span><span class="tile b">S</span><span class="tile b">E</span></div>
-    <p>Out of 6,591 words, RAISE leaves the fewest possible answers on average after the first guess. Already have a favorite opener? See where it ranks.</p>
+    <p>The site suggests RAISE, which leaves about 62 possible answers on average. Any strong opener works; the game is won on the guesses after it. Curious how yours does? See how it fares against every past answer.</p>
     <a class="cta" href="sandbox-stats.html">Check your opener</a>
   </section>
 
   <section class="card wide" aria-label="How well it plays">
     <h2>How well it plays</h2>
-    <p>Every change to the engine is tested by playing all 2,377 possible answers, opening with RAISE and following every suggestion, with every answer counted as equally likely:</p>
+    <p>Every change to the engine is tested before it goes live by replaying the past year of Wordle answers (366 puzzles), opening with RAISE and following every suggestion, using only what was known on each day:</p>
     <div class="tested">
-      <div><b>Every game won</b><span>in normal mode, about 3.5 guesses on average</span></div>
-      <div><b>2,375 of 2,377</b><span>won in hard mode, about 3.6 guesses on average</span></div>
+      <div><b>Every game won</b><span>in normal mode, about 3.2 guesses on average</span></div>
+      <div><b>Every game won</b><span>in hard mode, about 3.2 guesses on average</span></div>
     </div>
+    <p class="note">On the standard research test (the original 2,315 answers, every answer equally likely, opening with SALET), it averages 3.43 guesses; perfect play averages 3.42.</p>
     <p class="note">The engine runs right in your browser, on your own phone or computer, so suggestions appear within a second or so.</p>
   </section>
 
@@ -157,6 +159,7 @@ ul.plain li{margin:4px 0}
     <h2>Your privacy</h2>
     <ul class="plain">
       <li>Your guesses stay in your browser. Nothing you type is sent anywhere.</li>
+      <li>A screenshot you use is read on your own device and is never uploaded.</li>
       <li>Visits are counted anonymously with GoatCounter: no cookies and no personal data.</li>
       <li>No account, no email, no tracking across other sites.</li>
     </ul>
@@ -170,7 +173,7 @@ ul.plain li{margin:4px 0}
 
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
-  <p><a href="sandbox.html">The solver</a> · <a href="sandbox-stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.0.1 · © 2026 Ayman Mikhail</p>
+  <p><a href="sandbox.html">The solver</a> · <a href="sandbox-stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.13.1 · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 <script>if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
