@@ -68,6 +68,11 @@ footer p{margin:6px 0}
 
 .title{margin:26px 0 6px;font-size:36px;line-height:1.15}
 .lede{margin:0 0 22px;color:#2A3A5C;max-width:660px;font-size:19px}
+.cta{display:block;background:var(--blue);color:#fff !important;text-decoration:none;border-radius:12px;padding:14px 18px;margin:18px 0 0;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2);max-width:660px}
+.cta small{display:block;font-size:15px;opacity:.9}
+.cta b{display:block;font-size:20px;margin-top:2px}
+.cta:hover{filter:brightness(1.08)}
+#result .cta{margin:14px 0 0}
 .check{border-left:8px solid var(--blue)}
 .check form{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
 .check input{font:700 24px 'BNG Serif',Georgia,serif;letter-spacing:.3em;text-transform:uppercase;width:230px;max-width:100%;padding:10px 12px;border:2px solid var(--ink);border-radius:8px}
@@ -98,7 +103,7 @@ ul.words li span:last-child{display:block;color:var(--soft);font-size:14px}
   <h1><a href="./">Best Next Guess</a></h1>
   <div class="side">
     <span class="free">Free. No ads. Always.</span>
-    <nav><a href="./">Back to the solver</a> · <a href="stats.html">Wordle stats</a></nav>
+    <nav><a href="./?ref=answers-nav" onclick="track('ans-nav')">Solve today's Wordle &rarr;</a> · <a href="stats.html">Wordle stats</a></nav>
   </div>
 </header>
 
@@ -149,9 +154,17 @@ function check(raw){
   } else {
     box.innerHTML=`<div class="no"><b class="big">No. ${W} has never been a Wordle answer.</b><p>Checked through Wordle #${D.latest.toLocaleString('en-US')} (${fmt(D.latest)}). It isn't on the usual list of possible answers either.</p></div>`;
   }
+  box.insertAdjacentHTML('beforeend','<a class="cta" href="/?ref=answers-result" onclick="track(\'ans-cta-result\')"><small>Playing today\'s Wordle?</small><b>Get your best next guess &rarr;</b></a>');
   track('answer-checked');
 }
-document.getElementById('f').addEventListener('submit',e=>{ e.preventDefault(); check(inp.value); });
+function showCta(){
+  // Phones: close the keyboard, then scroll just enough that the answer and the button are both on screen
+  inp.blur();
+  setTimeout(()=>{ const c=box.querySelector('.cta'); if(!c) return;
+    const vh=(window.visualViewport&&visualViewport.height)||innerHeight, r=c.getBoundingClientRect(), top=box.getBoundingClientRect().top;
+    if(r.bottom>vh-12) window.scrollBy({top:Math.min(r.bottom-vh+20, top-12), behavior:'smooth'}); },300);
+}
+document.getElementById('f').addEventListener('submit',e=>{ e.preventDefault(); check(inp.value); showCta(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); });
 const q=new URLSearchParams(location.search).get('w'); if(q){ inp.value=q.slice(0,5).toUpperCase(); check(q); }
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
