@@ -96,7 +96,7 @@ ul.words li span:last-child{display:block;color:var(--soft);font-size:14px}
 </style>
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of answers page v2 (button under result only), not the live site. <a href="/" style="color:#fff">Go to the live site</a></div>
+<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of answers page button + About update, not the live site. <a href="/" style="color:#fff">Go to the live site</a></div>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -2159,7 +2159,14 @@ function check(raw){
   box.insertAdjacentHTML('beforeend','<a class="cta" href="sandbox.html?ref=answers-result" onclick="track(\'ans-cta-result\')"><small>Playing today\'s Wordle?</small><b>Get your best next guess &rarr;</b></a>');
   track('answer-checked');
 }
-document.getElementById('f').addEventListener('submit',e=>{ e.preventDefault(); check(inp.value); });
+function showCta(){
+  // Phones: close the keyboard, then scroll just enough that the answer and the button are both on screen
+  inp.blur();
+  setTimeout(()=>{ const c=box.querySelector('.cta'); if(!c) return;
+    const vh=(window.visualViewport&&visualViewport.height)||innerHeight, r=c.getBoundingClientRect(), top=box.getBoundingClientRect().top;
+    if(r.bottom>vh-12) window.scrollBy({top:Math.min(r.bottom-vh+20, top-12), behavior:'smooth'}); },300);
+}
+document.getElementById('f').addEventListener('submit',e=>{ e.preventDefault(); check(inp.value); showCta(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); });
 const q=new URLSearchParams(location.search).get('w'); if(q){ inp.value=q.slice(0,5).toUpperCase(); check(q); }
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
