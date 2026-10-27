@@ -96,7 +96,7 @@ ul.words li span:last-child{display:block;color:var(--soft);font-size:14px}
 </style>
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of answers page buttons, not the live site. <a href="/" style="color:#fff">Go to the live site</a></div>
+<div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of answers page v2 (button under result only), not the live site. <a href="/" style="color:#fff">Go to the live site</a></div>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -104,11 +104,10 @@ ul.words li span:last-child{display:block;color:var(--soft);font-size:14px}
   <h1><a href="sandbox.html">Best Next Guess</a></h1>
   <div class="side">
     <span class="free">Free. No ads. Always.</span>
-    <nav><a href="sandbox.html">Back to the solver</a> · <a href="sandbox-stats.html">Wordle stats</a></nav>
+    <nav><a href="sandbox.html?ref=answers-nav" onclick="track('ans-nav')">Solve today's Wordle &rarr;</a> · <a href="sandbox-stats.html">Wordle stats</a></nav>
   </div>
 </header>
 
-<a class="cta" id="ctaTop" href="sandbox.html?ref=answers-top"><small>Playing today's Wordle?</small><b>Get your best next guess &rarr;</b></a>
 <h2 class="title">Has it been a Wordle answer?</h2>
 <p class="lede">Type any five-letter word to see whether it has been a Wordle answer, and when. Updated every day. Today's answer is never shown.</p>
 
@@ -2160,7 +2159,6 @@ function check(raw){
   box.insertAdjacentHTML('beforeend','<a class="cta" href="sandbox.html?ref=answers-result" onclick="track(\'ans-cta-result\')"><small>Playing today\'s Wordle?</small><b>Get your best next guess &rarr;</b></a>');
   track('answer-checked');
 }
-document.getElementById('ctaTop').addEventListener('click',()=>track('ans-cta-top'));
 document.getElementById('f').addEventListener('submit',e=>{ e.preventDefault(); check(inp.value); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); });
 const q=new URLSearchParams(location.search).get('w'); if(q){ inp.value=q.slice(0,5).toUpperCase(); check(q); }
