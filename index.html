@@ -330,7 +330,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.13.2</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.13.3</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -582,6 +582,21 @@ function flush(tries=0){
 }
 const REF=(()=>{ try{ return (new URLSearchParams(location.search).get('ref')||'').replace(/[^a-z0-9_-]/gi,'').slice(0,40); }catch(e){ return ''; } })();   // v2.6.3: the link tag, attached to events so funnel steps can be split by source
 function track(name, once=true){ if(once && sent.has(name)) return; sent.add(name); queue.push(name); flush(); }
+// v2.13.3: returning visitors. This device keeps a private count of the days it has visited (nothing personal, never sent).
+// Once a day it sends one label: ret-first / ret-d2-3 / ret-d4-7 / ret-d8plus (+ ret-yesterday when it also came the day before), with -app or -web.
+(function(){ try{
+  const day=d=>{ const t=new Date(d); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); };
+  const today=day(Date.now()), yest=day(Date.now()-864e5);
+  const old=['bng-t2share','bng-games-v1','bng-hard'].some(k=>localStorage.getItem(k)!==null);   // signs of a visit before this counter existed
+  let v=null; try{ v=JSON.parse(localStorage.getItem('bng-days-v1')||'null'); }catch(e){}
+  if(v && v.last===today) return;   // already counted today
+  const prev=v ? v.last : null, n=v ? v.n+1 : (old ? 2 : 1);
+  localStorage.setItem('bng-days-v1', JSON.stringify({first:v?v.first:today, last:today, n, pre:v?v.pre:(old&&!v)}));
+  const kind=(matchMedia('(display-mode: standalone)').matches || navigator.standalone) ? '-app' : '-web';
+  const b = n===1 ? 'ret-first' : n<=3 ? 'ret-d2-3' : n<=7 ? 'ret-d4-7' : 'ret-d8plus';
+  track(b+kind);
+  if(prev===yest) track('ret-yesterday'+kind);
+}catch(e){} })();
 
 // ---------- state ----------
 let rows = [], hard = false, mode = 'today', demo = false;
