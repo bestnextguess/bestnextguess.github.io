@@ -198,6 +198,13 @@ td.p{text-align:right;font-weight:700}
 .mini{display:inline-flex;gap:2px;vertical-align:-1px;margin-right:6px}
 .mini i{display:block;width:12px;height:12px;border-radius:2px}
 .mini i.x{background:var(--x)} .mini i.y{background:var(--y)} .mini i.g{background:var(--g)}
+.score{margin:14px 0 0;padding:12px 14px;border:2px solid var(--ink);border-radius:12px;background:#F4F8FF}
+.score b.big{display:block;font-size:19px;color:var(--g)}
+.score p{margin:4px 0 0;font-size:15px}
+.score .note{margin-top:6px;font-size:13px}
+.instcard{margin:12px 0 0;padding:12px 14px;border:2px dashed var(--blue);border-radius:12px;font-size:15px}
+.instcard b{display:block;margin-bottom:2px}
+.instcard button.btn{margin-top:8px;padding:9px 14px;font-size:15px}
 .rsecs{margin-top:16px;border-top:2px solid var(--rule)}
 .rsecs details{border-bottom:1px solid var(--rule)}
 .rsecs summary{cursor:pointer;padding:11px 2px;font-weight:700;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center}
@@ -330,7 +337,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.13.3</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.14</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -1334,6 +1341,37 @@ function renderWalk(box,R){
   if(up) up.onclick=()=>{ walk.pick=Math.max(0,walk.pick-1); renderWalk(box,R); };
   if(dn) dn.onclick=()=>{ walk.pick=walk.pick+1; track('walk-picks'); renderWalk(box,R); };
 }
+// v2.14: review streak + running score vs the helper (this device only), and an install nudge after the report
+function streakInfo(){
+  const G=loadGames(), days=Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).sort();
+  if(!days.length) return {streak:0,games:[]};
+  const dayN=k=>Math.round(Date.UTC(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10))/864e5);
+  let streak=1; for(let i=days.length-1;i>0;i--){ if(dayN(days[i])-dayN(days[i-1])===1) streak++; else break; }
+  const last=dayN(days[days.length-1]), today=dayN(localDay());
+  if(today-last>1) streak=0;   // the run ended before yesterday
+  return {streak, games:days.map(k=>G[k])};
+}
+function scoreHtml(R){
+  if(R.mode!=='today' || !R.ok) return '';
+  const {streak,games}=streakInfo(); if(!games.length) return '';
+  const vs=games.filter(x=>x.h!=null), b=vs.filter(x=>x.h>6 || x.n<x.h).length, t=vs.filter(x=>x.n===x.h).length;
+  const you=(games.reduce((a,x)=>a+x.n,0)/games.length).toFixed(1), hp=vs.length?(vs.reduce((a,x)=>a+Math.min(x.h,7),0)/vs.length).toFixed(1):null;
+  const head = streak>=2 ? `Reviewed ${streak} days in a row` : (games.length===1 ? 'Your first review is saved' : 'Review streak: 1 day');
+  const lines = games.length>=2
+    ? `<p>You: <b>${you}</b> guesses on average · Helper: <b>${hp??'–'}</b></p>`+(vs.length?`<p>Beat the helper <b>${b}</b> · tied <b>${t}</b> · behind <b>${vs.length-b-t}</b></p>`:'')
+    : '<p>Come back after tomorrow\'s Wordle and your streak and score start here.</p>';
+  track('score-'+(streak>=8?'d8plus':streak>=4?'d4-7':streak>=2?'d2-3':'d1'));
+  return `<div class="score"><b class="big">${head}</b>${lines}<p class="note">Kept on this device only. Never sent anywhere.</p></div>`;
+}
+function installCardHtml(){
+  if(matchMedia('(display-mode: standalone)').matches || navigator.standalone) return '';
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const how = ios ? 'Tap <b style="display:inline">Share</b> (the square with an arrow), then <b style="display:inline">Add to Home Screen</b>.'
+    : document.getElementById('installWrap').hidden ? 'Open your browser menu and choose <b style="display:inline">Install app</b> or <b style="display:inline">Add to Home screen</b>.' : '';
+  track('instcard-shown');
+  return `<div class="instcard"><b>Review tomorrow's game in one tap</b>Add Best Next Guess to your home screen. It opens like an app, even offline, and keeps your streak.`+
+    (how?`<p class="note">${how}</p>`:`<button class="btn" id="instNow">Add to home screen</button>`)+`</div>`;
+}
 function renderReport(box,R){
   const today=R.mode==='today', wait=R.ok && !R.ready;
   let verdict='';
@@ -1349,12 +1387,14 @@ function renderReport(box,R){
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
     ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
+    ${scoreHtml(R)}${R.ok && R.ready ? installCardHtml() : ''}
     <div class="rsecs">${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
   </div>`;
   box.querySelectorAll('details[data-sec]').forEach(d=>d.addEventListener('toggle',()=>{
     const id=d.dataset.sec; if(d.open){ openSecs.add(id); track(id==='steps'?'replay':'report-'+id); } else openSecs.delete(id);
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
+  const ib=document.getElementById('instNow'); if(ib) ib.onclick=()=>{ track('install-report',false); document.getElementById('installBtn').click(); };
   const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); };
   const ch=document.getElementById('clearHist');
   if(ch) ch.onclick=()=>{ if(ch.dataset.sure){ try{ localStorage.removeItem(HKEY); }catch(e){} track('history-cleared',false); renderReport(box,R); } else { ch.dataset.sure='1'; ch.textContent='Tap again to clear your history'; } };
