@@ -614,13 +614,14 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
   if(prev===yest) track('ret-yesterday'+kind);
   showWelcome(n);
 }catch(e){} })();
-// v2.17: welcome card, once a day on the first visit of the day. Counts the days this device has visited (same private count as above).
+// v2.17: welcome card, once a day on the first visit of the day, for the first 20 days visited. Counts the days this device has visited (same private count as above).
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
 function showWelcome(n){ try{
   const W=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
   const ord=n<=10 ? W[n-1] : n+((n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
-  // One dot per visit, at most 2 rows: rows of 5 for visits 1-10, rows of 10 for visits 11-20; after 20 the dots start over (rows of 10).
-  const per=n<=10?5:10, fill=n<=20?n:((n-21)%20)+1, rows=Math.max(1,Math.ceil(fill/per));
+  // One dot per visit, at most 2 rows: rows of 5 for visits 1-10, rows of 10 for visits 11-20. After the 20th visit the card stops showing (they're a regular by then).
+  if(!(n>=1 && n<=20)) return;
+  const per=n<=10?5:10, fill=n, rows=Math.max(1,Math.ceil(fill/per));
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   el.innerHTML=`<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
