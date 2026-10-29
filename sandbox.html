@@ -613,7 +613,7 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
   showWelcome(n);
 }catch(e){} })();
 // v2.17: welcome card, once a day on the first visit of the day. Counts the days this device has visited (same private count as above).
-// Goes away on the x or on any tap, click or key anywhere on the page.
+// Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
 function showWelcome(n){ try{
   const W=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
   const ord=n<=10 ? W[n-1] : n+((n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
@@ -622,8 +622,9 @@ function showWelcome(n){ try{
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   el.innerHTML=`<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div></div><button class="x" aria-label="Close">×</button>`;
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
-    const close=()=>{ el.remove(); document.removeEventListener('pointerdown',close,true); document.removeEventListener('keydown',close,true); };
-    setTimeout(()=>{ document.addEventListener('pointerdown',close,true); document.addEventListener('keydown',close,true); },300); };
+    // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
+    const close=()=>{ document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); setTimeout(()=>el.remove(),0); };
+    setTimeout(()=>{ document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); },300); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
 try{ const fw=parseInt(new URLSearchParams(location.search).get('welcome')||'',10); if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3
