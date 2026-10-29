@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.15: smaller less-common word list · Best Next Guess</title>
+<title>SANDBOX v2.17 welcome card · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -254,10 +254,16 @@ td.p{text-align:right;font-weight:700}
 .dist span{width:10px;text-align:right;color:var(--soft)}
 .dist i{display:block;background:var(--x);color:#fff;font-style:normal;font-weight:700;text-align:right;padding:0 6px;border-radius:3px;min-width:22px}
 .dist i.on{background:var(--g)}
+.welcome{position:relative;display:flex;gap:12px;align-items:center;margin:10px 0 12px;padding:12px 40px 12px 12px;border-radius:14px;background:#FFF9EE;border:2px solid #EBDDBF}
+.welcome .wbadge{flex:none;width:58px;height:58px;border-radius:12px;background:#2E8B57;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800}
+.welcome .wbadge span{font-size:11px;letter-spacing:1px}.welcome .wbadge b{font-size:26px;line-height:1}
+.welcome .wt{font-size:18px;font-weight:800;color:#1F2A44}.welcome .ws{font-size:14px;color:#5B6478;margin:2px 0 6px}
+.welcome .wdot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:5px;background:#EFE6D2}.welcome .wdot.on{background:#E0A100}
+.welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.15: smaller less-common word list, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.17 welcome card, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -338,7 +344,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.15</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.17</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -604,7 +610,23 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
   const b = n===1 ? 'ret-first' : n<=3 ? 'ret-d2-3' : n<=7 ? 'ret-d4-7' : 'ret-d8plus';
   track(b+kind);
   if(prev===yest) track('ret-yesterday'+kind);
+  showWelcome(n);
 }catch(e){} })();
+// v2.17: welcome card, once a day on the first visit of the day. Counts the days this device has visited (same private count as above).
+// Goes away on the x or on any tap, click or key anywhere on the page.
+function showWelcome(n){ try{
+  const W=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
+  const ord=n<=10 ? W[n-1] : n+((n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
+  const fill=((n-1)%7)+1;
+  const dots=[1,2,3,4,5,6,7].map(i=>`<span class="wdot${i<=fill?' on':''}"></span>`).join('');
+  const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
+  el.innerHTML=`<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div></div><button class="x" aria-label="Close">×</button>`;
+  const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; h.after(el);
+    const close=()=>{ el.remove(); document.removeEventListener('pointerdown',close,true); document.removeEventListener('keydown',close,true); };
+    setTimeout(()=>{ document.addEventListener('pointerdown',close,true); document.addEventListener('keydown',close,true); },300); };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
+}catch(e){} }
+try{ const fw=parseInt(new URLSearchParams(location.search).get('welcome')||'',10); if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3
 
 // ---------- state ----------
 let rows = [], hard = false, mode = 'today', demo = false;
@@ -773,7 +795,7 @@ function update(){
     if(more.firstChild) more.firstChild.onclick=()=>{shown=sorted.length; drawList();};
   }
   drawList();
-  if(rows.length && !demo) track('used');
+  if(rows.length && !demo){ track('used'); if(mode==='today') markUsedDay(); }
   suggest(cands,P,++job);
 }
 
@@ -1343,24 +1365,28 @@ function renderWalk(box,R){
   if(dn) dn.onclick=()=>{ walk.pick=walk.pick+1; track('walk-picks'); renderWalk(box,R); };
 }
 // v2.14: review streak + running score vs the helper (this device only), and an install nudge after the report
+// v2.16: a day counts for the streak as soon as a guess goes on the board in Today's mode (players often finish on the NYT and leave)
+function markUsedDay(){ try{ const k='bng-used-days', d=localDay(); const a=JSON.parse(localStorage.getItem(k)||'[]'); if(a[a.length-1]!==d){ a.push(d); while(a.length>400) a.shift(); localStorage.setItem(k, JSON.stringify(a)); } }catch(e){} }
 function streakInfo(){
-  const G=loadGames(), days=Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).sort();
-  if(!days.length) return {streak:0,games:[]};
+  const G=loadGames(), games=Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).sort().map(k=>G[k]);
+  let used=[]; try{ used=JSON.parse(localStorage.getItem('bng-used-days')||'[]'); }catch(e){}
+  const days=[...new Set(Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).concat(used))].sort();
+  if(!days.length) return {streak:0,games};
   const dayN=k=>Math.round(Date.UTC(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10))/864e5);
   let streak=1; for(let i=days.length-1;i>0;i--){ if(dayN(days[i])-dayN(days[i-1])===1) streak++; else break; }
   const last=dayN(days[days.length-1]), today=dayN(localDay());
   if(today-last>1) streak=0;   // the run ended before yesterday
-  return {streak, games:days.map(k=>G[k])};
+  return {streak, games};
 }
 function scoreHtml(R){
   if(R.mode!=='today' || !R.ok) return '';
   const {streak,games}=streakInfo(); if(!games.length) return '';
   const vs=games.filter(x=>x.h!=null), b=vs.filter(x=>x.h>6 || x.n<x.h).length, t=vs.filter(x=>x.n===x.h).length;
   const you=(games.reduce((a,x)=>a+x.n,0)/games.length).toFixed(1), hp=vs.length?(vs.reduce((a,x)=>a+Math.min(x.h,7),0)/vs.length).toFixed(1):null;
-  const head = streak>=2 ? `Reviewed ${streak} days in a row` : (games.length===1 ? 'Your first review is saved' : 'Review streak: 1 day');
+  const head = streak>=2 ? `You've used Best Next Guess ${streak} days in a row` : (games.length===1 ? 'Your first game is saved' : 'Streak: 1 day');
   const lines = games.length>=2
     ? `<p>You: <b>${you}</b> guesses on average · Helper: <b>${hp??'–'}</b></p>`+(vs.length?`<p>Beat the helper <b>${b}</b> · tied <b>${t}</b> · behind <b>${vs.length-b-t}</b></p>`:'')
-    : '<p>Come back after tomorrow\'s Wordle and your streak and score start here.</p>';
+    : (streak>=2 ? '<p>Finish one more game here and your score against the helper starts adding up.</p>' : '<p>Come back for tomorrow\'s Wordle and your streak and score start here.</p>');
   track('score-'+(streak>=8?'d8plus':streak>=4?'d4-7':streak>=2?'d2-3':'d1'));
   return `<div class="score"><b class="big">${head}</b>${lines}<p class="note">Kept on this device only. Never sent anywhere.</p></div>`;
 }
