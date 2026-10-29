@@ -337,7 +337,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.15</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.16</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -772,7 +772,7 @@ function update(){
     if(more.firstChild) more.firstChild.onclick=()=>{shown=sorted.length; drawList();};
   }
   drawList();
-  if(rows.length && !demo) track('used');
+  if(rows.length && !demo){ track('used'); if(mode==='today') markUsedDay(); }
   suggest(cands,P,++job);
 }
 
@@ -1342,24 +1342,28 @@ function renderWalk(box,R){
   if(dn) dn.onclick=()=>{ walk.pick=walk.pick+1; track('walk-picks'); renderWalk(box,R); };
 }
 // v2.14: review streak + running score vs the helper (this device only), and an install nudge after the report
+// v2.16: a day counts for the streak as soon as a guess goes on the board in Today's mode (players often finish on the NYT and leave)
+function markUsedDay(){ try{ const k='bng-used-days', d=localDay(); const a=JSON.parse(localStorage.getItem(k)||'[]'); if(a[a.length-1]!==d){ a.push(d); while(a.length>400) a.shift(); localStorage.setItem(k, JSON.stringify(a)); } }catch(e){} }
 function streakInfo(){
-  const G=loadGames(), days=Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).sort();
-  if(!days.length) return {streak:0,games:[]};
+  const G=loadGames(), games=Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).sort().map(k=>G[k]);
+  let used=[]; try{ used=JSON.parse(localStorage.getItem('bng-used-days')||'[]'); }catch(e){}
+  const days=[...new Set(Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).concat(used))].sort();
+  if(!days.length) return {streak:0,games};
   const dayN=k=>Math.round(Date.UTC(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10))/864e5);
   let streak=1; for(let i=days.length-1;i>0;i--){ if(dayN(days[i])-dayN(days[i-1])===1) streak++; else break; }
   const last=dayN(days[days.length-1]), today=dayN(localDay());
   if(today-last>1) streak=0;   // the run ended before yesterday
-  return {streak, games:days.map(k=>G[k])};
+  return {streak, games};
 }
 function scoreHtml(R){
   if(R.mode!=='today' || !R.ok) return '';
   const {streak,games}=streakInfo(); if(!games.length) return '';
   const vs=games.filter(x=>x.h!=null), b=vs.filter(x=>x.h>6 || x.n<x.h).length, t=vs.filter(x=>x.n===x.h).length;
   const you=(games.reduce((a,x)=>a+x.n,0)/games.length).toFixed(1), hp=vs.length?(vs.reduce((a,x)=>a+Math.min(x.h,7),0)/vs.length).toFixed(1):null;
-  const head = streak>=2 ? `Reviewed ${streak} days in a row` : (games.length===1 ? 'Your first review is saved' : 'Review streak: 1 day');
+  const head = streak>=2 ? `You've used Best Next Guess ${streak} days in a row` : (games.length===1 ? 'Your first game is saved' : 'Streak: 1 day');
   const lines = games.length>=2
     ? `<p>You: <b>${you}</b> guesses on average · Helper: <b>${hp??'–'}</b></p>`+(vs.length?`<p>Beat the helper <b>${b}</b> · tied <b>${t}</b> · behind <b>${vs.length-b-t}</b></p>`:'')
-    : '<p>Come back after tomorrow\'s Wordle and your streak and score start here.</p>';
+    : (streak>=2 ? '<p>Finish one more game here and your score against the helper starts adding up.</p>' : '<p>Come back for tomorrow\'s Wordle and your streak and score start here.</p>');
   track('score-'+(streak>=8?'d8plus':streak>=4?'d4-7':streak>=2?'d2-3':'d1'));
   return `<div class="score"><b class="big">${head}</b>${lines}<p class="note">Kept on this device only. Never sent anywhere.</p></div>`;
 }
