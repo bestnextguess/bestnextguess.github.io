@@ -612,7 +612,7 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
   const b = n===1 ? 'ret-first' : n<=3 ? 'ret-d2-3' : n<=7 ? 'ret-d4-7' : 'ret-d8plus';
   track(b+kind);
   if(prev===yest) track('ret-yesterday'+kind);
-  showWelcome(n);
+  if(!/[?&]welcome=/.test(location.search)) showWelcome(n);   // a ?welcome= test link shows only the test card, never the real one
 }catch(e){} })();
 // v2.17: welcome card, once a day on the first visit of the day, for the first 20 days visited. Counts the days this device has visited (same private count as above).
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
