@@ -637,7 +637,7 @@ function showWelcome(n, back){ try{
     document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); document.addEventListener('pointerup',lift,true); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
-try{ const q=new URLSearchParams(location.search).get('welcome')||''; const fw=parseInt(q,10); if(q==='back') showWelcome(1,true); else if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3, ?welcome=back the card for early visitors
+try{ const q=(new URLSearchParams(location.search).get('welcome')||'').toLowerCase(); const fw=parseInt(q,10); if(q==='back') showWelcome(1,true); else if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3, ?welcome=back the card for early visitors
 
 // ---------- state ----------
 let rows = [], hard = false, mode = 'today', demo = false;
