@@ -628,6 +628,7 @@ function showWelcome(n){ try{
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     const close=()=>{ document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); setTimeout(()=>el.remove(),0); };
+    el.querySelector('.x').addEventListener('click',close);   // the x always works, even right away
     setTimeout(()=>{ document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); },300); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
