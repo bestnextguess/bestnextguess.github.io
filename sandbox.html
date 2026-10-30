@@ -627,9 +627,11 @@ function showWelcome(n){ try{
   el.innerHTML=`<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
-    const close=()=>{ document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); setTimeout(()=>el.remove(),0); };
-    el.querySelector('.x').addEventListener('click',close);   // the x always works, even right away
-    setTimeout(()=>{ document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); },300); };
+    // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
+    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); };
+    const lift=()=>setTimeout(close,350);
+    el.querySelector('.x').addEventListener('click',close);
+    document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); document.addEventListener('pointerup',lift,true); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
 try{ const fw=parseInt(new URLSearchParams(location.search).get('welcome')||'',10); if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3
