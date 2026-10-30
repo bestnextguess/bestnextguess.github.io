@@ -260,6 +260,7 @@ td.p{text-align:right;font-weight:700}
 .welcome .wt{font-size:22px;line-height:1.25;font-weight:800;color:#1F2A44}.welcome .ws{font-size:17px;color:#5B6478;margin:2px 0 6px}
 .welcome .wrow{line-height:0;margin-top:5px}.welcome .wdot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:5px;background:#ECE7E2}.welcome .wdot.on{background:#E0A100}
 .welcome .w10 .wdot{width:12px;height:12px;margin-right:4px}
+.welcome .wbadge .wave{font-size:30px}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
 .welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
 </style>
@@ -603,20 +604,21 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
 (function(){ try{
   const day=d=>{ const t=new Date(d); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); };
   const today=day(Date.now()), yest=day(Date.now()-864e5);
-  const old=['sbx-t2share','bng-games-v1','sbx-hard'].some(k=>localStorage.getItem(k)!==null);   // signs of a visit before this counter existed
-  let v=null; try{ v=JSON.parse(localStorage.getItem('bng-days-v1')||'null'); }catch(e){}
+  const old=['sbx-t2share','sbx-games-v1','sbx-hard'].some(k=>localStorage.getItem(k)!==null);   // signs of a visit before this counter existed
+  let v=null; try{ v=JSON.parse(localStorage.getItem('sbx-days-v1')||'null'); }catch(e){}
   if(v && v.last===today) return;   // already counted today
   const prev=v ? v.last : null, n=v ? v.n+1 : (old ? 2 : 1);
-  localStorage.setItem('bng-days-v1', JSON.stringify({first:v?v.first:today, last:today, n, pre:v?v.pre:(old&&!v)}));
+  localStorage.setItem('sbx-days-v1', JSON.stringify({first:v?v.first:today, last:today, n, pre:v?v.pre:(old&&!v)}));
   const kind=(matchMedia('(display-mode: standalone)').matches || navigator.standalone) ? '-app' : '-web';
   const b = n===1 ? 'ret-first' : n<=3 ? 'ret-d2-3' : n<=7 ? 'ret-d4-7' : 'ret-d8plus';
   track(b+kind);
   if(prev===yest) track('ret-yesterday'+kind);
-  if(!/[?&]welcome=/.test(location.search)) showWelcome(n);   // a ?welcome= test link shows only the test card, never the real one
+  if(!/[?&]welcome=/.test(location.search)) showWelcome(n, !!(v ? v.pre : (old&&!v)));   // a ?welcome= test link shows only the test card, never the real one
 }catch(e){} })();
 // v2.17: welcome card, once a day on the first visit of the day, for the first 20 days visited. Counts the days this device has visited (same private count as above).
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
-function showWelcome(n){ try{
+// back=true: this device visited before the day count existed (Oct 27), so its real number is unknown: say "Welcome back!" with no number or dots.
+function showWelcome(n, back){ try{
   const W=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
   const ord=n<=10 ? W[n-1] : n+((n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
   // One dot per visit, at most 2 rows: rows of 5 for visits 1-10, rows of 10 for visits 11-20. After the 20th visit the card stops showing (they're a regular by then).
@@ -624,7 +626,8 @@ function showWelcome(n){ try{
   const per=n<=10?5:10, fill=n, rows=Math.max(1,Math.ceil(fill/per));
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
-  el.innerHTML=`<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
+  el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">Welcome back!</div><div class="ws">Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
+  : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
@@ -634,7 +637,7 @@ function showWelcome(n){ try{
     document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); document.addEventListener('pointerup',lift,true); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
-try{ const fw=parseInt(new URLSearchParams(location.search).get('welcome')||'',10); if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3
+try{ const q=new URLSearchParams(location.search).get('welcome')||''; const fw=parseInt(q,10); if(q==='back') showWelcome(1,true); else if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3, ?welcome=back the card for early visitors
 
 // ---------- state ----------
 let rows = [], hard = false, mode = 'today', demo = false;
@@ -1374,10 +1377,10 @@ function renderWalk(box,R){
 }
 // v2.14: review streak + running score vs the helper (this device only), and an install nudge after the report
 // v2.16: a day counts for the streak as soon as a guess goes on the board in Today's mode (players often finish on the NYT and leave)
-function markUsedDay(){ try{ const k='bng-used-days', d=localDay(); const a=JSON.parse(localStorage.getItem(k)||'[]'); if(a[a.length-1]!==d){ a.push(d); while(a.length>400) a.shift(); localStorage.setItem(k, JSON.stringify(a)); } }catch(e){} }
+function markUsedDay(){ try{ const k='sbx-used-days', d=localDay(); const a=JSON.parse(localStorage.getItem(k)||'[]'); if(a[a.length-1]!==d){ a.push(d); while(a.length>400) a.shift(); localStorage.setItem(k, JSON.stringify(a)); } }catch(e){} }
 function streakInfo(){
   const G=loadGames(), games=Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).sort().map(k=>G[k]);
-  let used=[]; try{ used=JSON.parse(localStorage.getItem('bng-used-days')||'[]'); }catch(e){}
+  let used=[]; try{ used=JSON.parse(localStorage.getItem('sbx-used-days')||'[]'); }catch(e){}
   const days=[...new Set(Object.keys(G).filter(k=>G[k] && G[k].n>=1 && G[k].n<=6).concat(used))].sort();
   if(!days.length) return {streak:0,games};
   const dayN=k=>Math.round(Date.UTC(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10))/864e5);
