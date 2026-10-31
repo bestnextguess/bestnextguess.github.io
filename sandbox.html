@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.19 (live) · Best Next Guess</title>
+<title>SANDBOX v2.20 countdown to Wordle #2000 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -273,10 +273,19 @@ td.p{text-align:right;font-weight:700}
 .welcome .wbadge .wave{font-size:30px}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
 .welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
+/* v2.20: countdown to Wordle #2000 (Dec 10, 2026), under the header. Pill by default; .card is the bigger style. Hidden until the device's date is within 60 days, gone after the day. */
+.cd2k{display:inline-flex;align-items:center;gap:8px;margin:10px 0 12px;padding:6px 12px 6px 8px;border-radius:999px;background:#FFFFFF;border:2px solid var(--ink);font-size:15px;color:var(--ink);box-shadow:0 3px 0 rgba(31,42,68,.12)}
+.cd2k[hidden]{display:none}
+.cd2k .n{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:28px;padding:0 8px;border-radius:999px;background:var(--g);color:#fff;font-weight:800;font-size:16px}
+.cd2k b{font-weight:800}
+.cd2k.card{display:flex;gap:12px;padding:10px 12px;border-radius:12px;border:2px solid #F0B48C;box-shadow:none}
+.cd2k.card .big{flex:none;width:58px;height:58px;border-radius:12px;background:var(--blue);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;line-height:1}
+.cd2k.card .big b{font-size:24px}.cd2k.card .big span{font-size:10px;letter-spacing:1px;margin-top:2px}.cd2k.card .big .party{font-size:28px}
+.cd2k.card .t{font-size:17px;font-weight:800;line-height:1.25}.cd2k.card .s{font-size:14px;color:var(--soft);margin-top:2px}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.19 (live), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.20 countdown to Wordle #2000, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -288,6 +297,7 @@ td.p{text-align:right;font-weight:700}
     <nav><a href="sandbox-stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a><span id="installWrap"> · <a href="sandbox-about.html#install" id="installBtn">Install app</a></span></nav>
   </div>
 </header>
+<div class="cd2k" id="cd2k" hidden></div>
 
 <div class="howto" id="howto" hidden>
   <button class="x" id="howtoX" aria-label="Hide these tips">×</button>
@@ -358,7 +368,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.19</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.20</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -654,6 +664,22 @@ function showWelcome(n, back){ try{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
 try{ const q=(new URLSearchParams(location.search).get('welcome')||'').toLowerCase(); const fw=parseInt(q,10); if(q==='back') showWelcome(1,true); else if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3, ?welcome=back the card for early visitors; add &hour=0..23 to force the greeting's hour
+// v2.20: countdown to Wordle #2000 (Thursday, Dec 10, 2026). Counts from the device's own date; nothing leaves the device. Shows from 60 days out, says "Today is Wordle #2000!" on the day, and is gone after.
+// Test links: ?cd=a (pill) or ?cd=b (card), plus &cdn=N to pretend today is puzzle #N (e.g. ?cd=a&cdn=2000). The number is honored only with a ?cd= test link.
+(function(){ try{
+  const el=document.getElementById('cd2k'); if(!el) return;
+  const t=new Date(); let n=Math.round((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5);   // today's puzzle number, same count as puzzleToday()
+  let style='a';
+  try{ const qs=new URLSearchParams(location.search); const c=(qs.get('cd')||'').toLowerCase(); if(c==='a'||c==='b'){ style=c; const f=parseInt(qs.get('cdn'),10); if(f>0) n=f; } }catch(e){}
+  const left=2000-n; if(left<0 || left>60) return;
+  if(style==='b'){ el.classList.add('card');
+    el.innerHTML = left===0 ? `<div class="big"><b class="party">🎉</b></div><div><div class="t">Today is Wordle #2000!</div><div class="s">Two thousand puzzles. Thanks for solving some of them with us.</div></div>`
+      : `<div class="big"><b>${left}</b><span>${left===1?'DAY':'DAYS'}</span></div><div><div class="t">Wordle #2000 is coming: Thursday, Dec 10.</div><div class="s">Today is #${n}. Let's get there with a streak intact.</div></div>`;
+  } else {
+    el.innerHTML = left===0 ? `🎉 <b>Today is Wordle #2000!</b>` : `🎂 <span class="n">${left}</span> ${left===1?'day':'days'} to <b>Wordle #2000</b> · Dec 10`;
+  }
+  el.hidden=false;
+}catch(e){} })();
 
 // ---------- state ----------
 let rows = [], hard = false, mode = 'today', demo = false;
