@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.17 welcome card · Best Next Guess</title>
+<title>SANDBOX v2.19 tell-a-friend card · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -205,6 +205,9 @@ td.p{text-align:right;font-weight:700}
 .instcard{margin:12px 0 0;padding:12px 14px;border:2px dashed var(--blue);border-radius:12px;font-size:15px}
 .instcard b{display:block;margin-bottom:2px}
 .instcard button.btn{margin-top:8px;padding:9px 14px;font-size:15px}
+.sharecard{margin:12px 0 0;padding:12px 14px;border:2px solid #F0B48C;border-radius:12px;font-size:15px;background:#fff}
+.sharecard b{display:block;margin-bottom:2px}
+.sharecard button.btn{margin-top:8px;padding:9px 14px;font-size:15px}
 .rsecs{margin-top:16px;border-top:2px solid var(--rule)}
 .rsecs details{border-bottom:1px solid var(--rule)}
 .rsecs summary{cursor:pointer;padding:11px 2px;font-weight:700;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center}
@@ -266,7 +269,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.17 welcome card, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.19 tell-a-friend card, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -347,7 +350,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.17</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.19</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -619,6 +622,11 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
 // back=true: this device visited before the day count existed (Oct 27), so its real number is unknown: say "Welcome back!" with no number or dots.
 function showWelcome(n, back){ try{
+  // v2.18: the greeting follows the device's own clock (nothing leaves the device). Test links can force the hour: ?welcome=3&hour=23
+  let hr=new Date().getHours();
+  try{ const qs=new URLSearchParams(location.search); if(/[?&]welcome=/.test(location.search)){ const t=parseInt(qs.get('hour'),10); if(t>=0&&t<=23) hr=t; } }catch(e){}
+  const greet = hr>=5&&hr<11 ? 'Good morning!' : hr>=11&&hr<17 ? 'Good afternoon!' : hr>=17&&hr<23 ? 'Good evening!' : 'Up late?';
+  const us = greet==='Up late?' ? 'Us too. ' : '';
   const W=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
   const ord=n<=10 ? W[n-1] : n+((n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
   // One dot per visit, at most 2 rows: rows of 5 for visits 1-10, rows of 10 for visits 11-20. After the 20th visit the card stops showing (they're a regular by then).
@@ -626,8 +634,8 @@ function showWelcome(n, back){ try{
   const per=n<=10?5:10, fill=n, rows=Math.max(1,Math.ceil(fill/per));
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
-  el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">Welcome back!</div><div class="ws">Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
-  : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">Welcome! This is your ${ord} visit!</div><div class="ws">${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
+  el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">${greet} Welcome back!</div><div class="ws">${us}Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
+  : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">${greet} This is your ${ord} visit!</div><div class="ws">${us}${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
@@ -637,7 +645,7 @@ function showWelcome(n, back){ try{
     document.addEventListener('click',close,true); document.addEventListener('keydown',close,true); document.addEventListener('pointerup',lift,true); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 }catch(e){} }
-try{ const q=(new URLSearchParams(location.search).get('welcome')||'').toLowerCase(); const fw=parseInt(q,10); if(q==='back') showWelcome(1,true); else if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3, ?welcome=back the card for early visitors
+try{ const q=(new URLSearchParams(location.search).get('welcome')||'').toLowerCase(); const fw=parseInt(q,10); if(q==='back') showWelcome(1,true); else if(fw>0) showWelcome(fw); }catch(e){}   // test: ?welcome=3 shows the card for visit 3, ?welcome=back the card for early visitors; add &hour=0..23 to force the greeting's hour
 
 // ---------- state ----------
 let rows = [], hard = false, mode = 'today', demo = false;
@@ -1410,6 +1418,21 @@ function installCardHtml(){
   return `<div class="instcard"><b>Review tomorrow's game in one tap</b>Add Best Next Guess to your home screen. It opens like an app, even offline, and keeps your streak.`+
     (how?`<p class="note">${how}</p>`:`<button class="btn" id="instNow">Add to home screen</button>`)+`</div>`;
 }
+// v2.19: "Tell a friend": shares the site's address only (never the game or the answer). Link tagged ?ref=friend so word-of-mouth visits can be counted.
+const SHARE_URL='https://bestnextguess.com/?ref=friend', SHARE_TEXT='A free Wordle helper. No ads, no sign-up.';
+function shareAppHtml(){
+  track('sharecard-shown');
+  return `<div class="sharecard"><b>Know someone who plays Wordle?</b>Send them Best Next Guess. Only the link is shared, never your game.<br><button class="btn" id="shareApp">Share with a friend</button></div>`;
+}
+function shareApp(btn){
+  track('share-app',false);
+  const done=()=>{ track('share-app-done',false); btn.textContent='Thanks for sharing ✓'; };
+  if(navigator.share){ navigator.share({title:'Best Next Guess', text:SHARE_TEXT, url:SHARE_URL}).then(done).catch(()=>{}); return; }
+  const t=SHARE_TEXT+' '+SHARE_URL;
+  const copied=()=>{ track('share-app-copied',false); btn.textContent='Link copied ✓ Paste it in a message'; };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(copied).catch(()=>{ btn.textContent=SHARE_URL; }); }
+  else btn.textContent=SHARE_URL;
+}
 function renderReport(box,R){
   const today=R.mode==='today', wait=R.ok && !R.ready;
   let verdict='';
@@ -1425,7 +1448,7 @@ function renderReport(box,R){
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
     ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
-    ${scoreHtml(R)}${R.ok && R.ready ? installCardHtml() : ''}
+    ${scoreHtml(R)}${R.ok && R.ready ? installCardHtml()+shareAppHtml() : ''}
     <div class="rsecs">${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
   </div>`;
   box.querySelectorAll('details[data-sec]').forEach(d=>d.addEventListener('toggle',()=>{
@@ -1433,6 +1456,7 @@ function renderReport(box,R){
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
   const ib=document.getElementById('instNow'); if(ib) ib.onclick=()=>{ track('install-report',false); document.getElementById('installBtn').click(); };
+  const sa=document.getElementById('shareApp'); if(sa) sa.onclick=()=>shareApp(sa);
   const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); };
   const ch=document.getElementById('clearHist');
   if(ch) ch.onclick=()=>{ if(ch.dataset.sure){ try{ localStorage.removeItem(HKEY); }catch(e){} track('history-cleared',false); renderReport(box,R); } else { ch.dataset.sure='1'; ch.textContent='Tap again to clear your history'; } };
