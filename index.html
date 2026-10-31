@@ -205,6 +205,16 @@ td.p{text-align:right;font-weight:700}
 .instcard{margin:12px 0 0;padding:12px 14px;border:2px dashed var(--blue);border-radius:12px;font-size:15px}
 .instcard b{display:block;margin-bottom:2px}
 .instcard button.btn{margin-top:8px;padding:9px 14px;font-size:15px}
+.shareline{margin:16px 0 0;font-size:16px;color:var(--ink);border:2px solid #E8C766;background:#FFF8DB;border-radius:10px;padding:10px 12px}
+.shareline a{color:var(--blue);font-weight:700;font-size:17px;white-space:nowrap}
+@media (max-width:400px){ .shareline{font-size:15px;padding:10px} .shareline a{font-size:16px} }
+@media (max-width:370px){ .shareline{font-size:14px;padding:10px 8px} .shareline a{font-size:15px} }
+@media (max-width:355px){ .shareline{font-size:13px;padding:10px 6px} .shareline a{font-size:14px} }
+@media (max-width:330px){ .shareline{font-size:12px} .shareline a{font-size:13px} }
+.shareline .sl2{display:block;font-size:13px;color:var(--soft);margin-top:2px;overflow-wrap:anywhere}
+.sharecard{margin:12px 0 0;padding:12px 14px;border:2px solid #F0B48C;border-radius:12px;font-size:15px;background:#fff}
+.sharecard b{display:block;margin-bottom:2px}
+.sharecard button.btn{margin-top:8px;padding:9px 14px;font-size:15px;max-width:100%;overflow-wrap:anywhere}
 .rsecs{margin-top:16px;border-top:2px solid var(--rule)}
 .rsecs details{border-bottom:1px solid var(--rule)}
 .rsecs summary{cursor:pointer;padding:11px 2px;font-weight:700;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center}
@@ -320,6 +330,7 @@ td.p{text-align:right;font-weight:700}
       <button class="chip" id="reset">Start over</button>
     </div>
     <p class="note" id="tapNote">Tap a tile, then pick its color.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
+    <p class="shareline" id="shareLine" hidden>Know a friend? <a href="#" id="shareLink">Send them this app ›</a><span class="sl2">Only the link is shared, never your game.</span></p>
     <div id="solved"></div>
   </section>
 
@@ -346,7 +357,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.18</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.19</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -763,6 +774,7 @@ function update(){
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   document.getElementById('tapNote').hidden = inWalk();
+  document.getElementById('shareLine').hidden = demo || !rows.length || inWalk();   // v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
   document.getElementById('shotBar').hidden = !!(rows.length || demo);   // v2.11.1: shown for older puzzles too
   document.querySelector('#shotBar b').textContent = mode==='today' ? 'Already played today?' : 'Already played this puzzle?';   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
@@ -1414,6 +1426,24 @@ function installCardHtml(){
   return `<div class="instcard"><b>Review tomorrow's game in one tap</b>Add Best Next Guess to your home screen. It opens like an app, even offline, and keeps your streak.`+
     (how?`<p class="note">${how}</p>`:`<button class="btn" id="instNow">Add to home screen</button>`)+`</div>`;
 }
+// v2.19: "Tell a friend": shares the site's address only (never the game or the answer). Link tagged ?ref=friend so word-of-mouth visits can be counted.
+const SHARE_URL='https://bestnextguess.com/?ref=friend', SHARE_TEXT='A free Wordle helper. No ads, no sign-up.';
+function shareAppHtml(){
+  track('sharecard-shown');
+  return `<div class="sharecard"><b>Know someone who plays Wordle?</b>Send them Best Next Guess. Only the link is shared, never your game.<br><button class="btn" id="shareApp">Share with a friend</button></div>`;
+}
+function shareApp(btn,src){
+  track('share-app',false); track('share-from-'+(src||'card'),false);
+  // The link keeps its own text (so its line never wraps); its messages go in the small line under it. The card's button shows them itself.
+  const say=m=>{ if(src==='link'){ const n=document.querySelector('#shareLine .sl2'); if(n) n.textContent=m; } else btn.textContent=m; };
+  const done=()=>{ track('share-app-done',false); say('Thanks for sharing ✓'); };
+  if(navigator.share){ navigator.share({title:'Best Next Guess', text:SHARE_TEXT, url:SHARE_URL}).then(done).catch(()=>{}); return; }
+  const t=SHARE_TEXT+' '+SHARE_URL;
+  const copied=()=>{ track('share-app-copied',false); say('Link copied ✓ Paste it in a message.'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(copied).catch(()=>say(SHARE_URL)); }
+  else say(SHARE_URL);
+}
+try{ const sl=document.getElementById('shareLink'); if(sl) sl.onclick=e=>{ e.preventDefault(); shareApp(sl,'link'); }; }catch(e){}
 function renderReport(box,R){
   const today=R.mode==='today', wait=R.ok && !R.ready;
   let verdict='';
@@ -1429,7 +1459,7 @@ function renderReport(box,R){
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
     ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
-    ${scoreHtml(R)}${R.ok && R.ready ? installCardHtml() : ''}
+    ${scoreHtml(R)}${R.ok && R.ready ? installCardHtml()+shareAppHtml() : ''}
     <div class="rsecs">${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
   </div>`;
   box.querySelectorAll('details[data-sec]').forEach(d=>d.addEventListener('toggle',()=>{
@@ -1437,6 +1467,7 @@ function renderReport(box,R){
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
   const ib=document.getElementById('instNow'); if(ib) ib.onclick=()=>{ track('install-report',false); document.getElementById('installBtn').click(); };
+  const sa=document.getElementById('shareApp'); if(sa) sa.onclick=()=>shareApp(sa,'card');
   const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); };
   const ch=document.getElementById('clearHist');
   if(ch) ch.onclick=()=>{ if(ch.dataset.sure){ try{ localStorage.removeItem(HKEY); }catch(e){} track('history-cleared',false); renderReport(box,R); } else { ch.dataset.sure='1'; ch.textContent='Tap again to clear your history'; } };
