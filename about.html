@@ -72,6 +72,7 @@ footer p{margin:6px 0}
 .cards2 .card p{margin:0 0 10px}
 .cards2 .card p:last-child{margin-bottom:0}
 .wide{grid-column:1 / -1}
+.cards2 .col{display:flex;flex-direction:column;gap:20px}   /* right column on computers: opener, who made it, privacy stacked, so it ends level with the long How it works card */
 .promise{border-left:8px solid var(--g)}
 .engine{border-left:8px solid var(--blue)}
 .tested{display:flex;gap:28px;flex-wrap:wrap;margin:6px 0 12px}
@@ -86,6 +87,7 @@ ul.plain li{margin:4px 0}
 @media (max-width:720px){
   .title{font-size:28px} .lede{font-size:17px}
   .cards2{grid-template-columns:1fr;gap:16px}
+  .cards2 .col{gap:16px}
   .tested b{font-size:26px}
 }
 </style>
@@ -120,12 +122,31 @@ ul.plain li{margin:4px 0}
     <p><b>Past answers.</b> Wondering whether a word has already been a Wordle answer? Check any word on <a href="answers.html">Has it been a Wordle answer?</a> It updates every day and never shows today's answer, and if you're playing today's Wordle, it takes you straight to your best next guess.</p>
   </section>
 
-  <section class="card" aria-label="Your opener">
-    <h2>Your first guess</h2>
-    <div class="mini" aria-label="RAISE"><span class="tile b">R</span><span class="tile b">A</span><span class="tile b">I</span><span class="tile b">S</span><span class="tile b">E</span></div>
-    <p>The site suggests RAISE, which leaves about 62 possible answers on average. Any strong opener works; the game is won on the guesses after it. Curious how yours does? See how it fares against every past answer.</p>
-    <a class="cta" href="stats.html">Check your opener</a>
-  </section>
+  <div class="col">
+    <section class="card" aria-label="Your opener">
+      <h2>Your first guess</h2>
+      <div class="mini" aria-label="RAISE"><span class="tile b">R</span><span class="tile b">A</span><span class="tile b">I</span><span class="tile b">S</span><span class="tile b">E</span></div>
+      <p>The site suggests RAISE, which leaves about 62 possible answers on average. Any strong opener works; the game is won on the guesses after it. Curious how yours does? See how it fares against every past answer.</p>
+      <a class="cta" href="stats.html">Check your opener</a>
+    </section>
+
+    <section class="card" aria-label="Who made it">
+      <h2>Who made it</h2>
+      <p>Best Next Guess was made by Ayman Mikhail, a daily Wordle player who isn't a programmer. It started as a spreadsheet that filtered the word list by greens and yellows, and grew into this site with help from Claude, an AI assistant.</p>
+      <p><b>Questions, ideas or a bug to report?</b> Email <a href="mailto:hello@bestnextguess.com">hello@bestnextguess.com</a>. Every message gets read.</p>
+    </section>
+
+    <section class="card" aria-label="Privacy">
+      <h2>Your privacy</h2>
+      <ul class="plain">
+        <li>Your guesses stay in your browser. Nothing you type is sent anywhere.</li>
+        <li>A screenshot you use is read on your own device and is never uploaded.</li>
+        <li>Visits are counted anonymously with GoatCounter: no cookies and no personal data.</li>
+        <li>Your device keeps a count of the days you've visited. It shows in the welcome card for your first 20 days (the card's greeting follows your device's clock), and it lets us tell roughly how many players come back: only a range like "4 to 7 days" is sent, never your count or who you are.</li>
+        <li>No account, no email, no tracking across other sites.</li>
+      </ul>
+    </section>
+  </div>
 
   <section class="card wide" aria-label="How well it plays">
     <h2>How well it plays</h2>
@@ -147,23 +168,6 @@ ul.plain li{margin:4px 0}
       <li><b>Computer (Chrome or Edge):</b> click the install icon at the right end of the address bar.</li>
     </ul>
     <p class="note">No app store, no download and nothing to update: it always runs the latest version.</p>
-  </section>
-
-  <section class="card" aria-label="Who made it">
-    <h2>Who made it</h2>
-    <p>Best Next Guess was made by Ayman Mikhail, a daily Wordle player who isn't a programmer. It started as a spreadsheet that filtered the word list by greens and yellows, and grew into this site with help from Claude, an AI assistant.</p>
-    <p><b>Questions, ideas or a bug to report?</b> Email <a href="mailto:hello@bestnextguess.com">hello@bestnextguess.com</a>. Every message gets read.</p>
-  </section>
-
-  <section class="card" aria-label="Privacy">
-    <h2>Your privacy</h2>
-    <ul class="plain">
-      <li>Your guesses stay in your browser. Nothing you type is sent anywhere.</li>
-      <li>A screenshot you use is read on your own device and is never uploaded.</li>
-      <li>Visits are counted anonymously with GoatCounter: no cookies and no personal data.</li>
-      <li>Your device keeps a count of the days you've visited. It shows in the welcome card for your first 20 days (the card's greeting follows your device's clock), and it lets us tell roughly how many players come back: only a range like "4 to 7 days" is sent, never your count or who you are.</li>
-      <li>No account, no email, no tracking across other sites.</li>
-    </ul>
   </section>
 
   <section class="card wide" aria-label="Not affiliated">
