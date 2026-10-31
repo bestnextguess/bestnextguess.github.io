@@ -205,8 +205,12 @@ td.p{text-align:right;font-weight:700}
 .instcard{margin:12px 0 0;padding:12px 14px;border:2px dashed var(--blue);border-radius:12px;font-size:15px}
 .instcard b{display:block;margin-bottom:2px}
 .instcard button.btn{margin-top:8px;padding:9px 14px;font-size:15px}
-.shareline{margin:16px 0 0;font-size:16px;color:var(--ink)}
-.shareline a{color:var(--blue);font-weight:700;font-size:17px}
+.shareline{margin:16px 0 0;font-size:16px;color:var(--ink);border:2px solid #9CCFAE;background:#EEF8F1;border-radius:10px;padding:10px 12px}
+.shareline a{color:var(--blue);font-weight:700;font-size:17px;white-space:nowrap}
+@media (max-width:400px){ .shareline{font-size:15px;padding:10px} .shareline a{font-size:16px} }
+@media (max-width:370px){ .shareline{font-size:14px;padding:10px 8px} .shareline a{font-size:15px} }
+@media (max-width:355px){ .shareline{font-size:13px;padding:10px 6px} .shareline a{font-size:14px} }
+@media (max-width:330px){ .shareline{font-size:12px} .shareline a{font-size:13px} }
 .shareline .sl2{display:block;font-size:13px;color:var(--soft);margin-top:2px}
 .sharecard{margin:12px 0 0;padding:12px 14px;border:2px solid #F0B48C;border-radius:12px;font-size:15px;background:#fff}
 .sharecard b{display:block;margin-bottom:2px}
