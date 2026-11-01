@@ -44,6 +44,8 @@ main{max-width:920px;margin:0 auto;padding:28px 24px 44px}
 .free{display:inline-block;background:var(--yT);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-weight:700;font-size:15px}
 .top .side p{margin:0;color:#2A3A5C;font-size:15px;max-width:330px}
 .top nav{font-size:15px}
+#installBtn{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;text-decoration:none;border-radius:999px;padding:4px 14px;font-weight:700;box-shadow:0 2px 0 rgba(31,42,68,.25);margin-left:2px;white-space:nowrap}   /* v2.20.2: the Install link is a blue button, easier to notice on a first visit (Ayman, Nov 1) */
+#installBtn:hover{background:#1F4BB8}
 .card{background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:0 6px 0 rgba(31,42,68,.18);padding:20px 22px}
 .card h2{font-size:21px;margin:0 0 12px;color:var(--blue)}
 .note{color:var(--soft);font-size:14px;margin:8px 0 0}
@@ -292,7 +294,7 @@ td.p{text-align:right;font-weight:700}
   <div class="side">
     <span class="free">Free. No ads. Always.</span>
     <p>Enter your guesses and colors. See every possible answer and your smartest next move.</p>
-    <nav><a href="stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a><span id="installWrap"> · <a href="about.html#install" id="installBtn">Install app</a></span></nav>
+    <nav><a href="stats.html">See what <span id="nRev">1,947</span> answers reveal</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a><span id="installWrap"> · <a href="about.html#install" id="installBtn">📲 Install app</a></span></nav>
   </div>
 </header>
 
@@ -365,7 +367,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.20.1</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.20.2</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -953,7 +955,7 @@ if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.se
   let evt=null;
   window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); evt=e; wrap.hidden=false; });
   if(/iphone|ipad|ipod/i.test(navigator.userAgent)) wrap.hidden=false;   // iPhone: the link explains Share > Add to Home Screen
-  btn.onclick=async ev=>{ if(!evt) return; ev.preventDefault(); evt.prompt(); const r=await evt.userChoice; track('install-'+r.outcome,false); evt=null; wrap.hidden=true; };
+  btn.onclick=async ev=>{ if(ev.isTrusted) track('install-tap',false);   /* only a real tap on the header button (the report card's install links press it for you and have their own counters) */ if(!evt) return; ev.preventDefault(); evt.prompt(); const r=await evt.userChoice; track('install-'+r.outcome,false); evt=null; wrap.hidden=true; };
   window.addEventListener('appinstalled',()=>{ track('app-installed',false); wrap.hidden=true; });
 })();
 function wire(){
