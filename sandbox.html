@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.19 (live) · Best Next Guess</title>
+<title>SANDBOX v2.20 (wider engine search, go-for-the-win box, About contact box) · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -97,6 +97,14 @@ footer p{margin:6px 0}
 .move p{margin:0}
 .move b.n{color:var(--blue)}
 .alt{margin-top:14px;background:var(--yT);border-radius:8px;padding:10px 12px;font-size:15px}
+.safe{color:var(--soft);font-size:15px;margin-top:6px!important}
+.win{margin-top:18px;background:#FFF8DB;border:2px solid #E8C766;border-radius:10px;padding:12px 14px 14px}
+.win .wh{font-weight:700;font-size:17px;margin:0}
+.win .ws{font-size:14px;color:#5B4A12;margin:2px 0 4px!important}
+.win .opt{border-top:1px solid #E8C766;padding-top:10px;margin-top:10px} .win .opt:first-of-type{border-top:0}
+.big.sm{margin:4px 0 8px} .big.sm .tile{width:40px;height:40px;font-size:21px}
+.win .opt p{font-size:15px;line-height:1.45;color:var(--ink)} .win .opt .use{margin-top:8px;padding:5px 10px;font-size:15px}
+.win + .note{margin-top:12px}
 .alt b{letter-spacing:.08em}
 .use{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:700}
 .alt .use{margin:8px 0 0;padding:5px 10px;font-size:14px}
@@ -276,7 +284,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.19 (live), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.20 (wider engine search, go-for-the-win box, About contact box), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -358,7 +366,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.19</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.20</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -367,11 +375,14 @@ td.p{text-align:right;font-weight:700}
 // Picks the guess with the fewest expected guesses to finish, planning ahead:
 // small groups (10 words or fewer) are solved exactly, bigger ones use the 10 most
 // promising guesses, and every plan counts the guesses left (a loss counts as 100 extra guesses).
+// v2.20: for the move being chosen, it keeps comparing guesses past the top 10 (in the same order)
+// until a fixed amount of work is done, so a better guess outside the top 10 isn't missed.
 const engine = (function () {
   const T = 10, K = 10, SOLVED = 242, Q = 1e9, IB = 8192;
+  const WORK_CAP = 6e6;   // v2.20: work allowed for the extra guesses (counted, not timed, so every device gets the same answer)
   let LAM = 100;
   let W = null, WC = null, LCW = null, NA = 0, NALL = 0, ANSI = null, ALLI = null, FT = null, WT = null;
-  let hardMode = false, memo = null, allowCache = null, deadline = 0, nodes = 0;
+  let hardMode = false, memo = null, allowCache = null, deadline = 0, rootStop = 0, nodes = 0, work = 0;
   const LCt = new Int8Array(26), MK = new Int8Array(5);
   const CNT = new Int32Array(243), MASS = new Float64Array(243), MAXW = new Float64Array(243), TOUCH = new Int32Array(243);
   const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
@@ -422,7 +433,7 @@ const engine = (function () {
   }
 
   // V(S) = expected guesses to finish group S (+LAM per answer not solved in time)
-  function V(S, s, left) {
+  function V(S, s, left, root) {
     const n = S.length;
     if (n === 0) return { c: 0, pf: 0, g: -1 };
     if (left <= 0) return { c: LAM, pf: 1, g: -1 };
@@ -437,7 +448,7 @@ const engine = (function () {
     nodes++;
     let A = hardMode ? allowed(s) : ALLI;
     if (n > 400) A = hardMode ? A.filter(i => i < NA) : ANSI;
-    const P = A.length, late = now() > deadline;
+    const P = A.length, late = now() > deadline; work += P * n;
     const LB = new Float64Array(P), C1 = new Float64Array(P), SW = new Float64Array(P), CL2 = new Float64Array(P), PF2 = new Float64Array(P);
     for (let q = 0; q < P; q++) {
       const g = WC[A[q]]; let nt = 0;
@@ -514,7 +525,7 @@ const engine = (function () {
         if (c < best.c - 1e-12 || (Math.abs(c - best.c) < 1e-12 && SW[q] > 0)) best = { c, pf: pfs / Wt, g: gi };
       }
       tried++;
-      if (!exact && tried >= K) break;
+      if (!exact && tried >= K && (!root || work > WORK_CAP || now() > rootStop)) break;   // v2.20: the move being chosen tries more guesses while work allows (time cap only as a safety net for slow phones)
     }
     if (best.g < 0) { let bq = 0; for (let q = 1; q < P; q++) if (C1[q] < C1[bq]) bq = q; best = { c: 1 + C1[bq], pf: 0, g: A[bq] }; }
     memo.set(key, best);
@@ -525,7 +536,7 @@ const engine = (function () {
   function choose(req) {
     const t0 = now();
     hardMode = !!req.hard; LAM = req.lam || 100; memo = new Map(); allowCache = new Map(); nodes = 0;
-    deadline = t0 + (req.budgetMs || 8000);
+    deadline = t0 + (req.budgetMs || 8000); rootStop = t0 + (req.wideMs || 3000); work = 0;
     WT.fill(0);
     let S = [];
     for (let i = 0; i < req.cand.length; i++) if (req.w[i] > 0) { WT[req.cand[i]] = req.w[i]; S.push(req.cand[i]); }
@@ -536,8 +547,8 @@ const engine = (function () {
       s = { gr: new Int8Array(5).fill(-1), nd: new Int8Array(26), key: '' };
       for (const r of req.hist) s = sigNext(s, letters(r.w), r.c[0] + 3 * r.c[1] + 9 * r.c[2] + 27 * r.c[3] + 81 * r.c[4]);
     }
-    const r = V(Int32Array.from(S), s, req.left);
-    return { g: r.g, word: r.g >= 0 ? W[r.g] : null, cost: r.c, pf: r.pf, exp: r.c - LAM * r.pf, nodes, ms: now() - t0 };
+    const r = V(Int32Array.from(S), s, req.left, true);
+    return { g: r.g, word: r.g >= 0 ? W[r.g] : null, cost: r.c, pf: r.pf, exp: r.c - LAM * r.pf, nodes, work, ms: now() - t0 };
   }
   return { init, choose };
 })();
@@ -549,7 +560,7 @@ const engine = (function () {
   function analyze(req) {
     const t0 = now();
     hardMode = !!req.hard; LAM = req.lam || 100; memo = new Map(); allowCache = new Map(); nodes = 0;
-    deadline = t0 + (req.budgetMs || 8000);
+    deadline = t0 + (req.budgetMs || 8000); rootStop = t0 + (req.wideMs || 3000); work = 0;   // v2.20: same wide search as the suggestion, so the report's "best" matches what the page suggested
     WT.fill(0);
     let S = [];
     for (let i = 0; i < req.cand.length; i++) if (req.w[i] > 0) { WT[req.cand[i]] = req.w[i]; S.push(req.cand[i]); }
@@ -560,7 +571,7 @@ const engine = (function () {
       s = { gr: new Int8Array(5).fill(-1), nd: new Int8Array(26), key: '' };
       for (const r of req.hist) s = sigNext(s, letters(r.w), r.c[0] + 3 * r.c[1] + 9 * r.c[2] + 27 * r.c[3] + 81 * r.c[4]);
     }
-    const r = V(Int32Array.from(S), s, req.left);
+    const r = V(Int32Array.from(S), s, req.left, true);
     let Wt = 0; for (const t of S) Wt += WT[t];
     const score = word => {
       const g = letters(word), groups = new Map();
@@ -854,15 +865,58 @@ async function suggest(cands,P,my){
     hist:rows.map(r=>({w:r.w,c:r.c.slice()})), hard, left:6-rows.length});
   if(my!==job || !res || !res.word) return;
   const bw=res.word, pw=P.get(bw)||0;
-  let bestWin=null; for(const w of cands){ const p=P.get(w)||0; if(!bestWin || p>bestWin.p+1e-12) bestWin={w,p}; }
   const fmtG=x=>`about ${x.toFixed(1)} guesses`;
   const chance = pw>=0.005 ? `${Math.round(pw*100)}% estimated chance it's the answer.` : pw>0 ? 'Small estimated chance it\'s the answer.' : 'It can\'t be the answer, but it sets up the fastest finish.';
-  let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p><button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
-  if(bestWin && bestWin.w!==bw && bestWin.p>pw && (bestWin.p>=0.25 || rows.length>=4))   // v2.9: only when it's a real shot (1 in 4 or better) or with 2 guesses left
-    html+=`<div class="alt">Best shot to win now: <b>${bestWin.w.toUpperCase()}</b>, ${Math.round(bestWin.p*100)}% estimated chance.<br><button class="use" data-use="${bestWin.w}" data-kind="win">Use ${bestWin.w.toUpperCase()}</button></div>`;
+  // v2.20: "Or go for the win": the likeliest answers (10% or better) when the engine's pick isn't one of them, each with its own numbers
+  const wins=[...cands].filter(w=>w!==bw && (P.get(w)||0)>=WIN_MIN && (P.get(w)||0)>pw).sort((a,b)=>(P.get(b)-P.get(a))||a.localeCompare(b)).slice(0,2);
+  let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p>`;
+  if(wins.length) html+=`<p class="safe">${res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The pick that finishes fastest on average.'}</p>`;
+  html+=`<button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
+  if(wins.length) html+=`<div class="win" id="winBox"><p class="wh">Or go for the win</p><p class="ws">${wins.length===1?'The likeliest answer. It':'The two likeliest answers. One'} could finish it now; a miss leaves more words to sort out.</p>${wins.map(w=>`<div class="opt" data-w="${w}">${tilesHtml(w).replace('class="big"','class="big sm"')}<p><b>${Math.round(P.get(w)*100)}% chance it's the answer.</b> <span class="wn">Working it out…</span></p><button class="use" data-use="${w}" data-kind="win">Use this guess</button></div>`).join('')}</div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
   if(!demo) track('f-pick');   // v2.6.3 funnel: saw a real suggestion for their own board
   box.innerHTML=html; wire();
+  if(wins.length){ if(!demo) track('winbox-shown',false); fillWins(wins,cands,P,my,res); }
+  else stopSide();
+}
+const WIN_MIN=0.10;   // v2.20: a word must have at least this chance to be offered in "Or go for the win"
+async function fillWins(wins,cands,P,my,res){   // v2.20: for each offered word, the average guesses and loss risk if you play it now, by the same engine
+  stopSide();   // a newer board replaces the old side job (reviewer: a late answer from the old board mixed up the numbers)
+  const left=6-rows.length; let Wt=0; for(const w of cands) Wt+=P.get(w)||0;
+  for(const g of wins){
+    const groups=new Map();
+    for(const w of cands){ const k=fb(g,w); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(w); }
+    let e=1, pf=0;
+    for(const [k,a] of groups){
+      if(k===242) continue;
+      let m=0; for(const w of a) m+=P.get(w)||0;
+      let r;
+      if(a.length===1) r={exp:1,pf:0};
+      else if(left-1<=0) r={exp:0,pf:1};
+      else if(a.length===2){ const hi=Math.max(...a.map(w=>P.get(w)||0)), lo=1-hi/m; r=left-1>=2?{exp:1+lo,pf:0}:{exp:1,pf:lo}; }
+      else { r=await runSide({cand:Int32Array.from(a.map(w=>IDX.get(w))), w:Float64Array.from(a.map(w=>P.get(w)||0)), hist:rows.concat([{w:g,c:colorsOf(k)}]).map(x=>({w:x.w,c:x.c.slice()})), hard, left:left-1}); if(my!==job) return; if(!r){ const el=document.querySelector(`#winBox .opt[data-w="${g}"] .wn`); if(el) el.textContent=''; return; } }
+      e+=m/Wt*r.exp; pf+=m/Wt*r.pf;
+    }
+    if(my!==job) return;
+    const el=document.querySelector(`#winBox .opt[data-w="${g}"] .wn`); if(!el) return;
+    const per=x=>x<0.005?'under 1':x<0.015?'about 1':`about ${Math.round(x*100)}`;
+    const base=res.pf>0.005?` (${(res.word||'').toUpperCase()}: ${per(res.pf)})`:'';
+    el.textContent = pf<0.005 ? `About ${e.toFixed(1)} guesses on average, counting this one.` : `About ${e.toFixed(1)} guesses on average, but runs out of guesses in ${per(pf)} game${pf<0.015?'':'s'} in 100${base}.`;
+  }
+}
+let sideWorker=null, sidePending=null;
+function stopSide(){ if(sideWorker){ sideWorker.terminate(); sideWorker=null; } if(sidePending){ const p=sidePending; sidePending=null; p(null); } }   // v2.20: drop any side job from an older board
+function runSide(req){   // v2.20: a second worker for the side calculations, so the main suggestion is never delayed
+  return new Promise(resolve=>{
+    const inline=()=>{ try{ resolve(runInline(req)); }catch(e){ resolve(null); } };
+    if(!workerOk){ setTimeout(inline,0); return; }
+    try{ if(!sideWorker) sideWorker=makeWorker(); }catch(e){ inline(); return; }
+    if(!sideWorker){ inline(); return; }
+    const w=sideWorker; sidePending=resolve;
+    w.onmessage=e=>{ if(sidePending===resolve){ sidePending=null; resolve(e.data); } };
+    w.onerror=()=>{ sideWorker=null; if(sidePending===resolve){ sidePending=null; inline(); } };
+    w.postMessage(req);
+  });
 }
 
 // ---------- run the engine in the background (falls back to running inline) ----------
