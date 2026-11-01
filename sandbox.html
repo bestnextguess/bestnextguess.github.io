@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX live v2.20 · Best Next Guess</title>
+<title>SANDBOX live v2.20.1 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -284,7 +284,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of live v2.20, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of live v2.20.1, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -366,7 +366,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.20</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.20.1</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -870,7 +870,7 @@ async function suggest(cands,P,my){
   // v2.20: "Or go for the win": the likeliest answers (10% or better) when the engine's pick isn't one of them, each with its own numbers
   const wins=[...cands].filter(w=>w!==bw && (P.get(w)||0)>=WIN_MIN && (P.get(w)||0)>pw).sort((a,b)=>(P.get(b)-P.get(a))||a.localeCompare(b)).slice(0,2);
   let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p>`;
-  if(wins.length) html+=`<p class="safe">${res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The pick that finishes fastest on average.'}</p>`;
+  if(wins.length) html+=`<p class="safe">${res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The steady pick: it never runs out of guesses, whatever the answer.'}</p>`;
   html+=`<button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
   if(wins.length) html+=`<div class="win" id="winBox"><p class="wh">Or go for the win</p><p class="ws">${wins.length===1?'The likeliest answer. It':'The two likeliest answers. One'} could finish it now; a miss leaves more words to sort out.</p>${wins.map(w=>`<div class="opt" data-w="${w}">${tilesHtml(w).replace('class="big"','class="big sm"')}<p><b>${Math.round(P.get(w)*100)}% chance it's the answer.</b> <span class="wn">Working it out…</span></p><button class="use" data-use="${w}" data-kind="win">Use this guess</button></div>`).join('')}</div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
