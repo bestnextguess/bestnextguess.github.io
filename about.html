@@ -90,6 +90,7 @@ ul.plain li{margin:4px 0}
   .cards2 .col{gap:16px}
   .tested b{font-size:26px}
 }
+.ask{background:#FFF8DB;border:2px solid #E8C766;border-radius:10px;padding:10px 12px;margin-top:14px}
 </style>
 </head>
 <body>
@@ -113,6 +114,12 @@ ul.plain li{margin:4px 0}
     <p>No ads, no pop-ups, no sign-up and nothing to install. There's no trial and no paid version. It's a hobby project made for people who love the game, and it will stay free.</p>
   </section>
 
+    <section class="card wide" aria-label="Who made it">
+      <h2>Who made it</h2>
+      <p>Best Next Guess was made by Ayman Mikhail, a daily Wordle player who isn't a programmer. It started as a spreadsheet that filtered the word list by greens and yellows, and grew into this site with help from Claude, an AI assistant.</p>
+      <p class="ask"><b>Questions, ideas or a bug to report?</b> Email <a href="mailto:hello@bestnextguess.com">hello@bestnextguess.com</a>. Every message gets read.</p>
+    </section>
+
   <section class="card engine" aria-label="How it works">
     <h2>How it works</h2>
     <p><b>The odds.</b> Wordle now sometimes reuses old answers, but only about 1 in 10 answers since February 2, 2026 has been a repeat. So the site estimates that words never used as the answer share about 89% of the odds and past answers about 11%, split again among whichever words still fit. Less common words get a slice of the never-used odds that follows the last 60 days of answers, and common words get a little more weight than rare ones, because that is how the answers have actually been chosen. The list of past answers updates itself every day.</p>
@@ -130,11 +137,6 @@ ul.plain li{margin:4px 0}
       <a class="cta" href="stats.html">Check your opener</a>
     </section>
 
-    <section class="card" aria-label="Who made it">
-      <h2>Who made it</h2>
-      <p>Best Next Guess was made by Ayman Mikhail, a daily Wordle player who isn't a programmer. It started as a spreadsheet that filtered the word list by greens and yellows, and grew into this site with help from Claude, an AI assistant.</p>
-      <p><b>Questions, ideas or a bug to report?</b> Email <a href="mailto:hello@bestnextguess.com">hello@bestnextguess.com</a>. Every message gets read.</p>
-    </section>
 
     <section class="card" aria-label="Privacy">
       <h2>Your privacy</h2>
@@ -178,7 +180,7 @@ ul.plain li{margin:4px 0}
 
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, nothing to install, works on any phone or computer.</p>
-  <p><a href="./">The solver</a> · <a href="stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.19 · © 2026 Ayman Mikhail</p>
+  <p><a href="./">The solver</a> · <a href="stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.20 · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 <script>if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
