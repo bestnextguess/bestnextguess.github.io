@@ -99,6 +99,7 @@ footer p{margin:6px 0}
 .big{display:flex;gap:6px;margin:10px 0 12px}
 .big .tile{width:58px;height:58px;font-size:30px}
 .move p{margin:0}
+.move .shareline{margin-top:16px}   /* v2.22: the share line now sits in this card; keep its gap */
 .move b.n{color:var(--blue)}
 .alt{margin-top:14px;background:var(--yT);border-radius:8px;padding:10px 12px;font-size:15px}
 .safe{color:var(--soft);font-size:15px;margin-top:6px!important}
@@ -806,7 +807,8 @@ function update(){
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   document.getElementById('tapNote').hidden = inWalk();
-  document.getElementById('shareLine').hidden = demo || !rows.length || inWalk() || rows[rows.length-1].c.every(v=>v===2);   // v2.22: not once solved (the game report has its own share card)   // v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
+  { const l=rows[rows.length-1], repShare = !!l && l.c.every(v=>v===2) && rows.every(r=>fb(r.w,l.w)===code(r.c)) && ANSSET.has(l.w);   // v2.22: the game report will show its own share card (same test as baseReport's R.ok)
+    document.getElementById('shareLine').hidden = demo || !rows.length || inWalk() || repShare; }   // v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
   document.getElementById('shotBar').hidden = !!(rows.length || demo);   // v2.11.1: shown for older puzzles too
   document.querySelector('#shotBar b').textContent = mode==='today' ? 'Already played today?' : 'Already played this puzzle?';   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
@@ -861,10 +863,11 @@ function update(){
 // ---------- next move ----------
 const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span class="tile b">${c}</span>`).join('')+'</div>';
 function setPeek(w){   // v2.22: phones: "Your next move: WORD [Use it]" right under the board; same button as the pick box
-  // w = a word, 'wait' (the engine is thinking: keep the box's place so nothing below it jumps), or null (nothing to suggest: hide)
+  // w = a word, 'wait' (the engine is thinking) or 'nofit' (no word fits the colors yet, e.g. a new guess before its colors are set):
+  // both keep the box's place so nothing below it jumps; null (nothing more to suggest: empty board, solved, no guesses left) hides it
   const el=document.getElementById('nextPeek'); if(!el) return;
   if(!w || demo || checkMode){ el.hidden=true; el.innerHTML=''; return; }   // not in the example game, nor when typing in a game already played
-  if(w==='wait'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw">working it out…</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }
+  if(w==='wait' || w==='nofit'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw">${w==='wait'?'working it out…':'set the tile colors above'}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }
   const W=w.toUpperCase();
   el.innerHTML=`<span class="pl">Your next move</span><b class="pw">${W}</b><button class="use" data-use="${w}" data-kind="peek" aria-label="Use it: ${W}">Use it</button>`; el.hidden=false;
 }
@@ -879,7 +882,7 @@ async function suggest(cands,P,my){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!cands.length){ setPeek(null); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
+  if(!cands.length){ setPeek('nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
@@ -1099,6 +1102,7 @@ function alertBox(msg){ const ov=document.createElement('div'); ov.className='sh
 
 // ---------- input ----------
 const inp=document.getElementById('guess');
+{ const mq=matchMedia('(max-width:310px)'), ph=()=>{ inp.placeholder = mq.matches ? 'GUESS' : 'TYPE GUESS'; }; ph(); if(mq.addEventListener) mq.addEventListener('change',ph); }   // v2.22: the tiniest screens (folding-phone covers) get a placeholder that fits
 let lastAdd=0, fromPick=false;
 function addGuess(){
   if(rows.length>=6) return;   // v2.9: six guesses is the limit
@@ -1116,7 +1120,7 @@ inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); if(inp.value) track('f-typed'); });   // v2.6.3 funnel: started typing
 document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; if(mode==='archive') track('archive-mode'); update(); });
-document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; update(); inp.focus(); };
+document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; checkMode=false; update(); inp.focus(); };   // v2.22: Start over also leaves "check my game" mode (it used to stay on for the rest of the visit)
 document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
 document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
