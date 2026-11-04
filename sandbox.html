@@ -882,7 +882,7 @@ async function suggest(cands,P,my){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!cands.length){ setPeek('nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
+  if(!cands.length){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
@@ -1102,7 +1102,7 @@ function alertBox(msg){ const ov=document.createElement('div'); ov.className='sh
 
 // ---------- input ----------
 const inp=document.getElementById('guess');
-{ const mq=matchMedia('(max-width:310px)'), ph=()=>{ inp.placeholder = mq.matches ? 'GUESS' : 'TYPE GUESS'; }; ph(); if(mq.addEventListener) mq.addEventListener('change',ph); }   // v2.22: the tiniest screens (folding-phone covers) get a placeholder that fits
+{ const mq=matchMedia('(max-width:319px)'), ph=()=>{ inp.placeholder = mq.matches ? 'GUESS' : 'TYPE GUESS'; }; ph(); if(mq.addEventListener) mq.addEventListener('change',ph); }   // v2.22: the tiniest screens (folding-phone covers) get a placeholder that fits
 let lastAdd=0, fromPick=false;
 function addGuess(){
   if(rows.length>=6) return;   // v2.9: six guesses is the limit
