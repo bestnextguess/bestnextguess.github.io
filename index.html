@@ -72,7 +72,7 @@ footer p{margin:6px 0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-.grid{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;margin-top:24px}
+.grid{display:grid;grid-template-columns:minmax(min-content,1fr) minmax(0,1.15fr);gap:24px;margin-top:24px}   /* v2.22: the next-move card may shrink (minmax(0,…)) so the two cards never push the page wider than the screen (800px windows scrolled sideways) */
 .row{display:flex;gap:7px;margin-bottom:7px;align-items:center}
 .row .tile{cursor:pointer}
 /* v2.8: tap a tile, pick its color */
@@ -99,6 +99,7 @@ footer p{margin:6px 0}
 .big{display:flex;gap:6px;margin:10px 0 12px}
 .big .tile{width:58px;height:58px;font-size:30px}
 .move p{margin:0}
+.move .shareline{margin-top:16px}   /* v2.22: the share line now sits in this card; keep its gap */
 .move b.n{color:var(--blue)}
 .alt{margin-top:14px;background:var(--yT);border-radius:8px;padding:10px 12px;font-size:15px}
 .safe{color:var(--soft);font-size:15px;margin-top:6px!important}
@@ -180,6 +181,7 @@ td.p{text-align:right;font-weight:700}
 .checknote{margin:8px 0 0;background:var(--blueT);border-radius:8px;padding:8px 10px;font-size:15px;color:#2A3A5C}
 @media (max-width:640px){.ways{grid-template-columns:1fr}}
 @media (max-width:400px){.entry input{letter-spacing:.1em;font-size:17px;padding:9px 8px}}
+@media (max-width:350px){.entry input{letter-spacing:.04em;font-size:16px;padding:9px 6px} .entry .btn{padding-left:12px;padding-right:12px}}   /* v2.22: "TYPE GUESS" fits on the smallest phones (16px, so iPhones do not zoom in when it is tapped) */
 @media (max-width:340px){.entry input{letter-spacing:.04em;font-size:16px}}   /* v2.7.1: the TYPE GUESS placeholder fits narrow phones */
 .howto .x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:24px;color:var(--soft);cursor:pointer;line-height:1;padding:4px}
 .demoNote{margin:0 0 10px;background:var(--yT);border:2px solid var(--ink);border-radius:8px;padding:8px 12px;font-size:15px}
@@ -242,6 +244,16 @@ td.p{text-align:right;font-weight:700}
 .replay .off{color:#A3471B;font-weight:700}
 .replay .off .soft{font-weight:400}
 .replay .star{color:var(--g);font-weight:700} .replay .star .soft{font-weight:400}   /* v2.21: the player's word beat the helper's pick that day */
+.top .side p.tagm{display:none}   /* v2.22: one line on phones saying what the site does */
+@media (max-width:799px){ .top .side p.tagm{display:block;order:-1;width:100%;max-width:none;margin:0 0 2px;font-size:16px;color:#2A3A5C} }
+.welcome.act{border-color:#2E8B57;padding:10px 36px 10px 14px;margin:8px 0 10px} .welcome.act .wt{font-size:18px} .welcome.act .ws{font-size:15px;color:#2A3A5C;margin:2px 0 0}   /* v2.22: first visit: what to do */
+.nextpeek{display:none}   /* v2.22: phones: the next move right under the board */
+@media (max-width:799px){ .nextpeek:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:center;margin:10px 0 4px;padding:8px 12px;border-radius:12px;background:#E8F3EC;border:2px solid #2E8B57;color:var(--ink)}
+  .nextpeek .pl{grid-column:1;font-size:14px;line-height:18px;color:var(--soft)} .nextpeek .pw{grid-column:1;font-size:20px;line-height:26px;font-weight:700;letter-spacing:.08em;white-space:nowrap}
+  .nextpeek .pw.pkw{font-size:16px;font-weight:400;letter-spacing:0;font-style:italic;color:var(--soft)}
+  .nextpeek .use{grid-column:2;grid-row:1 / 3;margin:0;padding:8px 14px;font-size:16px;width:auto;white-space:nowrap} .nextpeek .use.ph{visibility:hidden} }   /* v2.22: always two lines (label, then the word), so the box never changes height */
+@media (max-width:400px){ .nextpeek:not([hidden]){padding:8px 10px;column-gap:8px} .nextpeek .use{padding:8px 10px;font-size:15px} }
+@media (min-width:800px) and (max-width:959px){ .row.fresh{position:relative;margin-bottom:38px} .row.fresh .del.rm,.row.fresh .del.ok{position:absolute;top:calc(100% + 6px);height:26px;margin:0} .row.fresh .del.ok{right:0} .row.fresh .del.rm{left:0} }   /* v2.22: two-column screens under 960px: Remove and Solved go under the new row, so the next-move card isn't squeezed */
 .replay .lk{font-size:14px;color:var(--soft)}
 .report .replay .note{font-size:13px}
 .walk .k{margin-bottom:2px}
@@ -295,6 +307,7 @@ td.p{text-align:right;font-weight:700}
   <img class="logo" src="logo.svg" alt="">
   <h1>Best Next Guess</h1>
   <div class="side">
+    <p class="tagm">Type your Wordle guesses and colors. Get your smartest next word.</p>
     <span class="free">Free. No ads. Always.</span>
     <p>Enter your guesses and colors. See every possible answer and your smartest next move.</p>
     <nav><a href="stats.html" class="nav1">See what <span id="nRev">1,947</span> answers reveal</a><span class="sep1"> · </span><a href="answers.html">Past answers</a> · <span class="navgrp"><a href="about.html">About</a><span id="installWrap"> · <a href="about.html#install" id="installBtn">📲 Install app</a></span></span></nav>
@@ -327,6 +340,7 @@ td.p{text-align:right;font-weight:700}
     <h2>Your guesses</h2>
     <div id="demoNote"></div>
     <div id="board"></div>
+    <div class="nextpeek" id="nextPeek" aria-live="polite" hidden></div>
     <p class="checknote" id="checkNote" hidden>Type each guess from your game, in order, and tap the tiles to match its colors. Your game report appears when you add the winning word.</p>
     <div class="entry" id="entryWrap">
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
@@ -343,13 +357,13 @@ td.p{text-align:right;font-weight:700}
       <button class="chip" id="reset">Start over</button>
     </div>
     <p class="note" id="tapNote">Tap a tile, then pick its color.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
-    <p class="shareline" id="shareLine" hidden>Know a friend? <a href="#" id="shareLink">Send them this app ›</a><span class="sl2">Only the link is shared, never your game.</span></p>
     <div id="solved"></div>
   </section>
 
   <section class="card move" aria-label="Your next move">
     <h2 id="moveH">Your next move</h2>
     <div id="pick"><p class="empty">Add your first guess and your next move appears here.</p></div>
+    <p class="shareline" id="shareLine" hidden>Know a friend? <a href="#" id="shareLink">Send them this app ›</a><span class="sl2">Only the link is shared, never your game.</span></p>   <!-- v2.22: below the next move, so the pick stays on the first screen -->
   </section>
 </div>
 
@@ -370,7 +384,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.21</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.22</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -657,8 +671,10 @@ function showWelcome(n, back){ try{
   const per=n<=10?5:10, fill=n, rows=Math.max(1,Math.ceil(fill/per));
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
-  el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">${greet} Welcome back!</div><div class="ws">${us}Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
-  : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">${greet} This is your ${ord} visit!</div><div class="ws">${us}${n===1?'We hope you come back.':'Great to see you again!'}</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
+  if(!back && n===1){ el.classList.add('act');   // v2.22: the very first visit says what to do; greetings start on visit 2
+    el.innerHTML=`<div class="wtext"><div class="wt">👋 New here? Type your first Wordle guess.</div><div class="ws">Then tap each tile to match its Wordle color to get your best next word.</div></div><button class="x" aria-label="Close">×</button>`; }
+  else el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">${greet} Welcome back!</div><div class="ws">${us}Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
+  : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">${greet} This is your ${ord} visit!</div><div class="ws">${us}Great to see you again!</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
@@ -790,7 +806,8 @@ function update(){
   document.getElementById('demoNote').innerHTML = demo ? `<div class="demoNote"><b>Example game.</b> Tap the tiles to try other colors, or <button class="linkbtn" id="demoExit">${hasOwn()?'go back to your game':'start your own game'}</button>.</div>` : '';
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   document.getElementById('tapNote').hidden = inWalk();
-  document.getElementById('shareLine').hidden = demo || !rows.length || inWalk();   // v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
+  { const l=rows[rows.length-1], repShare = !!l && l.c.every(v=>v===2) && rows.every(r=>fb(r.w,l.w)===code(r.c)) && ANSSET.has(l.w);   // v2.22: the game report will show its own share card (same test as baseReport's R.ok)
+    document.getElementById('shareLine').hidden = demo || !rows.length || inWalk() || repShare; }   // v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
   document.getElementById('shotBar').hidden = !!(rows.length || demo);   // v2.11.1: shown for older puzzles too
   document.querySelector('#shotBar b').textContent = mode==='today' ? 'Already played today?' : 'Already played this puzzle?';   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
@@ -844,30 +861,40 @@ function update(){
 
 // ---------- next move ----------
 const tilesHtml=w=>'<div class="big">'+w.toUpperCase().split('').map(c=>`<span class="tile b">${c}</span>`).join('')+'</div>';
+function setPeek(w){   // v2.22: phones: "Your next move: WORD [Use it]" right under the board; same button as the pick box
+  // w = a word, 'wait' (the engine is thinking) or 'nofit' (no word fits the colors yet, e.g. a new guess before its colors are set):
+  // both keep the box's place so nothing below it jumps; null (nothing more to suggest: empty board, solved, no guesses left) hides it
+  const el=document.getElementById('nextPeek'); if(!el) return;
+  if(!w || demo || checkMode){ el.hidden=true; el.innerHTML=''; return; }   // not in the example game, nor when typing in a game already played
+  if(w==='wait' || w==='nofit'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw">${w==='wait'?'working it out…':'set the tile colors above'}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }
+  const W=w.toUpperCase();
+  el.innerHTML=`<span class="pl">Your next move</span><b class="pw">${W}</b><button class="use" data-use="${w}" data-kind="peek" aria-label="Use it: ${W}">Use it</button>`; el.hidden=false;
+}
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
-  if(!rows.length){   // v2.10: two choices for every visitor: playing now, or already played (screenshot / type it in)
+  if(!rows.length){ setPeek(null);   // v2.10: two choices for every visitor: playing now, or already played (screenshot / type it in)
     box.innerHTML=`<p class="k">${mode==='today'?'Playing now? ':''}Best first guess</p>${tilesHtml('raise')}<p>Leaves about 62 possible answers on average.</p><button class="use" data-use="raise" data-kind="opener">Use this guess</button><p class="note">New here? <button class="linkbtn" id="demoBtn2">See it in action</button></p>`;
     wire(); document.getElementById('demoBtn2').onclick=startDemo;
     return; }
   const last=rows[rows.length-1];
-  if(last.c.every(v=>v===2)){
+  if(last.c.every(v=>v===2)){ setPeek(null);
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!cands.length){ box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
+  if(!cands.length){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
+  if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
-    box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${cands.length===1?'The only word that fits.':pct(P.get(best))+' estimated chance it\'s the answer. If not, the other word is it.'}</p><button class="use" data-use="${best}" data-kind="only">Use this guess</button>`;
+    box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${cands.length===1?'The only word that fits.':pct(P.get(best))+' estimated chance it\'s the answer. If not, the other word is it.'}</p><button class="use" data-use="${best}" data-kind="only">Use this guess</button>`; setPeek(best);
     if(!demo) track('f-pick');   // v2.6.3 funnel (1-2 words left)
     if(!demo) track('f-done');   // v2.7: the helper reached the answer (players rarely type the final word)
     wire(); return;
   }
-  if(rows.length>=6){ box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }
-  box.innerHTML='<p class="empty">Thinking ahead…</p>';
+  box.innerHTML='<p class="empty">Thinking ahead…</p>'; setPeek('wait');
   const res=await runEngine({cand:Int32Array.from(cands.map(w=>IDX.get(w))), w:Float64Array.from(cands.map(w=>P.get(w)||0)),
     hist:rows.map(r=>({w:r.w,c:r.c.slice()})), hard, left:6-rows.length});
-  if(my!==job || !res || !res.word) return;
+  if(my!==job) return;
+  if(!res || !res.word){ setPeek(null); return; }
   const bw=res.word, pw=P.get(bw)||0;
   const fmtG=x=>`about ${x.toFixed(1)} guesses`;
   const chance = pw>=0.005 ? `${Math.round(pw*100)}% estimated chance it's the answer.` : pw>0 ? 'Small estimated chance it\'s the answer.' : 'It can\'t be the answer, but it sets up the fastest finish.';
@@ -879,7 +906,7 @@ async function suggest(cands,P,my){
   if(wins.length) html+=`<div class="win" id="winBox"><p class="wh">Or go for the win</p><p class="ws">${wins.length===1?'The likeliest answer. It':'The two likeliest answers. One'} could finish it now; a miss leaves more words to sort out.</p>${wins.map(w=>`<div class="opt" data-w="${w}">${tilesHtml(w).replace('class="big"','class="big sm"')}<p><b>${Math.round(P.get(w)*100)}% chance it's the answer.</b> <span class="wn">Working it out…</span></p><button class="use" data-use="${w}" data-kind="win">Use this guess</button></div>`).join('')}</div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
   if(!demo) track('f-pick');   // v2.6.3 funnel: saw a real suggestion for their own board
-  box.innerHTML=html; wire();
+  box.innerHTML=html; setPeek(bw); wire();
   if(wins.length){ if(!demo) track('winbox-shown',false); fillWins(wins,cands,P,my,res); }
   else stopSide();
 }
@@ -1074,6 +1101,7 @@ function alertBox(msg){ const ov=document.createElement('div'); ov.className='sh
 
 // ---------- input ----------
 const inp=document.getElementById('guess');
+{ const mq=matchMedia('(max-width:319px)'), ph=()=>{ inp.placeholder = mq.matches ? 'GUESS' : 'TYPE GUESS'; }; ph(); if(mq.addEventListener) mq.addEventListener('change',ph); }   // v2.22: the tiniest screens (folding-phone covers) get a placeholder that fits
 let lastAdd=0, fromPick=false;
 function addGuess(){
   if(rows.length>=6) return;   // v2.9: six guesses is the limit
@@ -1091,7 +1119,7 @@ inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); if(inp.value) track('f-typed'); });   // v2.6.3 funnel: started typing
 document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; if(mode==='archive') track('archive-mode'); update(); });
-document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; update(); inp.focus(); };
+document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; checkMode=false; update(); inp.focus(); };   // v2.22: Start over also leaves "check my game" mode (it used to stay on for the rest of the visit)
 document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
 document.getElementById('howtoX').onclick=()=>{ doneHowto(); track('howto-hidden',false); update(); };
