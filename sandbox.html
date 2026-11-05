@@ -1116,7 +1116,7 @@ function addGuess(){
   doneHowto();
   const c=[0,0,0,0,0];   // v2.23: a letter already confirmed green in an earlier guess starts green when the new guess keeps it in that spot
   rows.forEach(r=>r.c.forEach((v,i)=>{ if(v===2 && r.w[i]===w[i]) c[i]=2; }));
-  rows.push({w,c,fresh:true}); inp.value=''; update();
+  rows.push({w,c,fresh:!c.every(v=>v===2)}); inp.value=''; update();   // a row that comes out all green is solved, not waiting for colors
 }
 document.getElementById('add').onclick=addGuess;
 inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
@@ -1140,7 +1140,7 @@ document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false
 let ownRows=null;                            // the player's own game, kept while the example is showing
 const hasOwn=()=>!!(ownRows && ownRows.length);
 function startDemo(){
-  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice()}));
+  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice(),fresh:r.fresh}));   // v2.23: keep the not-yet-colored flag across the example game
   demo=true; rows=[{w:'raise',c:[2,2,0,0,0]}]; track('demo',false); update();
   const g=document.querySelector('.grid'); if(g && g.scrollIntoView) g.scrollIntoView({behavior:'smooth',block:'start'});
 }
