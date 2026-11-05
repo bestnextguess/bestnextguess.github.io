@@ -384,7 +384,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.22</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.23</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -732,20 +732,21 @@ function renderBoard(){
   picker=null; board.innerHTML='';
   const ro=inWalk();   // v2.10: walking through a finished game: show the rows so far, no editing
   vrows().forEach((r,ri)=>{
-    const d=document.createElement('div'); d.className='row'+(ri===rows.length-1 && r.c.every(v=>v===0)?' fresh':'');
+    const isFresh = ri===rows.length-1 && (r.fresh || r.c.every(v=>v===0));   // v2.23: newest guess the player hasn't colored yet (auto-greens don't count as coloring)
+    const d=document.createElement('div'); d.className='row'+(isFresh?' fresh':'');
     r.w.split('').forEach((ch,i)=>{
       const b=document.createElement('button'); b.className='tile '+['x','y','g'][r.c[i]]; b.textContent=ch;
       b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to pick a color`);
       if(ro){ b.disabled=true; b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}`); }
-      else b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
+      else b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; r.fresh=false; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
       d.appendChild(b);
     });
-    const fresh = ri===rows.length-1 && r.c.every(v=>v===0);   // v2.9: newest guess, no colors set yet: show a clear Remove button
+    const fresh = isFresh;   // v2.9: newest guess, no colors set yet: show a clear Remove button
     const x=document.createElement('button'); x.className='del'+(fresh?' rm':''); x.textContent=fresh?'Remove':'×'; x.title='Remove this guess'; x.setAttribute('aria-label','Remove this guess');
     x.onclick=()=>{ rows.splice(ri,1); update(); };
     if(fresh && !ro){   // v2.13: one tap turns the whole row green when this guess was the answer
       const ok=document.createElement('button'); ok.className='del ok'; ok.textContent='Solved ✓'; ok.title='This guess was the answer: make every tile green'; ok.setAttribute('aria-label','This guess was the answer: make every tile green');
-      ok.onclick=()=>{ r.c=[2,2,2,2,2]; if(!demo){ track('f-colors'); track('solved-tap',false); } update(); };
+      ok.onclick=()=>{ r.c=[2,2,2,2,2]; r.fresh=false; if(!demo){ track('f-colors'); track('solved-tap',false); } update(); };
       if(!ro) d.appendChild(x); d.appendChild(ok); }   // Remove first, then Solved at the far end
     else if(!ro) d.appendChild(x);
     board.appendChild(d);
@@ -1112,7 +1113,9 @@ function addGuess(){
   lastAdd=Date.now();
   if(demo){ demo=false; const o=ownRows||[]; ownRows=null; const l=o[o.length-1], done=o.length>=6 || (l && l.c.every(v=>v===2)); rows = done ? [] : o; }
   doneHowto();
-  rows.push({w,c:[0,0,0,0,0]}); inp.value=''; update();
+  const c=[0,0,0,0,0];   // v2.23: a letter already confirmed green in an earlier guess starts green when the new guess keeps it in that spot
+  rows.forEach(r=>r.c.forEach((v,i)=>{ if(v===2 && r.w[i]===w[i]) c[i]=2; }));
+  rows.push({w,c,fresh:!c.every(v=>v===2)}); inp.value=''; update();   // a row that comes out all green is solved, not waiting for colors
 }
 document.getElementById('add').onclick=addGuess;
 inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
@@ -1136,7 +1139,7 @@ document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false
 let ownRows=null;                            // the player's own game, kept while the example is showing
 const hasOwn=()=>!!(ownRows && ownRows.length);
 function startDemo(){
-  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice()}));
+  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice(),fresh:r.fresh}));   // v2.23: keep the not-yet-colored flag across the example game
   demo=true; rows=[{w:'raise',c:[2,2,0,0,0]}]; track('demo',false); update();
   const g=document.querySelector('.grid'); if(g && g.scrollIntoView) g.scrollIntoView({behavior:'smooth',block:'start'});
 }
