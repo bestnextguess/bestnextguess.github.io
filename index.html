@@ -384,7 +384,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.24.1</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.24.2</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -891,7 +891,9 @@ async function suggest(cands,P,my){
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
-    box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${cands.length===1?'The only word that fits.':pct(P.get(best))+' estimated chance it\'s the answer. If not, the other word is it.'}</p><button class="use" data-use="${best}" data-kind="only">Use this guess</button>`; setPeek(best);
+    const rare = (demo || !USUAL.includes(best)) ? [] : X3.filter(fits);   // v2.24.2: very rare words (last-resort list) that also fit; shown, never picked
+    const rareNote = rare.length ? `<p class="note">Plus ${rare.length===1?'1 very rare word also fits':rare.length+' very rare words also fit'}: ${rare.slice(0,3).map(w=>w.toUpperCase()).join(', ')}${rare.length>3?` and ${rare.length-3} more`:''}.</p>` : '';
+    box.innerHTML=`<p class="k">Play this</p>${tilesHtml(best)}<p>${cands.length===1?'The only word that fits.':pct(P.get(best))+' estimated chance it\'s the answer. If not, the other word is it.'}</p>${rareNote}<button class="use" data-use="${best}" data-kind="only">Use this guess</button>`; setPeek(best);
     if(!demo) track('f-pick');   // v2.6.3 funnel (1-2 words left)
     if(!demo) track('f-done');   // v2.7: the helper reached the answer (players rarely type the final word)
     wire(); return;
