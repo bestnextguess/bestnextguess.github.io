@@ -128,8 +128,8 @@ footer p{margin:6px 0}
 .nfbtns .use{margin:0}
 .nfcard .kl{font-size:13px;color:var(--soft);margin:0 0 4px}
 .pat{display:flex;gap:5px;margin:4px 0 12px}
-.pt{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;border-radius:5px;color:#fff;background:#2E8B57}
-.pt.q{background:#fff;color:var(--blue);border:2px dashed var(--blue)}
+.nfp{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;border-radius:5px;color:#fff;background:#2E8B57}
+.nfp.q{background:#fff;color:var(--blue);border:2px dashed var(--blue)}
 .keys{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px}
 .keys .k{min-width:22px;height:26px;padding:0 3px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border-radius:4px;background:#fff;border:1px solid #cbd5e1;color:var(--ink)}
 .keys .k.out{background:#7c8592;color:#fff;border-color:#7c8592;text-decoration:line-through}
@@ -137,6 +137,7 @@ footer p{margin:6px 0}
 .chk{display:flex;gap:8px;margin:2px 0 6px}
 .chk input{flex:1;min-width:0;font:inherit;font-size:16px;letter-spacing:.15em;text-transform:uppercase;padding:8px 10px;border:2px solid var(--ink);border-radius:8px;background:#fff}
 .chk input::placeholder{color:#94a3b8;letter-spacing:.12em}
+@media (max-width:360px){ .chk input{letter-spacing:.06em;padding:8px 6px} .chk input::placeholder{letter-spacing:.02em} .chk button{padding:0 10px} }
 .chk button{margin:0;width:auto;padding:0 14px}
 .chkres{font-size:14px;margin:4px 0 0;color:var(--soft)}
 .chkres.ok{color:#2E8B57;font-weight:700}
@@ -924,25 +925,30 @@ function oneTileFix(){
     const key=bad*15+diff*3+cw[diff]; let e=tally.get(key); if(!e){ e={ri:bad,i:diff,v:cw[diff],n:[0,0,0]}; tally.set(key,e); } e.n[t]++;
   }});
   let best=null;
-  for(const e of tally.values()){
+  const last=rows.length-1, inLast=[...tally.values()].filter(e=>e.ri===last && rows[last].c[e.i]===0 && e.v>0);   // a still-gray tile in the newest row first: the player is likely still coloring it
+  for(const e of (inLast.length?inLast:tally.values())){
     const sc=e.n[0]*1e8+e.n[1]*1e4+e.n[2];
     if(!best || sc>best.sc || (sc===best.sc && (e.ri>best.ri || (e.ri===best.ri && e.i<best.i)))) best={...e,sc};
   }
   return best;
 }
 function miniRow(w,c,hl){ return w.toUpperCase().split('').map((ch,i)=>`<span class="mt ${['x','y','g'][c[i]]}${hl===i?' hl':''}">${ch}</span>`).join(''); }
+let nfRightSig=null;   // the board the player said has the right colors
+const boardSig=()=>rows.map(r=>r.w+r.c.join('')).join('|');
 function noFitCard(box,colorsRight){
+  if(colorsRight) nfRightSig=boardSig(); else if(nfRightSig===boardSig()) colorsRight=true;
   document.getElementById('shareLine').hidden=true;
   const fix=colorsRight ? null : oneTileFix();
   if(fix){
     const r=rows[fix.ri], after=r.c.slice(); after[fix.i]=fix.v;
     const t=document.querySelectorAll('#board .row')[fix.ri]; if(t){ const tl=t.querySelectorAll('.tile')[fix.i]; if(tl) tl.classList.add('suspect'); }
     const n=fix.n[0]||fix.n[1]||fix.n[2], kind=fix.n[0]?'':' rare';
-    const L=r.w[fix.i].toUpperCase(), W=r.w.toUpperCase();
+    const ch0=r.w[fix.i], idx0=[...r.w].map((x,j)=>x===ch0?j:-1).filter(j=>j>=0), k0=idx0.indexOf(fix.i), ord0=idx0.length<2?'':(k0===idx0.length-1?'last ':['first ','second ','third '][k0]);
+    const L=ord0+'<b>'+ch0.toUpperCase()+'</b>', W=r.w.toUpperCase();
     box.innerHTML=`<div class="nfcard"><h4>One tile looks off?</h4><p>No word on our lists fits these colors. If you've finished coloring, the likeliest slip is:</p>
       <div class="nfrow"><span class="lb">Now</span><span>${miniRow(r.w,r.c,fix.i)}</span></div>
       <div class="nfrow"><span class="lb">Fixed</span><span>${miniRow(r.w,after,fix.i)}</span></div>
-      <p>Make the <b>${L}</b> in ${W} <b>${COLN[fix.v]}</b>, and ${n===1?'1'+kind+' word fits':n+kind+' words fit'}.</p>
+      <p>Make the ${L} in ${W} <b>${COLN[fix.v]}</b>, and ${n===1?'1'+kind+' word fits':n+kind+' words fit'}.</p>
       <div class="nfbtns"><button class="use" id="nfFix">Fix it</button><button class="linkbtn" id="nfSelf">My colors are right</button></div></div>`;
     setPeek(rows.length>=6 ? null : {txt:'one tile looks off ↓',cls:'pkfix'});
     track('nofit-fix-shown');
@@ -951,17 +957,18 @@ function noFitCard(box,colorsRight){
     return;
   }
   // no single change helps: show what the colors prove
+  { const bn=document.getElementById('banner'); if(bn) bn.innerHTML='<div class="banner">No word on our lists fits these colors.</div>'; }
   const green=[null,null,null,null,null], seen=new Set(), grayOnly=new Set();
   for(const r of rows) for(let i=0;i<5;i++){ const ch=r.w[i]; if(r.c[i]===2) green[i]=ch; if(r.c[i]>0) seen.add(ch); }
   for(const r of rows) for(let i=0;i<5;i++){ const ch=r.w[i]; if(r.c[i]===0 && !seen.has(ch)) grayOnly.add(ch); }
-  const pat=green.map(ch=>ch?`<span class="pt">${ch.toUpperCase()}</span>`:'<span class="pt q">?</span>').join('');
+  const pat=green.map(ch=>ch?`<span class="nfp">${ch.toUpperCase()}</span>`:'<span class="nfp q">?</span>').join('');
   const keys='abcdefghijklmnopqrstuvwxyz'.split('').map(ch=>`<span class="k${grayOnly.has(ch)?' out':seen.has(ch)?' in':''}">${ch.toUpperCase()}</span>`).join('');
   const patTxt=green.map(ch=>ch?ch.toUpperCase():'?').join(' ');
   box.innerHTML=`<div class="nfcard nw"><h4>A word we don't know yet</h4><p>No word on our lists fits, but your colors still say a lot. The editor sometimes picks a brand-new word.</p>
     <div class="kl">The answer looks like</div><div class="pat">${pat}</div>
     <div class="kl">Letters: crossed out = not in the answer, green = in it</div><div class="keys">${keys}</div>
     <div class="kl">Have a word in mind? Check it against your colors:</div>
-    <div class="chk"><input id="nfIn" maxlength="5" placeholder="TYPE A WORD" aria-label="Check a word" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="use" id="nfChk">Check</button></div>
+    <div class="chk"><input id="nfIn" maxlength="5" placeholder="A WORD" aria-label="Check a word" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="use" id="nfChk">Check</button></div>
     <div class="chkres" id="nfRes">We'll tell you if it fits, or which tile it breaks.</div></div>`;
   setPeek(rows.length>=6 ? null : {txt:'a new word: '+patTxt+' ↓',cls:'pknew'});
   track('nofit-new-shown');
@@ -972,7 +979,13 @@ function noFitCard(box,colorsRight){
     if(!/^[a-z]{5}$/.test(w)){ res.className='chkres'; res.textContent='Type a 5-letter word.'; return; }
     track('nofit-check',false);
     for(const r of rows){ const c=fb(r.w,w), cw=[c%3,Math.floor(c/3)%3,Math.floor(c/9)%3,Math.floor(c/27)%3,Math.floor(c/81)%3];
-      for(let i=0;i<5;i++) if(cw[i]!==r.c[i]){ res.className='chkres'; res.textContent=`No: with ${w.toUpperCase()}, the ${r.w[i].toUpperCase()} in ${r.w.toUpperCase()} would be ${COLN[cw[i]]}, not ${COLN[r.c[i]]}.`; return; } }
+      for(let i=0;i<5;i++) if(cw[i]!==r.c[i]){
+        const ch=r.w[i], idx=[...r.w].map((x,j)=>x===ch?j:-1).filter(j=>j>=0), k=idx.indexOf(i), ord=idx.length<2?'':(k===idx.length-1?'last ':['first ','second ','third '][k]);
+        res.className='chkres'; res.textContent=`No: with ${w.toUpperCase()}, the ${ord}${ch.toUpperCase()} in ${r.w.toUpperCase()} would be ${COLN[cw[i]]}, not ${COLN[r.c[i]]}.`;
+        document.querySelectorAll('#board .tile.suspect').forEach(x=>x.classList.remove('suspect'));
+        const rw=document.querySelectorAll('#board .row')[rows.indexOf(r)]; if(rw){ const tl=rw.querySelectorAll('.tile')[i]; if(tl) tl.classList.add('suspect'); }
+        return; } }
+    document.querySelectorAll('#board .tile.suspect').forEach(x=>x.classList.remove('suspect'));
     res.className='chkres ok';
     res.innerHTML=`✓ ${w.toUpperCase()} fits all your colors.${ALLKNOWN.has(w)?'':' <span style="font-weight:400;color:var(--soft)">It isn\'t on our lists, so we can\'t confirm Wordle accepts it.</span>'}${rows.length<6?`<br><button class="use" data-use="${w}" data-kind="newword">Use this guess</button>`:''}`;
     wire();
