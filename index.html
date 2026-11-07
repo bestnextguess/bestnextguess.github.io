@@ -114,6 +114,36 @@ footer p{margin:6px 0}
 .use{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:700}
 .alt .use{margin:8px 0 0;padding:5px 10px;font-size:14px}
 .empty{color:var(--soft);margin:0}
+/* v2.25: when no word fits the colors */
+.tile.suspect{outline:3px solid #E8590C;outline-offset:2px}
+.nfcard{border:2px solid #E8C766;background:#FFF8DB;border-radius:12px;padding:14px 14px 12px}
+.nfcard.nw{border-color:#9BB6F0;background:#EEF4FF}
+.nfcard h4{margin:0 0 6px;font-size:17px;color:var(--ink)}
+.nfcard p{margin:0 0 10px;font-size:14px;color:#4a5568;line-height:1.35}
+.nfrow{display:flex;align-items:center;gap:8px;margin:0 0 8px;white-space:nowrap}
+.nfrow .lb{width:46px;font-size:13px;color:var(--soft)}
+.mt{display:inline-flex;width:28px;height:28px;margin-right:3px;align-items:center;justify-content:center;font-weight:700;color:#fff;border-radius:4px;font-size:15px}
+.mt.x{background:#7c8592}.mt.y{background:#C9A227}.mt.g{background:#2E8B57}.mt.hl{outline:3px solid #E8590C;outline-offset:1px}
+.nfbtns{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.nfbtns .use{margin:0}
+.nfcard .kl{font-size:13px;color:var(--soft);margin:0 0 4px}
+.pat{display:flex;gap:5px;margin:4px 0 12px}
+.nfp{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;border-radius:5px;color:#fff;background:#2E8B57}
+.nfp.q{background:#fff;color:var(--blue);border:2px dashed var(--blue)}
+.keys{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px}
+.keys .k{min-width:22px;height:26px;padding:0 3px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border-radius:4px;background:#fff;border:1px solid #cbd5e1;color:var(--ink)}
+.keys .k.out{background:#7c8592;color:#fff;border-color:#7c8592;text-decoration:line-through}
+.keys .k.in{background:#DDEFE4;border-color:#2E8B57}
+.chk{display:flex;gap:8px;margin:2px 0 6px}
+.chk input{flex:1;min-width:0;font:inherit;font-size:16px;letter-spacing:.15em;text-transform:uppercase;padding:8px 10px;border:2px solid var(--ink);border-radius:8px;background:#fff}
+.chk input::placeholder{color:#94a3b8;letter-spacing:.12em}
+@media (max-width:360px){ .chk input{letter-spacing:.06em;padding:8px 6px} .chk input::placeholder{letter-spacing:.02em} .chk button{padding:0 10px} }
+.chk button{margin:0;width:auto;padding:0 14px}
+.chkres{font-size:14px;margin:4px 0 0;color:var(--soft)}
+.chkres.ok{color:#2E8B57;font-weight:700}
+.chkres .use{margin-top:8px}
+.nextpeek .pw.pkw.pkfix{color:#C2410C}
+.nextpeek .pw.pkw.pknew{color:var(--blue)}
 .answers{margin-top:24px}
 .count{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end}
 .count b{font-size:36px;display:block;line-height:1}
@@ -384,7 +414,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.24.2</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.25</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -727,6 +757,7 @@ const ALLW=USUAL.concat(BAK), IDX=new Map(ALLW.map((w,i)=>[w,i]));
 // v2.24: when only last-resort words fit (none of them is in the engine's word list), pick the one that splits the rest into the most groups
 function splitPick(c){ let best=null, bn=-1; for(const g of [...c].sort()){ const seen=new Set(); for(const w of c) seen.add(fb(g,w)); if(seen.size>bn){ bn=seen.size; best=g; } } return best; }
 const offEngine=c=>c.some(w=>!IDX.has(w));
+const ALLKNOWN=new Set(USUAL.concat(BAK,X3));   // v2.25: every word the page knows
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 // ---------- board ----------
@@ -839,7 +870,8 @@ function update(){
   document.getElementById('nRep').textContent=backup?'–':rep.length;
   const fw=backup?0:Math.round(pr.fr*100), rw=(backup||!(pr.fr+pr.rr))?0:100-fw;
   document.getElementById('bar').innerHTML=backup?'<i style="width:100%;background:var(--x)"></i>':`<i style="width:${fw}%;background:var(--g)"></i><i style="width:${rw}%;background:var(--y)"></i>`;
-  document.getElementById('legend').textContent = backup ? 'Rarer words all share the odds equally.'
+  const vrare = cands.length>0 && !IDX.has(cands[0]);   // v2.24.3: last-resort words (every other word Wordle accepts) get their own label
+  document.getElementById('legend').textContent = vrare ? 'Very rare words all share the odds equally.' : backup ? 'Rarer words all share the odds equally.'
      : mode==='archive' ? 'Older puzzle: its answer was already used, so only repeats get odds.'
      : (fresh.length&&rep.length) ? `Estimated odds: never-used words share ${fw}%, repeats ${rw}% (about 1 in 10 answers since Feb 2, 2026 was a repeat).${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% of that (bigger slices for familiar ones)${SHARE_LIVE?': their share of brand-new answers in the last 60 days':''}.`:''}` : fresh.length ? `Only never-used words fit, so they share all the odds.${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% (bigger slices for familiar ones).`:''}` : rep.length ? 'Only repeats fit, so they share all the odds.' : '';
   const ban=document.getElementById('banner');
@@ -854,7 +886,7 @@ function update(){
   function drawList(){
     list.innerHTML=sorted.slice(0,shown).map(w=>{
       const isRep=PAST.has(w), isT2=!isRep&&T2SET.has(w);
-      const cls=backup?'k':(isRep?'':isT2?'t':'f'), pill=backup?'<span class="pill pb">rarer word</span>':isRep?'<span class="pill py">repeat</span>':isT2?'<span class="pill pt">less common</span>':'<span class="pill pg">never used</span>';
+      const cls=backup?'k':(isRep?'':isT2?'t':'f'), pill=vrare?'<span class="pill pb">very rare word</span>':backup?'<span class="pill pb">rarer word</span>':isRep?'<span class="pill py">repeat</span>':isT2?'<span class="pill pt">less common</span>':'<span class="pill pg">never used</span>';
       return `<tr class="${cls}"><td class="w"><i></i>${w.toUpperCase()}</td><td>${pill}</td><td class="p">${pct(P.get(w)||0)}</td></tr>`;
     }).join('');
     more.innerHTML = shown<sorted.length ? `<button class="chip">Show all ${sorted.length}</button>`:'';
@@ -872,9 +904,94 @@ function setPeek(w){   // v2.22: phones: "Your next move: WORD [Use it]" right u
   // both keep the box's place so nothing below it jumps; null (nothing more to suggest: empty board, solved, no guesses left) hides it
   const el=document.getElementById('nextPeek'); if(!el) return;
   if(!w || demo || checkMode){ el.hidden=true; el.innerHTML=''; return; }   // not in the example game, nor when typing in a game already played
+  if(w && typeof w==='object'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw ${w.cls||''}">${w.txt}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }   // v2.25: a short note pointing down to the no-fit card
   if(w==='wait' || w==='nofit'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw">${w==='wait'?'working it out…':'set the tile colors above'}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }
   const W=w.toUpperCase();
   el.innerHTML=`<span class="pl">Your next move</span><b class="pw">${W}</b><button class="use" data-use="${w}" data-kind="peek" aria-label="Use it: ${W}">Use it</button>`; el.hidden=false;
+}
+// v2.25: no word Wordle accepts fits the colors. Usually one tile was set wrong: find the single change that makes words fit again.
+// Otherwise the answer is a word we don't know (or two tiles are off): show what the colors prove and let the player test a word.
+const COLN=['gray','yellow','green'];
+function oneTileFix(){
+  const tiers=[USUAL,BAK,X3], tally=new Map();
+  tiers.forEach((L,t)=>{ for(const w of L){
+    let bad=-1;
+    for(let ri=0;ri<rows.length;ri++){ if(fb(rows[ri].w,w)!==code(rows[ri].c)){ if(bad>=0){ bad=-2; break; } bad=ri; } }
+    if(bad<0) continue;
+    const r=rows[bad], c=fb(r.w,w), cw=[c%3,Math.floor(c/3)%3,Math.floor(c/9)%3,Math.floor(c/27)%3,Math.floor(c/81)%3];
+    let diff=-1, n=0; for(let i=0;i<5;i++) if(cw[i]!==r.c[i]){ diff=i; n++; }
+    if(n!==1) continue;
+    if(cw.every(v=>v===2)) continue;   // never 'fix' a row into all green: the player would know if that guess had been the answer
+    const key=bad*15+diff*3+cw[diff]; let e=tally.get(key); if(!e){ e={ri:bad,i:diff,v:cw[diff],n:[0,0,0]}; tally.set(key,e); } e.n[t]++;
+  }});
+  let best=null;
+  const last=rows.length-1, inLast=[...tally.values()].filter(e=>e.ri===last && rows[last].c[e.i]===0 && e.v>0);   // a still-gray tile in the newest row first: the player is likely still coloring it
+  for(const e of (inLast.length?inLast:tally.values())){
+    const sc=e.n[0]*1e8+e.n[1]*1e4+e.n[2];
+    if(!best || sc>best.sc || (sc===best.sc && (e.ri>best.ri || (e.ri===best.ri && e.i<best.i)))) best={...e,sc};
+  }
+  return best;
+}
+function miniRow(w,c,hl){ return w.toUpperCase().split('').map((ch,i)=>`<span class="mt ${['x','y','g'][c[i]]}${hl===i?' hl':''}">${ch}</span>`).join(''); }
+let nfRightSig=null;   // the board the player said has the right colors
+const boardSig=()=>rows.map(r=>r.w+r.c.join('')).join('|');
+function noFitCard(box,colorsRight){
+  if(colorsRight) nfRightSig=boardSig(); else if(nfRightSig===boardSig()) colorsRight=true;
+  document.getElementById('shareLine').hidden=true;
+  const fix=colorsRight ? null : oneTileFix();
+  if(fix){
+    const r=rows[fix.ri], after=r.c.slice(); after[fix.i]=fix.v;
+    const t=document.querySelectorAll('#board .row')[fix.ri]; if(t){ const tl=t.querySelectorAll('.tile')[fix.i]; if(tl) tl.classList.add('suspect'); }
+    const n=fix.n[0]||fix.n[1]||fix.n[2], kind=fix.n[0]?'':' rare';
+    const ch0=r.w[fix.i], idx0=[...r.w].map((x,j)=>x===ch0?j:-1).filter(j=>j>=0), k0=idx0.indexOf(fix.i), ord0=idx0.length<2?'':(k0===idx0.length-1?'last ':['first ','second ','third '][k0]);
+    const L=ord0+'<b>'+ch0.toUpperCase()+'</b>', W=r.w.toUpperCase();
+    box.innerHTML=`<div class="nfcard"><h4>One tile looks off?</h4><p>No word on our lists fits these colors. If you've finished coloring, the likeliest slip is:</p>
+      <div class="nfrow"><span class="lb">Now</span><span>${miniRow(r.w,r.c,fix.i)}</span></div>
+      <div class="nfrow"><span class="lb">Fixed</span><span>${miniRow(r.w,after,fix.i)}</span></div>
+      <p>Make the ${L} in ${W} <b>${COLN[fix.v]}</b>, and ${n===1?'1'+kind+' word fits':n+kind+' words fit'}.</p>
+      <div class="nfbtns"><button class="use" id="nfFix">Fix it</button><button class="linkbtn" id="nfSelf">My colors are right</button></div></div>`;
+    setPeek(rows.length>=6 ? null : {txt:'one tile looks off ↓',cls:'pkfix'});
+    track('nofit-fix-shown');
+    document.getElementById('nfFix').onclick=()=>{ r.c[fix.i]=fix.v; r.fresh=false; track('nofit-fix',false); update(); };
+    document.getElementById('nfSelf').onclick=()=>{ document.querySelectorAll('#board .tile.suspect').forEach(x=>x.classList.remove('suspect')); track('nofit-colors-right',false); noFitCard(box,true); };
+    return;
+  }
+  // no single change helps: show what the colors prove
+  { const bn=document.getElementById('banner'); if(bn) bn.innerHTML='<div class="banner">No word on our lists fits these colors.</div>'; }
+  const green=[null,null,null,null,null], seen=new Set(), grayOnly=new Set();
+  for(const r of rows) for(let i=0;i<5;i++){ const ch=r.w[i]; if(r.c[i]===2) green[i]=ch; if(r.c[i]>0) seen.add(ch); }
+  for(const r of rows) for(let i=0;i<5;i++){ const ch=r.w[i]; if(r.c[i]===0 && !seen.has(ch)) grayOnly.add(ch); }
+  const pat=green.map(ch=>ch?`<span class="nfp">${ch.toUpperCase()}</span>`:'<span class="nfp q">?</span>').join('');
+  const keys='abcdefghijklmnopqrstuvwxyz'.split('').map(ch=>`<span class="k${grayOnly.has(ch)?' out':seen.has(ch)?' in':''}">${ch.toUpperCase()}</span>`).join('');
+  const patTxt=green.map(ch=>ch?ch.toUpperCase():'?').join(' ');
+  box.innerHTML=`<div class="nfcard nw"><h4>A word we don't know yet</h4><p>No word on our lists fits, but your colors still say a lot. The editor sometimes picks a brand-new word.</p>
+    <div class="kl">The answer looks like</div><div class="pat">${pat}</div>
+    <div class="kl">Letters: crossed out = not in the answer, green = in it</div><div class="keys">${keys}</div>
+    <div class="kl">Have a word in mind? Check it against your colors:</div>
+    <div class="chk"><input id="nfIn" maxlength="5" placeholder="A WORD" aria-label="Check a word" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="use" id="nfChk">Check</button></div>
+    <div class="chkres" id="nfRes">We'll tell you if it fits, or which tile it breaks.</div></div>`;
+  setPeek(rows.length>=6 ? null : {txt:'a new word: '+patTxt+' ↓',cls:'pknew'});
+  track('nofit-new-shown');
+  const inEl=document.getElementById('nfIn'), res=document.getElementById('nfRes');
+  inEl.addEventListener('input',()=>{ inEl.value=inEl.value.replace(/[^a-zA-Z]/g,'').slice(0,5); });
+  const check=()=>{
+    const w=inEl.value.trim().toLowerCase();
+    if(!/^[a-z]{5}$/.test(w)){ res.className='chkres'; res.textContent='Type a 5-letter word.'; return; }
+    track('nofit-check',false);
+    for(const r of rows){ const c=fb(r.w,w), cw=[c%3,Math.floor(c/3)%3,Math.floor(c/9)%3,Math.floor(c/27)%3,Math.floor(c/81)%3];
+      for(let i=0;i<5;i++) if(cw[i]!==r.c[i]){
+        const ch=r.w[i], idx=[...r.w].map((x,j)=>x===ch?j:-1).filter(j=>j>=0), k=idx.indexOf(i), ord=idx.length<2?'':(k===idx.length-1?'last ':['first ','second ','third '][k]);
+        res.className='chkres'; res.textContent=`No: with ${w.toUpperCase()}, the ${ord}${ch.toUpperCase()} in ${r.w.toUpperCase()} would be ${COLN[cw[i]]}, not ${COLN[r.c[i]]}.`;
+        document.querySelectorAll('#board .tile.suspect').forEach(x=>x.classList.remove('suspect'));
+        const rw=document.querySelectorAll('#board .row')[rows.indexOf(r)]; if(rw){ const tl=rw.querySelectorAll('.tile')[i]; if(tl) tl.classList.add('suspect'); }
+        return; } }
+    document.querySelectorAll('#board .tile.suspect').forEach(x=>x.classList.remove('suspect'));
+    res.className='chkres ok';
+    res.innerHTML=`✓ ${w.toUpperCase()} fits all your colors.${ALLKNOWN.has(w)?'':' <span style="font-weight:400;color:var(--soft)">It isn\'t on our lists, so we can\'t confirm Wordle accepts it.</span>'}${rows.length<6?`<br><button class="use" data-use="${w}" data-kind="newword">Use this guess</button>`:''}`;
+    wire();
+  };
+  document.getElementById('nfChk').onclick=check;
+  inEl.addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
 }
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
@@ -887,7 +1004,9 @@ async function suggest(cands,P,my){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!cands.length){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }
+  if(!cands.length){
+    if(demo || inWalk() || last.fresh){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }   // a new guess the player hasn't colored yet: unchanged
+    noFitCard(box); return; }   // v2.25
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
@@ -1272,7 +1391,8 @@ function baseReport(){                       // everything that doesn't need the
   if(!rs.every(r=>fb(r.w,ans)===code(r.c))){ R.ok=false; R.why='colors'; }
   else if(!ANSSET.has(ans)){ R.ok=false; R.why='word'; }
   const op=rs[0].w;
-  R.openers=[...new Set([op,...OPENERS])].map(o=>({w:o,left:o===ans?0:fitsRows([{w:o,c:colorsOf(fb(o,ans))}],USUAL).length}))
+  R.offList=!ANSSET.has(ans);   // v2.24.3: an answer outside the usual list still fits its own colors, so it is counted too
+  R.openers=[...new Set([op,...OPENERS])].map(o=>({w:o,left:o===ans?0:fitsRows([{w:o,c:colorsOf(fb(o,ans))}],USUAL).length+(R.offList?1:0)}))
     .sort((a,b)=>a.left-b.left || (a.w===op?-1:b.w===op?1:0));
   R.alike=USUAL.filter(w=>{ if(w===ans) return false; let d=0; for(let i=0;i<5;i++) if(w[i]!==ans[i]) d++; return d===1; });
   if(!R.ok) return R;
@@ -1389,7 +1509,7 @@ function wordHtml(R){
 function openersHtml(R){
   const op=R.rows[0].w, mx=Math.max(1,...R.openers.map(o=>o.left));
   const tr=R.openers.map(o=>`<tr class="${o.w===op?'me':''}"><td class="wd">${U(o.w)}${o.w===op?' <small>yours</small>':''}</td><td class="bar"><i style="width:${Math.max(3,Math.round(100*o.left/mx))}%"></i></td><td class="num">${o.left===0?'solved!':nW(o.left)}</td></tr>`).join('');
-  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common). Fewer is better.</p><table class="ops">${tr}</table><p><a href="stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
+  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common)${R.offList?`, plus ${U(R.ans)} itself, which isn't on that list`:''}. Fewer is better.</p><table class="ops">${tr}</table><p><a href="stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
 }
 function histHtml(R){
   const G=loadGames(), games=Object.keys(G).sort().map(k=>G[k]).filter(x=>x && x.n>=1 && x.n<=6);
