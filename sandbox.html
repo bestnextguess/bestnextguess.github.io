@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.25 sandbox: no-fit cards · Best Next Guess</title>
+<title>SANDBOX v2.25 + v2.24.3 fixes (no-fit cards; very-rare badge; off-list answer counted in the report) · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -331,7 +331,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.25 sandbox: no-fit cards, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.25 + v2.24.3 fixes (no-fit cards; very-rare badge; off-list answer counted in the report), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -871,7 +871,8 @@ function update(){
   document.getElementById('nRep').textContent=backup?'–':rep.length;
   const fw=backup?0:Math.round(pr.fr*100), rw=(backup||!(pr.fr+pr.rr))?0:100-fw;
   document.getElementById('bar').innerHTML=backup?'<i style="width:100%;background:var(--x)"></i>':`<i style="width:${fw}%;background:var(--g)"></i><i style="width:${rw}%;background:var(--y)"></i>`;
-  document.getElementById('legend').textContent = backup ? 'Rarer words all share the odds equally.'
+  const vrare = cands.length>0 && !IDX.has(cands[0]);   // v2.24.3: last-resort words (every other word Wordle accepts) get their own label
+  document.getElementById('legend').textContent = vrare ? 'Very rare words all share the odds equally.' : backup ? 'Rarer words all share the odds equally.'
      : mode==='archive' ? 'Older puzzle: its answer was already used, so only repeats get odds.'
      : (fresh.length&&rep.length) ? `Estimated odds: never-used words share ${fw}%, repeats ${rw}% (about 1 in 10 answers since Feb 2, 2026 was a repeat).${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% of that (bigger slices for familiar ones)${SHARE_LIVE?': their share of brand-new answers in the last 60 days':''}.`:''}` : fresh.length ? `Only never-used words fit, so they share all the odds.${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% (bigger slices for familiar ones).`:''}` : rep.length ? 'Only repeats fit, so they share all the odds.' : '';
   const ban=document.getElementById('banner');
@@ -886,7 +887,7 @@ function update(){
   function drawList(){
     list.innerHTML=sorted.slice(0,shown).map(w=>{
       const isRep=PAST.has(w), isT2=!isRep&&T2SET.has(w);
-      const cls=backup?'k':(isRep?'':isT2?'t':'f'), pill=backup?'<span class="pill pb">rarer word</span>':isRep?'<span class="pill py">repeat</span>':isT2?'<span class="pill pt">less common</span>':'<span class="pill pg">never used</span>';
+      const cls=backup?'k':(isRep?'':isT2?'t':'f'), pill=vrare?'<span class="pill pb">very rare word</span>':backup?'<span class="pill pb">rarer word</span>':isRep?'<span class="pill py">repeat</span>':isT2?'<span class="pill pt">less common</span>':'<span class="pill pg">never used</span>';
       return `<tr class="${cls}"><td class="w"><i></i>${w.toUpperCase()}</td><td>${pill}</td><td class="p">${pct(P.get(w)||0)}</td></tr>`;
     }).join('');
     more.innerHTML = shown<sorted.length ? `<button class="chip">Show all ${sorted.length}</button>`:'';
@@ -1391,7 +1392,8 @@ function baseReport(){                       // everything that doesn't need the
   if(!rs.every(r=>fb(r.w,ans)===code(r.c))){ R.ok=false; R.why='colors'; }
   else if(!ANSSET.has(ans)){ R.ok=false; R.why='word'; }
   const op=rs[0].w;
-  R.openers=[...new Set([op,...OPENERS])].map(o=>({w:o,left:o===ans?0:fitsRows([{w:o,c:colorsOf(fb(o,ans))}],USUAL).length}))
+  R.offList=!ANSSET.has(ans);   // v2.24.3: an answer outside the usual list still fits its own colors, so it is counted too
+  R.openers=[...new Set([op,...OPENERS])].map(o=>({w:o,left:o===ans?0:fitsRows([{w:o,c:colorsOf(fb(o,ans))}],USUAL).length+(R.offList?1:0)}))
     .sort((a,b)=>a.left-b.left || (a.w===op?-1:b.w===op?1:0));
   R.alike=USUAL.filter(w=>{ if(w===ans) return false; let d=0; for(let i=0;i<5;i++) if(w[i]!==ans[i]) d++; return d===1; });
   if(!R.ok) return R;
@@ -1508,7 +1510,7 @@ function wordHtml(R){
 function openersHtml(R){
   const op=R.rows[0].w, mx=Math.max(1,...R.openers.map(o=>o.left));
   const tr=R.openers.map(o=>`<tr class="${o.w===op?'me':''}"><td class="wd">${U(o.w)}${o.w===op?' <small>yours</small>':''}</td><td class="bar"><i style="width:${Math.max(3,Math.round(100*o.left/mx))}%"></i></td><td class="num">${o.left===0?'solved!':nW(o.left)}</td></tr>`).join('');
-  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common). Fewer is better.</p><table class="ops">${tr}</table><p><a href="sandbox-stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
+  return `<p>Words still possible after each opener${R.mode==='today'?' today':''}, out of all ${USUAL.length.toLocaleString('en-US')} possible answers (usual and less common)${R.offList?`, plus ${U(R.ans)} itself, which isn't on that list`:''}. Fewer is better.</p><table class="ops">${tr}</table><p><a href="sandbox-stats.html?w=${op}" id="toStats">How does ${U(op)} do on every past answer? →</a></p>`;
 }
 function histHtml(R){
   const G=loadGames(), games=Object.keys(G).sort().map(k=>G[k]).filter(x=>x && x.n>=1 && x.n<=6);
