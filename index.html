@@ -414,7 +414,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.25</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.25.1</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -871,7 +871,7 @@ function update(){
   const fw=backup?0:Math.round(pr.fr*100), rw=(backup||!(pr.fr+pr.rr))?0:100-fw;
   document.getElementById('bar').innerHTML=backup?'<i style="width:100%;background:var(--x)"></i>':`<i style="width:${fw}%;background:var(--g)"></i><i style="width:${rw}%;background:var(--y)"></i>`;
   const vrare = cands.length>0 && !IDX.has(cands[0]);   // v2.24.3: last-resort words (every other word Wordle accepts) get their own label
-  document.getElementById('legend').textContent = vrare ? 'Very rare words all share the odds equally.' : backup ? 'Rarer words all share the odds equally.'
+  document.getElementById('legend').textContent = !cands.length ? '' : vrare ? 'Very rare words all share the odds equally.' : backup ? 'Rarer words all share the odds equally.'
      : mode==='archive' ? 'Older puzzle: its answer was already used, so only repeats get odds.'
      : (fresh.length&&rep.length) ? `Estimated odds: never-used words share ${fw}%, repeats ${rw}% (about 1 in 10 answers since Feb 2, 2026 was a repeat).${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% of that (bigger slices for familiar ones)${SHARE_LIVE?': their share of brand-new answers in the last 60 days':''}.`:''}` : fresh.length ? `Only never-used words fit, so they share all the odds.${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% (bigger slices for familiar ones).`:''}` : rep.length ? 'Only repeats fit, so they share all the odds.' : '';
   const ban=document.getElementById('banner');
@@ -936,7 +936,7 @@ function miniRow(w,c,hl){ return w.toUpperCase().split('').map((ch,i)=>`<span cl
 let nfRightSig=null;   // the board the player said has the right colors
 const boardSig=()=>rows.map(r=>r.w+r.c.join('')).join('|');
 function noFitCard(box,colorsRight){
-  if(colorsRight) nfRightSig=boardSig(); else if(nfRightSig===boardSig()) colorsRight=true;
+  if(colorsRight) nfRightSig=boardSig(); else if(nfRightSig===boardSig() || (rows.length>1 && nfRightSig===rows.slice(0,-1).map(r=>r.w+r.c.join('')).join('|'))) colorsRight=true;   // v2.25.1: 'colors right' carries to a new row added on top
   document.getElementById('shareLine').hidden=true;
   const fix=colorsRight ? null : oneTileFix();
   if(fix){
@@ -1005,7 +1005,8 @@ async function suggest(cands,P,my){
     if(!demo) track('f-done');
     showReport(box); return; }
   if(!cands.length){
-    if(demo || inWalk() || last.fresh){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }   // a new guess the player hasn't colored yet: unchanged
+    const prevFit = !last.fresh || rows.length<2 || fitsRows(rows.slice(0,-1),USUAL).length || fitsRows(rows.slice(0,-1),BAK).length || fitsRows(rows.slice(0,-1),X3).length;   // v2.25.1: did anything fit before the new row?
+    if(demo || inWalk() || (last.fresh && prevFit)){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }   // a new guess the player hasn't colored yet, and it is the reason nothing fits: unchanged
     noFitCard(box); return; }   // v2.25
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
   if(cands.length<=2){
