@@ -1256,7 +1256,7 @@ document.getElementById('add').onclick=addGuess;
 inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); if(inp.value) track('f-typed'); });   // v2.6.3 funnel: started typing
 document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
-document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ const m=b.dataset.m; if(m!==mode && rows.length && !demo){ rows=[]; ownRows=null; checkMode=false; track('mode-switch-fresh'); } mode=m; if(mode==='archive') track('archive-mode'); update(); });   // v2.26.1: switching puzzle starts a fresh board, so an old puzzle's game is never saved as today's
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ const m=b.dataset.m; if(m!==mode && rows.length){ if(!demo) track('mode-switch-fresh'); rows=[]; demo=false; ownRows=null; checkMode=false; } mode=m; if(mode==='archive') track('archive-mode'); update(); });   // v2.26.1: switching puzzle starts a fresh board, so an old puzzle's game is never saved as today's
 document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; checkMode=false; update(); inp.focus(); };   // v2.22: Start over also leaves "check my game" mode (it used to stay on for the rest of the visit)
 document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
