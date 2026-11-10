@@ -256,6 +256,9 @@ td.p{text-align:right;font-weight:700}
 @media (max-width:355px){ .shareline{font-size:13px;padding:10px 6px} .shareline a{font-size:14px} }
 @media (max-width:330px){ .shareline{font-size:12px} .shareline a{font-size:13px} }
 .shareline .sl2{display:block;font-size:13px;color:var(--soft);margin-top:2px;overflow-wrap:anywhere}
+.todaycard{margin:14px 0 0;padding:12px 14px;border:2px solid var(--blue);border-radius:12px;font-size:15px;background:#F4F8FF}
+.todaycard b{display:block;margin-bottom:2px}
+.todaycard button.btn{margin-top:8px;padding:9px 14px;font-size:15px}
 .sharecard{margin:12px 0 0;padding:12px 14px;border:2px solid #F0B48C;border-radius:12px;font-size:15px;background:#fff}
 .sharecard b{display:block;margin-bottom:2px}
 .sharecard button.btn{margin-top:8px;padding:9px 14px;font-size:15px;max-width:100%;overflow-wrap:anywhere}
@@ -414,7 +417,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.25.1</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.26</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -1642,6 +1645,12 @@ function scoreHtml(R){
   track('score-'+(streak>=8?'d8plus':streak>=4?'d4-7':streak>=2?'d2-3':'d1'));
   return `<div class="score"><b class="big">${head}</b>${lines}<p class="note">Kept on this device only. Never sent anywhere.</p></div>`;
 }
+// v2.26: after a game replayed in Older mode, one card invites the player to today's puzzle (fresh board, nothing about today's answer).
+function todayCardHtml(R){
+  if(R.mode==='today' || demo) return '';
+  track('older-to-today-shown');
+  return `<div class="todaycard"><b>Playing today's Wordle too?</b>Start a fresh board for today's puzzle and get your smartest next guess as you go. Today's games build your streak and your score against the helper.<br><button class="btn" id="toToday">Start today's puzzle</button></div>`;
+}
 function installCardHtml(){
   if(matchMedia('(display-mode: standalone)').matches || navigator.standalone) return '';
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1684,7 +1693,7 @@ function renderReport(box,R){
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
     ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
-    ${scoreHtml(R)}${R.ok && R.ready ? installCardHtml()+shareAppHtml() : ''}
+    ${scoreHtml(R)}${todayCardHtml(R)}${R.ok && R.ready ? installCardHtml()+shareAppHtml() : ''}
     <div class="rsecs">${sec('word',today?'Today\'s word':'This puzzle\'s word',wordHtml(R))}${sec('openers',today?'How other openers did today':'How other openers did',openersHtml(R))}${sec('games','Your games on this device',histHtml(R))}</div>
   </div>`;
   box.querySelectorAll('details[data-sec]').forEach(d=>d.addEventListener('toggle',()=>{
@@ -1693,6 +1702,7 @@ function renderReport(box,R){
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
   const ib=document.getElementById('instNow'); if(ib) ib.onclick=()=>{ track('install-report',false); document.getElementById('installBtn').click(); };
   const sa=document.getElementById('shareApp'); if(sa) sa.onclick=()=>shareApp(sa,'card');
+  const tt=document.getElementById('toToday'); if(tt) tt.onclick=()=>{ track('older-to-today'); mode='today'; rows=[]; demo=false; ownRows=null; checkMode=false; update(); try{ inp.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} inp.focus(); };
   const wa=document.getElementById('walkAgain'); if(wa) wa.onclick=()=>{ track('walk-again'); walk={step:0,sig:gameSig()}; walkSeen=walk.sig; update(); const m=document.querySelector('.move'); if(m && m.getBoundingClientRect().top<0 && m.scrollIntoView) m.scrollIntoView({block:'start'}); };
   const ch=document.getElementById('clearHist');
   if(ch) ch.onclick=()=>{ if(ch.dataset.sure){ try{ localStorage.removeItem(HKEY); }catch(e){} track('history-cleared',false); renderReport(box,R); } else { ch.dataset.sure='1'; ch.textContent='Tap again to clear your history'; } };
