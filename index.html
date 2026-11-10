@@ -417,7 +417,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.26</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.26.1</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -1255,7 +1255,7 @@ document.getElementById('add').onclick=addGuess;
 inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
 inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/[^a-zA-Z]/g,'').slice(0,5); inp.setCustomValidity(''); if(inp.value) track('f-typed'); });   // v2.6.3 funnel: started typing
 document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ const h=b.dataset.h==='1'; if(h!==hard){ hard=h; track(hard?'mode-hard':'mode-normal',false); update(); } });
-document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; if(mode==='archive') track('archive-mode'); update(); });
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ const m=b.dataset.m; if(m!==mode && rows.length){ if(!demo) track('mode-switch-fresh'); rows=[]; demo=false; ownRows=null; checkMode=false; } mode=m; if(mode==='archive') track('archive-mode'); update(); });   // v2.26.1: switching puzzle starts a fresh board, so an old puzzle's game is never saved as today's
 document.getElementById('reset').onclick=()=>{ rows=[]; demo=false; ownRows=null; checkMode=false; update(); inp.focus(); };   // v2.22: Start over also leaves "check my game" mode (it used to stay on for the rest of the visit)
 document.getElementById('demoBtn1').onclick=startDemo;
 document.getElementById('demoBtn3').onclick=startDemo;
