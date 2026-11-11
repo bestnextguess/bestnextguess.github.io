@@ -1000,7 +1000,7 @@ function noFitCard(box,colorsRight){
 }
 function colorAsk(box,last){   // v2.27
   setPeek('nofit'); const any=last.c.some(v=>v>0), W=last.w.toUpperCase();
-  box.innerHTML=`<p class="k">One step first</p><p class="askq">What colors did Wordle give ${W}?</p><p>Tap each tile and pick the color Wordle showed you. Your next guess appears as soon as the colors are set.</p><button class="use" id="colOk">${any?'These colors are right':'It was all gray'}</button>`;
+  box.innerHTML=`<p class="k">One step first</p><p class="askq">What colors did Wordle give ${W}?</p><p>Tap each tile and pick the color Wordle showed you.${checkMode?'':' Your next guess appears as soon as the colors are set.'}</p><button class="use" id="colOk">${any?'These colors are right':'It was all gray'}</button>`;
   track('color-ask');
   document.getElementById('colOk').onclick=()=>{ last.fresh=false; last.ok=true; track('color-ok',false); update(); };
 }
@@ -1015,7 +1015,7 @@ async function suggest(cands,P,my){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!demo && !inWalk() && !last.ok && (last.fresh || last.c.every(v=>v===0))){   // v2.27: a new guess the player hasn't colored yet: ask for Wordle's colors before suggesting anything
+  if(!demo && !inWalk() && rows.length<6 && !last.ok && (last.fresh || last.c.every(v=>v===0))){   // v2.27: a new guess the player hasn't colored yet: ask for Wordle's colors before suggesting anything
     const before = rows.length<2 || fitsRows(rows.slice(0,-1),USUAL).length || fitsRows(rows.slice(0,-1),BAK).length || fitsRows(rows.slice(0,-1),X3).length;
     if(before){ colorAsk(box,last); return; } }   // (when nothing fit before this row, the v2.25 cards still show)
   if(!cands.length){
