@@ -1943,3 +1943,4 @@ parch
 dreck
 prate
 loamy
+truce

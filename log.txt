@@ -22,3 +22,4 @@
 1967 prate
 1968 first
 1969 loamy
+1970 truce
