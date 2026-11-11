@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.27 (asks for Wordle's colors before the first suggestion) · Best Next Guess</title>
+<title>SANDBOX same as live v2.26.2 · Best Next Guess</title>
 <meta name="description" content="Free, ad-free helper for daily 5-letter word puzzles. Enter your green, yellow and gray letters to see every possible answer, the odds, and the smartest next guess. Works in normal and hard mode and knows which answers were already used.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -114,7 +114,6 @@ footer p{margin:6px 0}
 .use{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:700}
 .alt .use{margin:8px 0 0;padding:5px 10px;font-size:14px}
 .empty{color:var(--soft);margin:0}
-.askq{font-weight:700;font-size:19px;margin:4px 0 6px}   /* v2.27: the colors question */
 /* v2.25: when no word fits the colors */
 .tile.suspect{outline:3px solid #E8590C;outline-offset:2px}
 .nfcard{border:2px solid #E8C766;background:#FFF8DB;border-radius:12px;padding:14px 14px 12px}
@@ -335,7 +334,7 @@ td.p{text-align:right;font-weight:700}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.27 (asks for Wordle's colors before the first suggestion), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of same as live v2.26.2, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -419,7 +418,7 @@ td.p{text-align:right;font-weight:700}
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.27</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.26.2</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -998,12 +997,6 @@ function noFitCard(box,colorsRight){
   document.getElementById('nfChk').onclick=check;
   inEl.addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
 }
-function colorAsk(box,last){   // v2.27
-  setPeek('nofit'); const any=last.c.some(v=>v>0), W=last.w.toUpperCase();
-  box.innerHTML=`<p class="k">One step first</p><p class="askq">What colors did Wordle give ${W}?</p><p>Tap each tile and pick the color Wordle showed you.${checkMode?'':' Your next guess appears as soon as the colors are set.'}</p><button class="use" id="colOk">${any?'These colors are right':'It was all gray'}</button>`;
-  track('color-ask');
-  document.getElementById('colOk').onclick=()=>{ last.fresh=false; last.ok=true; track('color-ok',false); update(); };
-}
 async function suggest(cands,P,my){
   const box=document.getElementById('pick');
   if(!rows.length){ setPeek(null);   // v2.10: two choices for every visitor: playing now, or already played (screenshot / type it in)
@@ -1015,9 +1008,6 @@ async function suggest(cands,P,my){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!demo && !inWalk() && rows.length<6 && !last.ok && (last.fresh || last.c.every(v=>v===0))){   // v2.27: a new guess the player hasn't colored yet: ask for Wordle's colors before suggesting anything
-    const before = rows.length<2 || fitsRows(rows.slice(0,-1),USUAL).length || fitsRows(rows.slice(0,-1),BAK).length || fitsRows(rows.slice(0,-1),X3).length;
-    if(before){ colorAsk(box,last); return; } }   // (when nothing fit before this row, the v2.25 cards still show)
   if(!cands.length){
     const prevFit = !last.fresh || rows.length<2 || fitsRows(rows.slice(0,-1),USUAL).length || fitsRows(rows.slice(0,-1),BAK).length || fitsRows(rows.slice(0,-1),X3).length;   // v2.25.1: did anything fit before the new row?
     if(demo || inWalk() || (last.fresh && prevFit)){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }   // a new guess the player hasn't colored yet, and it is the reason nothing fits: unchanged
@@ -1228,7 +1218,7 @@ function shotPreview(found){
   document.getElementById('shotCancel').onclick=close;
   ov.onclick=e=>{ if(e.target===ov) close(); };
   const esc_=e=>{ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',esc_); } }; document.addEventListener('keydown',esc_);
-  document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); checkMode=true; rows=found.map(r=>({w:r.w, c:r.c.slice(), ok:true})); track('shot-read'); update(); };
+  document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); checkMode=true; rows=found.map(r=>({w:r.w, c:r.c.slice()})); track('shot-read'); update(); };
   document.getElementById('shotNext').focus();
 }
 function pickShot(){
@@ -1284,7 +1274,7 @@ document.getElementById('howtoInstall').onclick=e=>{ track('howto-install',false
 let ownRows=null;                            // the player's own game, kept while the example is showing
 const hasOwn=()=>!!(ownRows && ownRows.length);
 function startDemo(){
-  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice(),fresh:r.fresh,ok:r.ok}));   // v2.23: keep the not-yet-colored flag across the example game
+  if(!demo) ownRows=rows.map(r=>({w:r.w,c:r.c.slice(),fresh:r.fresh}));   // v2.23: keep the not-yet-colored flag across the example game
   demo=true; rows=[{w:'raise',c:[2,2,0,0,0]}]; track('demo',false); update();
   const g=document.querySelector('.grid'); if(g && g.scrollIntoView) g.scrollIntoView({behavior:'smooth',block:'start'});
 }
