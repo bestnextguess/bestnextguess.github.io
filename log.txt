@@ -25,3 +25,4 @@
 1970 truce
 1971 bless
 1972 karat
+1973 moxie
