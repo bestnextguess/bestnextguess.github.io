@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Phone view · Best Next Guess (testing)</title>
+<style>
+  :root{--bg:#EEF2F7;--ink:#1F2A44;--muted:#5B6478;--line:#C9D3E3;--blue:#2E5BD8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:12px 16px;border-bottom:1px solid var(--line);background:#fff}
+  .bar b{margin-right:6px}
+  button,select{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  button.main{background:var(--blue);border-color:var(--blue);color:#fff}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin:8px 16px 0}
+  .stage{display:flex;justify-content:center;padding:16px}
+  .phone{border:12px solid #1F2A44;border-radius:36px;overflow:hidden;background:#000;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+  iframe{display:block;border:0;background:#fff}
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>Phone view</b>
+  <select id="dev" aria-label="Phone size">
+    <option value="390x844" selected>iPhone 13/14 (390 × 844)</option>
+    <option value="375x667">iPhone SE (375 × 667)</option>
+    <option value="412x915">Pixel 7 (412 × 915)</option>
+    <option value="360x780">Small Android (360 × 780)</option>
+  </select>
+  <button class="main" data-u="index.html?ref=google-ad&amp;welcome=1">New visitor from the ad</button>
+  <button data-u="index.html?welcome=1">New visitor, no ad</button>
+  <button data-u="index.html">Returning visitor</button>
+</div>
+<p class="note">For testing only. Use it at bestnextguess.com/phone.html, where visits are never counted (it turns on GoatCounter's skip for this browser). The ad card shows with the first button whatever this browser's history.</p>
+<div class="stage"><div class="phone"><iframe id="f" title="Best Next Guess at phone size"></iframe></div></div>
+<script>
+  try{ localStorage.setItem('skipgc','t'); }catch(e){}   // never count test visits
+  const f=document.getElementById('f'), dev=document.getElementById('dev');
+  let url='index.html?ref=google-ad&welcome=1';
+  function size(){ const [w,h]=dev.value.split('x').map(Number); f.width=w; f.height=h; }
+  const BASE = location.hostname.endsWith('bestnextguess.com') ? '' : 'https://bestnextguess.com/';   // opened anywhere else (a file preview), load the live site by its full address
+  function load(u){ url=u; try{ sessionStorage.clear(); }catch(e){} f.src=BASE+u+(u.includes('?')?'&':'?')+'t='+Date.now(); }   // fresh board each time
+  document.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>load(b.dataset.u));
+  dev.onchange=()=>{ size(); load(url); };
+  size(); load(url);
+</script>
+</body>
+</html>
