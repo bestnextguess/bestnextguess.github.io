@@ -203,6 +203,7 @@ td.p{text-align:right;font-weight:700}
 .shotbar[hidden]{display:none}
 .shotbar b{font-size:16px}
 .shotbar .use{margin-top:0}
+.card .shotbar{border:0;box-shadow:none;background:none;padding:0;margin:12px 0 4px}   /* v2.29: inside Your guesses */
 .played{margin-top:14px;border-top:1px solid #E3EAF5;padding-top:12px}
 .played b{display:block;font-size:16px;margin-bottom:8px}
 .played .use{margin-top:0}
@@ -369,7 +370,6 @@ td.p{text-align:right;font-weight:700}
   <p class="more"><button class="linkbtn" id="demoBtn1">See it in action</button><span id="howtoInstallWrap"> · Done for today? <a href="about.html#install" id="howtoInstall">Install it for tomorrow's Wordle</a></span></p>
 </div>
 
-<div class="shotbar" id="shotBar" hidden><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>
 
 <div class="grid">
   <section class="card" aria-label="Your guesses">
@@ -382,6 +382,7 @@ td.p{text-align:right;font-weight:700}
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
       <button class="btn" id="add">Add guess</button>
     </div>
+    <div class="shotbar" id="shotBar" hidden><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>   <!-- v2.29: under the type box, so the type box is on a small phone's first screen -->
     <div class="optrow" role="group" aria-label="Game mode"><span class="ol">Mode <button class="info" id="modeInfoBtn" aria-label="What do Normal and Hard mean?" aria-expanded="false" aria-controls="modeInfo">ⓘ</button></span>
       <button class="chip" data-h="0" title="Any word can be your next guess.">Normal</button>
       <button class="chip" data-h="1" title="Like Wordle's Hard Mode: your next guess must reuse every green and yellow letter.">Hard</button>
@@ -392,7 +393,7 @@ td.p{text-align:right;font-weight:700}
       <button class="chip" data-m="archive">Older</button>
       <button class="chip" id="reset">Start over</button>
     </div>
-    <p class="note" id="tapNote">Tap a tile, then pick its color.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
+    <p class="note" id="tapNote">Tap a tile to change its color: gray, yellow, green.<span id="demoLinkWrap" hidden> New here? <button class="linkbtn" id="demoBtn3">See it in action</button></span></p>
     <div id="solved"></div>
   </section>
 
@@ -421,7 +422,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.28</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.29</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -710,7 +711,7 @@ function showWelcome(n, back){ try{
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   if(!back && n===1){ el.classList.add('act');   // v2.22: the very first visit says what to do; greetings start on visit 2
     if(REF==='google-ad'){   // v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
-      el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Type the guesses you've made so far and tap each tile to match its color. Get your smartest next word, no spoilers. Or tap 📷 Use a screenshot just below.</div></div><button class="x" aria-label="Close">×</button>`;
+      el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Type your guesses below, then tap each tile to match its color.</div></div><button class="x" aria-label="Close">×</button>`;
       track('ad-card-shown');
     } else
     el.innerHTML=`<div class="wtext"><div class="wt">👋 New here? Type your first Wordle guess.</div><div class="ws">Then tap each tile to match its Wordle color to get your best next word.</div></div><button class="x" aria-label="Close">×</button>`; }
@@ -781,16 +782,16 @@ function renderBoard(){
     const d=document.createElement('div'); d.className='row'+(isFresh?' fresh':'');
     r.w.split('').forEach((ch,i)=>{
       const b=document.createElement('button'); b.className='tile '+['x','y','g'][r.c[i]]; b.textContent=ch;
-      b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to pick a color`);
+      b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}, tap to change its color`);
       if(ro){ b.disabled=true; b.setAttribute('aria-label',`${ch.toUpperCase()} ${['gray','yellow','green'][r.c[i]]}`); }
-      else b.onclick=e=>{ e.stopPropagation(); openPicker(b, v=>{ r.c[i]=v; r.fresh=false; if(!demo) track('f-colors'); update(); }, r.c[i]); };   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
+      else b.onclick=e=>{ e.stopPropagation(); r.c[i]=(r.c[i]+1)%3; r.fresh=false; if(!demo) track('f-colors'); update(); };   // v2.29: one tap cycles gray, yellow, green (was a color menu, 2 taps a tile)   // v2.8: tap a tile, pick its color (v2.6.3 funnel: set a color)
       d.appendChild(b);
     });
     const fresh = isFresh;   // v2.9: newest guess, no colors set yet: show a clear Remove button
     const x=document.createElement('button'); x.className='del'+(fresh?' rm':''); x.textContent=fresh?'Remove':'×'; x.title='Remove this guess'; x.setAttribute('aria-label','Remove this guess');
     x.onclick=()=>{ rows.splice(ri,1); update(); };
     if(fresh && !ro){   // v2.13: one tap turns the whole row green when this guess was the answer
-      const ok=document.createElement('button'); ok.className='del ok'; ok.textContent='Solved ✓'; ok.title='This guess was the answer: make every tile green'; ok.setAttribute('aria-label','This guess was the answer: make every tile green');
+      const ok=document.createElement('button'); ok.className='del ok'; ok.textContent='All green ✓'; ok.title='This guess was the answer: make every tile green'; ok.setAttribute('aria-label','This guess was the answer: make every tile green');
       ok.onclick=()=>{ r.c=[2,2,2,2,2]; r.fresh=false; if(!demo){ track('f-colors'); track('solved-tap',false); } update(); };
       if(!ro) d.appendChild(x); d.appendChild(ok); }   // Remove first, then Solved at the far end
     else if(!ro) d.appendChild(x);
@@ -853,7 +854,7 @@ function update(){
   document.getElementById('demoLinkWrap').hidden = demo || !rows.length;
   document.getElementById('tapNote').hidden = inWalk();
   { const l=rows[rows.length-1], repShare = !!l && l.c.every(v=>v===2) && rows.every(r=>fb(r.w,l.w)===code(r.c)) && ANSSET.has(l.w);   // v2.22: the game report will show its own share card (same test as baseReport's R.ok)
-    document.getElementById('shareLine').hidden = demo || !rows.length || inWalk() || repShare; }   // v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
+    document.getElementById('shareLine').hidden = demo || rows.length<2 || inWalk() || repShare; }   // v2.29: from the 2nd guess (after the visitor got some help). v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
   document.getElementById('shotBar').hidden = !!demo;   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
   document.querySelector('#shotBar b').textContent = mode==='today' ? 'Already played today?' : 'Already played this puzzle?';   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
@@ -950,7 +951,7 @@ const boardSig=()=>rows.map(r=>r.w+r.c.join('')).join('|');
 function colorAsk(box,last){   // v2.27
   const any=last.c.some(v=>v>0), W=last.w.toUpperCase(), btn=any?'These colors are right':'It was all gray';
   setPeek({ask:true, btn});
-  box.innerHTML=`<p class="k">One step first</p><p class="askq">What colors did Wordle give ${W}?</p><p>Tap each letter and pick the color Wordle showed you. Your next guess appears as soon as the colors are set.</p><button class="use" id="colOk">${btn}</button>`;
+  box.innerHTML=`<p class="k">One step first</p><p class="askq">What colors did Wordle give ${W}?</p><p>Tap each letter until it shows the color Wordle gave it. Then tap the button below and your next guess appears.</p><button class="use" id="colOk">${btn}</button>`;
   track('color-ask');
   const ok=()=>{ last.fresh=false; last.ok=true; track('color-ok',false); update(); };
   document.getElementById('colOk').onclick=ok; const pg=document.getElementById('peekOk'); if(pg) pg.onclick=ok;
@@ -1024,7 +1025,7 @@ async function suggest(cands,P,my){
     if(demo){ box.innerHTML=`<p class="solvedHead">Solved! 🎉</p><p>That was the example game. Play your own game and you get a full game report: skill and luck scores, and where you could have saved a guess.</p><button class="use" id="demoExit2">${hasOwn()?'Back to your game':'Start your own game'}</button>`; document.getElementById('demoExit2').onclick=exitDemo; return; }
     if(!demo) track('f-done');
     showReport(box); return; }
-  if(!demo && !inWalk() && !last.ok && (last.fresh || last.c.every(v=>v===0))){   // v2.27: a new guess the player hasn't colored yet: ask for Wordle's colors before suggesting anything (rebuilt Nov 16 for ad visitors)
+  if(!demo && !inWalk() && !last.ok){   // v2.29: every new guess waits for the player's "Colors set" / "All gray" (a hint after the first tile was often wrong: RAISE with R set but E not yet green gave TOUCH, not TRUCE); v2.27: a new guess the player hasn't colored yet: ask for Wordle's colors before suggesting anything (rebuilt Nov 16 for ad visitors)
     const before = rows.length<2 || fitsRows(rows.slice(0,-1),USUAL).length || fitsRows(rows.slice(0,-1),BAK).length || fitsRows(rows.slice(0,-1),X3).length;
     if(before){ colorAsk(box,last); return; } }   // (when nothing fit before this row, the v2.25 cards still show)
   if(!cands.length){
@@ -1270,6 +1271,7 @@ function addGuess(){
   const c=[0,0,0,0,0];   // v2.23: a letter already confirmed green in an earlier guess starts green when the new guess keeps it in that spot
   rows.forEach(r=>r.c.forEach((v,i)=>{ if(v===2 && r.w[i]===w[i]) c[i]=2; }));
   rows.push({w,c,fresh:!c.every(v=>v===2)}); inp.value=''; update();   // a row that comes out all green is solved, not waiting for colors
+  if(innerWidth<800){ const pk=document.getElementById('nextPeek'); if(pk && !pk.hidden){ const b=pk.getBoundingClientRect(); if(b.bottom>innerHeight-8 || b.top<0) pk.scrollIntoView({block:'center',behavior:'smooth'}); } }   // v2.29: small phones: keep "Now set the colors" on screen
 }
 document.getElementById('add').onclick=addGuess;
 inp.addEventListener('keydown',e=>{ if(e.key==='Enter') addGuess(); });
