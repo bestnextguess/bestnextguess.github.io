@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.29 (reviewer's 7 changes) · Best Next Guess</title>
+<title>SANDBOX v2.30 (screenshot first for ad visitors) · Best Next Guess</title>
 <meta name="description" content="Free Wordle hint without the spoiler: enter your guesses and colors, see every word that still fits and your smartest next guess. Works in normal and hard mode. No ads, ever.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -333,12 +333,15 @@ td.p{text-align:right;font-weight:700}
 .welcome .wrow{line-height:0;margin-top:5px}.welcome .wdot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:5px;background:#ECE7E2}.welcome .wdot.on{background:#E0A100}
 .welcome .w10 .wdot{width:12px;height:12px;margin-right:4px}
 .welcome .wbadge .wave{font-size:30px}
+.welcome .adshot{display:block;width:100%;margin:10px 0 6px;padding:12px 14px;font-size:17px}   /* v2.30 */
+.welcome .adsub{font-size:14px;color:var(--muted,#5B6478)}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
 .welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.29 (reviewer's 7 changes), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.30 (screenshot first for ad visitors), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })();</script>
+<script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -423,7 +426,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.29</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.30</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -712,7 +715,8 @@ function showWelcome(n, back){ try{
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   if(!back && n===1){ el.classList.add('act');   // v2.22: the very first visit says what to do; greetings start on visit 2
     if(REF==='google-ad'){   // v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
-      el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Type your guesses below, then tap each tile to match its color.</div></div><button class="x" aria-label="Close">×</button>`;
+      el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Get a hint from your own game, without the spoiler.</div><button class="use blue adshot" id="adShot">📷 Add a screenshot of your game</button><div class="ws adsub">Take a screenshot in Wordle, then tap the button. Or type your guesses below.</div></div><button class="x" aria-label="Close">×</button>`;   // v2.30 (Idea 1): screenshot first for ad visitors: about 3 taps instead of typing and coloring every guess
+      el.querySelector('#adShot').addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); });
       track('ad-card-shown');
     } else
     el.innerHTML=`<div class="wtext"><div class="wt">👋 New here? Type your first Wordle guess.</div><div class="ws">Then tap each tile to match its Wordle color to get your best next word.</div></div><button class="x" aria-label="Close">×</button>`; }
