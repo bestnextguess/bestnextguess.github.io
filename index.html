@@ -424,7 +424,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.31</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.32</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -723,7 +723,7 @@ function showWelcome(n, back){ try{
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
-    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); };
+    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); if(typeof update==='function') update(); };   // v2.32: re-show the screenshot box when the ad card closes
     const lift=()=>setTimeout(close,350);
     el.querySelector('.x').addEventListener('click',close);
     };   // v2.28: only the x closes the card, so nothing moves under the player's finger (it used to close on any tap, shifting the page)
@@ -858,7 +858,7 @@ function update(){
   document.getElementById('tapNote').hidden = inWalk();
   { const l=rows[rows.length-1], repShare = !!l && l.c.every(v=>v===2) && rows.every(r=>fb(r.w,l.w)===code(r.c)) && ANSSET.has(l.w);   // v2.22: the game report will show its own share card (same test as baseReport's R.ok)
     document.getElementById('shareLine').hidden = demo || rows.length<2 || inWalk() || repShare; }   // v2.29: from the 2nd guess (after the visitor got some help). v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
-  document.getElementById('shotBar').hidden = !!demo;   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
+  document.getElementById('shotBar').hidden = !!demo || !!document.getElementById('adShot');   // v2.32: hidden while the ad card's own screenshot button is on screen (no duplicate heading/button)   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
   document.querySelector('#shotBar b').textContent = mode==='today' ? 'Stuck on today\'s Wordle?' : 'Already played this puzzle?';   // v2.30: was 'Already played today?' (Ayman, Nov 17)   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
@@ -1241,7 +1241,8 @@ function shotPreview(found){
   document.getElementById('shotCancel').onclick=close;
   ov.onclick=e=>{ if(e.target===ov) close(); };
   const esc_=e=>{ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',esc_); } }; document.addEventListener('keydown',esc_);
-  document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); const lr=found[found.length-1]; checkMode = found.length>=6 || lr.c.every(v=>v===2); rows=found.map(r=>({w:r.w, c:r.c.slice(), ok:true})); track(checkMode?'shot-read':'shot-read-mid'); update(); };   // v2.26.5: an unfinished board keeps playing (next-move box shows); only a finished one goes to the report
+  document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); const lr=found[found.length-1]; checkMode = found.length>=6 || lr.c.every(v=>v===2); rows=found.map(r=>({w:r.w, c:r.c.slice(), ok:true})); track(checkMode?'shot-read':'shot-read-mid'); update();
+    if(innerWidth<800) setTimeout(()=>{ const pk=document.getElementById('nextPeek'), t=(pk && !pk.hidden) ? pk : document.getElementById('board'); if(t) t.scrollIntoView({block:'center',behavior:'smooth'}); }, 60); };   // v2.32: small phones: the result loaded below the screen edge, so a screenshot seemed to do nothing (App designer, iPhone SE)   // v2.26.5: an unfinished board keeps playing (next-move box shows); only a finished one goes to the report
   document.getElementById('shotNext').focus();
 }
 function pickShot(){
@@ -1250,7 +1251,7 @@ function pickShot(){
     fi.onchange=()=>{ const f=fi.files&&fi.files[0]; fi.value=''; if(!f) return;
       const url=URL.createObjectURL(f), img=new Image();
       img.onload=()=>{ let found=null; try{ found=readShot(img); }catch(e){} URL.revokeObjectURL(url);
-        if(found && found.length) shotPreview(found); else { track('shot-fail'); alertBox('Couldn\'t find a Wordle board in that picture. Try a screenshot of the finished game, or type your guesses instead.'); } };
+        if(found && found.length) shotPreview(found); else { track('shot-fail'); alertBox('Couldn\'t find a Wordle board in that picture. Try a screenshot of your Wordle board, or type your guesses instead.'); } };
       img.onerror=()=>{ URL.revokeObjectURL(url); alertBox('That file couldn\'t be opened as a picture.'); };
       img.src=url; };
   }
