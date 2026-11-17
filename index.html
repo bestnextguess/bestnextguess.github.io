@@ -144,7 +144,7 @@ footer p{margin:6px 0}
 .chkres .use{margin-top:8px}
 .nextpeek .pw.pkw.pkfix{color:#C2410C}
 .nextpeek .pw.pkw.pknew{color:var(--blue)}
-.nextpeek .pw.pkw.pkask{color:var(--ink,#1F2A44);font-style:normal;font-weight:700}
+.nextpeek .pw.pkw.pkask{color:var(--ink,#1F2A44);font-style:normal;font-weight:700;white-space:normal;line-height:20px;overflow-wrap:break-word}   /* v2.31: wraps instead of running under the button on phones with larger text (Ad rep's 2.29.1 fix) */
 @media (max-width:340px){ .nextpeek .pw.pkw.pkask{font-size:13px} }
 .askq{font-weight:700;font-size:19px;margin:4px 0 6px}   /* v2.27: the colors question */
 .answers{margin-top:24px}
@@ -424,7 +424,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.30</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.31</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -712,7 +712,7 @@ function showWelcome(n, back){ try{
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   if(!back && n===1){ el.classList.add('act');   // v2.22: the very first visit says what to do; greetings start on visit 2
-    if(REF==='google-ad'){   // v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
+    if(REF.toLowerCase().startsWith('google-ad')){   // v2.31: any google-ad tag (google-ad-<keyword> from keyword tagging); v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
       el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Get a hint from your own game, without the spoiler.</div><button class="use blue adshot" id="adShot">📷 Add a screenshot of your game</button><div class="ws adsub">Take a screenshot in Wordle, then tap the button. Or type your guesses below.</div></div><button class="x" aria-label="Close">×</button>`;   // v2.30 (Idea 1): screenshot first for ad visitors: about 3 taps instead of typing and coloring every guess
       el.querySelector('#adShot').addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); });
       track('ad-card-shown');
