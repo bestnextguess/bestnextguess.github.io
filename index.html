@@ -424,7 +424,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.32</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.33</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -738,6 +738,9 @@ const KEY = 'bng-state-v1';
 let checkMode=false;   // visitor chose "Already played today? Check my game"
 let walk=null, walkSeen=null;   // v2.10: step through a finished game one guess at a time ({step, sig}); step===rows.length is the summary
 const gameSig=()=>JSON.stringify(rows.map(r=>[r.w,r.c]));
+let seen1=null;   // v2.33: board where the player chose to see the one word left
+const hide1=c=>c.length===1 && rows.length>0 && !demo && !inWalk() && !rows[rows.length-1].c.every(v=>v===2) && seen1!==gameSig();   // v2.33: when only one word fits it is the answer: ask before showing it ("without the spoiler", for everyone)
+function show1(){ seen1=gameSig(); track('see-one'); update(); }
 const inWalk=()=>!!(walk && walk.step<rows.length);
 const vrows=()=>inWalk()?rows.slice(0,walk.step+1):rows;   // the rows on view: during a walk, only up to the current guess
 let howtoDone=false; try{ const s0=JSON.parse(sessionStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('bng-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
@@ -899,6 +902,7 @@ function update(){
   const list=document.getElementById('list'), more=document.getElementById('more');
   let shown=Math.min(sorted.length,60);
   function drawList(){
+    if(hide1(sorted)){ list.innerHTML='<tr><td colspan="3" class="w"><button class="chip" id="see1l">Only 1 word fits. Tap to see it.</button></td></tr>'; more.innerHTML=''; document.getElementById('see1l').onclick=show1; return; }   // v2.33
     list.innerHTML=sorted.slice(0,shown).map(w=>{
       const isRep=PAST.has(w), isT2=!isRep&&T2SET.has(w);
       const cls=backup?'k':(isRep?'':isT2?'t':'f'), pill=vrare?'<span class="pill pb">very rare word</span>':backup?'<span class="pill pb">rarer word</span>':isRep?'<span class="pill py">repeat</span>':isT2?'<span class="pill pt">less common</span>':'<span class="pill pg">never used</span>';
@@ -919,6 +923,7 @@ function setPeek(w){   // v2.22: phones: "Your next move: WORD [Use it]" right u
   // both keep the box's place so nothing below it jumps; null (nothing more to suggest: empty board, solved, no guesses left) hides it
   const el=document.getElementById('nextPeek'); if(!el) return;
   if(!w || demo || checkMode){ el.hidden=true; el.innerHTML=''; return; }   // not in the example game, nor when typing in a game already played
+  if(w && w.one){ el.innerHTML=`<span class="pl">Only 1 word fits</span><span class="pw pkw pkask">Tap to see it</span><button class="use" id="peekOne">Show it</button>`; el.hidden=false; document.getElementById('peekOne').onclick=show1; return; }   // v2.33: the one word left is the answer: shown only on a tap
   if(w && w.ask){ el.innerHTML=`<span class="pl">Now set the colors</span><span class="pw pkw pkask">Tap each tile above</span><button class="use" id="peekOk">${w.btn==='It was all gray'?'All gray':'Colors set'}</button>`; el.hidden=false; return; }   // v2.27: phones: the colors step, right under the board
   if(w && typeof w==='object'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw ${w.cls||''}">${w.txt}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }   // v2.25: a short note pointing down to the no-fit card
   if(w==='wait' || w==='nofit'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw">${w==='wait'?'working it out…':'set the tile colors above'}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }
@@ -1036,6 +1041,7 @@ async function suggest(cands,P,my){
     if(demo || inWalk() || (last.fresh && prevFit)){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }   // a new guess the player hasn't colored yet, and it is the reason nothing fits: unchanged
     noFitCard(box); return; }   // v2.25
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
+  if(hide1(cands)){ setPeek({one:true}); box.innerHTML='<p class="k">Only 1 word fits</p><p>That word is the answer. Want one more try on your own first?</p><button class="use" id="see1b">Show it</button>'; document.getElementById('see1b').onclick=show1; return; }   // v2.33
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
     const rare = (demo || !USUAL.includes(best)) ? [] : X3.filter(fits);   // v2.24.2: very rare words (last-resort list) that also fit; shown, never picked
