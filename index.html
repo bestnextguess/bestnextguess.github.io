@@ -335,6 +335,10 @@ td.p{text-align:right;font-weight:700}
 .welcome .wbadge .wave{font-size:30px}
 .welcome .adshot{display:block;width:100%;margin:10px 0 6px;padding:12px 14px;font-size:17px}   /* v2.30 */
 .welcome .adsub{font-size:14px;color:var(--muted,#5B6478)}
+.welcome .adshot.slim{font-size:16px;padding:10px 14px}   /* v2.34: keyword card */
+.welcome .wsep{border-top:1px solid #D5DCE8;margin:12px 0}
+.welcome .mtiles{display:flex;gap:4px;margin:6px 0 4px}.welcome .mtiles span{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#787C7E;color:#fff;font-weight:700;font-size:18px;border-radius:3px}
+.welcome .adraise{display:block;width:100%;margin:8px 0 2px;font-size:16px;padding:10px 14px}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
 .welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
 </style>
@@ -424,7 +428,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.33</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.34</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -713,6 +717,11 @@ function showWelcome(n, back){ try{
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   if(!back && n===1){ el.classList.add('act');   // v2.22: the very first visit says what to do; greetings start on visit 2
     if(REF.toLowerCase().startsWith('google-ad')){   // v2.31: any google-ad tag (google-ad-<keyword> from keyword tagging); v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
+      window.bngAdCard=true; const sb=document.getElementById('shotBar'); if(sb) sb.hidden=true;   // v2.34: no second screenshot box while the ad card is open (it showed on arrival)
+      if(/startingword|startword|firstword|tips/.test(REF.toLowerCase())){   // v2.34: searched for a first word or tips (App designer's keyword card): mid-game help on top, a first word below
+        el.innerHTML=`<div class="wtext"><div class="wt">Already 2 or 3 guesses in?</div><button class="use blue adshot slim" id="adShot">📷 Add a screenshot</button><div class="ws adsub">Or type your guesses below. You'll get your next word, not the answer.</div><div class="wsep"></div><div class="wt">Looking for a good first word?</div><div class="mtiles" aria-label="RAISE">${'RAISE'.split('').map(c=>`<span>${c}</span>`).join('')}</div><div class="ws adsub">A strong first word. Played it? Add your colors and get your smartest next word, no spoilers.</div><button class="use adraise" id="adRaise">I played RAISE: add my colors</button></div><button class="x" aria-label="Close">×</button>`;
+        el.querySelector('#adRaise').addEventListener('click',()=>{ track('ad-card-raise'); const g=document.getElementById('guess'); g.value='raise'; document.getElementById('add').click(); });
+      } else
       el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Get a hint from your own game, without the spoiler.</div><button class="use blue adshot" id="adShot">📷 Add a screenshot of your game</button><div class="ws adsub">Take a screenshot in Wordle, then tap the button. Or type your guesses below.</div></div><button class="x" aria-label="Close">×</button>`;   // v2.30 (Idea 1): screenshot first for ad visitors: about 3 taps instead of typing and coloring every guess
       el.querySelector('#adShot').addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); });
       track('ad-card-shown');
@@ -723,7 +732,7 @@ function showWelcome(n, back){ try{
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
-    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); if(typeof update==='function') update(); };   // v2.32: re-show the screenshot box when the ad card closes
+    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); window.bngAdCard=false; if(typeof update==='function') update(); };   // v2.32: re-show the screenshot box when the ad card closes
     const lift=()=>setTimeout(close,350);
     el.querySelector('.x').addEventListener('click',close);
     };   // v2.28: only the x closes the card, so nothing moves under the player's finger (it used to close on any tap, shifting the page)
@@ -861,7 +870,7 @@ function update(){
   document.getElementById('tapNote').hidden = inWalk();
   { const l=rows[rows.length-1], repShare = !!l && l.c.every(v=>v===2) && rows.every(r=>fb(r.w,l.w)===code(r.c)) && ANSSET.has(l.w);   // v2.22: the game report will show its own share card (same test as baseReport's R.ok)
     document.getElementById('shareLine').hidden = demo || rows.length<2 || inWalk() || repShare; }   // v2.29: from the 2nd guess (after the visitor got some help). v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
-  document.getElementById('shotBar').hidden = !!demo || !!document.getElementById('adShot');   // v2.32: hidden while the ad card's own screenshot button is on screen (no duplicate heading/button)   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
+  document.getElementById('shotBar').hidden = !!demo || !!window.bngAdCard || !!document.getElementById('adShot');   // v2.32: hidden while the ad card's own screenshot button is on screen (no duplicate heading/button)   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
   document.querySelector('#shotBar b').textContent = mode==='today' ? 'Stuck on today\'s Wordle?' : 'Already played this puzzle?';   // v2.30: was 'Already played today?' (Ayman, Nov 17)   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
@@ -1244,7 +1253,7 @@ function shotPreview(found){
   ov.innerHTML=`<div class="shotbox"><b>Is this your game?</b>${rowsH}<p class="shotnote">${odd?'<b>One word isn\'t in our word list, so check its letters.</b> ':''}Read from your screenshot on this device. If a letter or a row is wrong, tap Cancel and type your game instead.</p><div class="shotbtns"><button class="use" id="shotNext">Next</button><button class="chip" id="shotCancel">Cancel</button></div></div>`;
   document.body.appendChild(ov);
   const close=()=>ov.remove();
-  document.getElementById('shotCancel').onclick=close;
+  document.getElementById('shotCancel').onclick=()=>{ track('shot-cancel'); close(); };   // v2.34: count cancelled screenshot previews
   ov.onclick=e=>{ if(e.target===ov) close(); };
   const esc_=e=>{ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',esc_); } }; document.addEventListener('keydown',esc_);
   document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); const lr=found[found.length-1]; checkMode = found.length>=6 || lr.c.every(v=>v===2); rows=found.map(r=>({w:r.w, c:r.c.slice(), ok:true})); track(checkMode?'shot-read':'shot-read-mid'); update();
