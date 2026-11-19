@@ -55,6 +55,12 @@ main{max-width:920px;margin:0 auto;padding:28px 24px 44px}
 .chip{background:#fff;border:1px solid var(--rule);border-radius:999px;padding:4px 12px;font-size:14px;color:var(--soft);cursor:pointer}
 .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
 .oddsbar{display:flex;height:14px;border-radius:999px;overflow:hidden;margin:16px 0 4px;background:var(--rule)} .oddsbar i{display:block}
+.own{border-left:8px solid var(--ink)}
+.sw{position:relative;display:flex;width:100%;max-width:360px;margin:14px 0 8px;border:2px solid var(--ink);border-radius:999px;background:#fff;user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:pointer}
+.sw span{flex:1;position:relative;z-index:1;text-align:center;padding:10px 6px;font-weight:700;font-size:16px;color:var(--soft);transition:color .2s}
+.sw i{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--g);transition:transform .25s}
+.sw.bot i{transform:translateX(100%);background:var(--blue)}
+.sw:not(.bot) span.l, .sw.bot span.r{color:#fff}
 footer{margin-top:26px;color:#3E4A63;font-size:14px}
 footer p{margin:6px 0}
 @media (max-width:720px){
@@ -178,13 +184,34 @@ ul.plain li{margin:4px 0}
     <h2>An independent fan project</h2>
     <p>Best Next Guess is not affiliated with or endorsed by The New York Times, which publishes Wordle. It doesn't know the day's answer: it works only from the colors you enter.</p>
   </section>
+  <section class="card wide own" id="owner" hidden aria-label="Owner setting">
+    <h2>Owner setting (only on this device)</h2>
+    <p>Shown only on devices that don't count visits. Tap or swipe to switch.</p>
+    <div class="sw" id="botSw" role="switch" aria-checked="false" aria-label="Beat the bot" tabindex="0"><i></i><span class="l">Regular</span><span class="r">Beat the bot</span></div>
+    <p class="note" id="botNote"></p>
+  </section>
 </div>
 
 <footer>
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
-  <p><a href="./">The solver</a> · <a href="stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.26.2 · © 2026 Ayman Mikhail</p>
+  <p><a href="./">The solver</a> · <a href="stats.html">Wordle stats</a> · <a href="mailto:hello@bestnextguess.com">Contact</a> · Version 2.36 · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
+<script>(function(){ try{ if(localStorage.getItem('skipgc')!=='t') return; }catch(e){ return; }   // owner devices only (visit counting turned off with the 5 taps on the version number)
+  const card=document.getElementById('owner'), sw=document.getElementById('botSw'), note=document.getElementById('botNote'); if(!card||!sw) return; card.hidden=false;
+  const NOTE={reg:'Regular: protects your streak. A loss counts as 100 extra guesses, so it never takes a risk it can avoid.',bot:'Beat the bot: goes for the fewest guesses. A loss counts as only 2 extra guesses, so it will take a small risk of losing to finish sooner. Your main page shows 🤖 while this is on.'};
+  const get=()=>{ try{ return localStorage.getItem('bng-botmode')==='t'; }catch(e){ return false; } };
+  const set=on=>{ try{ if(on) localStorage.setItem('bng-botmode','t'); else localStorage.removeItem('bng-botmode'); }catch(e){} show(); };
+  const show=()=>{ const on=get(); sw.classList.toggle('bot',on); sw.setAttribute('aria-checked',on?'true':'false'); note.textContent=on?NOTE.bot:NOTE.reg; };
+  let x0=null, moved=false;
+  sw.addEventListener('pointerdown',e=>{ x0=e.clientX; moved=false; });
+  sw.addEventListener('pointermove',e=>{ if(x0===null) return; const dx=e.clientX-x0; if(Math.abs(dx)>30){ moved=true; set(dx>0); x0=null; } });
+  sw.addEventListener('pointerup',()=>{ x0=null; });
+  sw.addEventListener('pointercancel',()=>{ x0=null; });
+  sw.addEventListener('click',()=>{ if(moved){ moved=false; return; } set(!get()); });
+  sw.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); set(!get()); } if(e.key==='ArrowLeft') set(false); if(e.key==='ArrowRight') set(true); });
+  show();
+})();</script>
 <script>if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://bestnextguess.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>

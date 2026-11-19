@@ -349,6 +349,7 @@ td.p{text-align:right;font-weight:700}
 <header class="top">
   <img class="logo" src="logo.svg" alt="Best Next Guess logo">
   <h1>Best Next Guess</h1>
+  <a href="about.html#owner" id="botBadge" hidden title="Beat the bot is on (tap to change)" style="margin-left:8px;font-size:15px;font-weight:700;text-decoration:none;background:var(--blue);color:#fff;border-radius:999px;padding:3px 10px;align-self:center;white-space:nowrap">🤖 Beat the bot</a>
   <div class="side">
     <p class="tagm">Wordle hint without the spoiler. Type your guesses and colors, get your smartest next word.</p>
     <span class="free">Free. No ads. Always.</span>
@@ -428,7 +429,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.35</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.36</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -1080,7 +1081,7 @@ async function suggest(cands,P,my){
   // v2.20: "Or go for the win": the likeliest answers (10% or better) when the engine's pick isn't one of them, each with its own numbers
   const wins=[...cands].filter(w=>w!==bw && (P.get(w)||0)>=WIN_MIN && (P.get(w)||0)>pw).sort((a,b)=>(P.get(b)-P.get(a))||a.localeCompare(b)).slice(0,2);
   let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p>`;
-  if(wins.length) html+=`<p class="safe">${res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The steady pick: it never runs out of guesses, whatever the answer.'}</p>`;
+  if(wins.length) html+=`<p class="safe">${BOT?'Beat-the-bot pick: the fewest guesses on average.':res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The steady pick: it never runs out of guesses, whatever the answer.'}</p>`;
   html+=`<button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
   if(wins.length) html+=`<div class="win" id="winBox"><p class="wh">Or go for the win</p><p class="ws">${wins.length===1?'The likeliest answer. It':'The two likeliest answers. One'} could finish it now; a miss leaves more words to sort out.</p>${wins.map(w=>`<div class="opt" data-w="${w}">${tilesHtml(w).replace('class="big"','class="big sm"')}<p><b>${Math.round(P.get(w)*100)}% chance it's the answer.</b> <span class="wn">Working it out…</span></p><button class="use" data-use="${w}" data-kind="win">Use this guess</button></div>`).join('')}</div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
@@ -1116,7 +1117,7 @@ async function fillWins(wins,cands,P,my,res){   // v2.20: for each offered word,
 }
 let sideWorker=null, sidePending=null;
 function stopSide(){ if(sideWorker){ sideWorker.terminate(); sideWorker=null; } if(sidePending){ const p=sidePending; sidePending=null; p(null); } }   // v2.20: drop any side job from an older board
-function runSide(req){   // v2.20: a second worker for the side calculations, so the main suggestion is never delayed
+function runSide(req){ withLam(req);   // v2.20: a second worker for the side calculations, so the main suggestion is never delayed
   return new Promise(resolve=>{
     const inline=()=>{ try{ resolve(runInline(req)); }catch(e){ resolve(null); } };
     if(!workerOk){ setTimeout(inline,0); return; }
@@ -1140,11 +1141,14 @@ function makeWorker(){
     return w;
   }catch(e){ workerOk=false; return null; }
 }
-function runInline(req){
+// v2.36: owner-only "Beat the bot" mode (About page switch, shown only on devices that don't count visits). A loss costs 2 extra guesses instead of 100.
+const BOT=(()=>{ try{ return localStorage.getItem('skipgc')==='t' && localStorage.getItem('bng-botmode')==='t'; }catch(e){ return false; } })();
+const withLam=req=>{ if(BOT && req && !req.init) req.lam=2; return req; };
+function runInline(req){ withLam(req);
   if(!inlineEngine){ inlineEngine=(new Function(ENGINE_SRC+'\nreturn engine;'))(); inlineEngine.init(ALLW,USUAL.length,FTAB); }
   return inlineEngine.choose(req);
 }
-function runEngine(req){
+function runEngine(req){ withLam(req);
   if(pending){ worker.terminate(); worker=null; const p=pending; pending=null; p(null); }   // a newer board replaces the old job
   return new Promise(resolve=>{
     if(workerOk && !worker) worker=makeWorker();
@@ -1760,6 +1764,7 @@ fetch('past.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():Promise.reject()).the
   if(words.length>1000){ PAST=new Set(words); update(); }
 }).catch(()=>{});
 
+if(BOT){ const bb=document.getElementById('botBadge'); if(bb) bb.hidden=false; }   // v2.36
 load(); update(); refreshShare();
 setTimeout(()=>{ if(document.visibilityState==='visible') track('f-stay30'); },30000);   // v2.6.3 funnel: still here after 30 s
 // v2.6.2: owner switch. Tap the version number 5 times within 4 seconds to stop (or restart) counting visits from this device.
