@@ -340,6 +340,27 @@ td.p{text-align:right;font-weight:700}
 .welcome .mtiles{display:flex;gap:4px;margin:6px 0 4px}.welcome .mtiles span{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#787C7E;color:#fff;font-weight:700;font-size:18px;border-radius:3px}
 .welcome .adraise{display:block;width:100%;margin:8px 0 2px;font-size:16px;padding:10px 14px}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
+/* v2.37: "Copy your keyboard" card for ad visitors (App designer, Nov 19) */
+body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
+.welcome.act.kbcard{padding:14px 14px 16px}
+@media(max-width:480px){.welcome.act.kbcard{padding:12px 8px 14px}}
+.kbcard{display:block;border-width:3px;box-shadow:0 6px 18px rgba(27,36,64,.16)}
+.welcome.act.kbcard .wt{font-size:26px;margin-right:28px;text-align:center} .welcome.act.kbcard .ws{font-size:17px;color:#2A3A5C;margin:4px 0 14px;text-align:center}
+@media(max-width:480px){.welcome.act.kbcard .wt{font-size:21px;text-align:left} .welcome.act.kbcard .ws{font-size:15px;text-align:left;margin-bottom:10px}}
+.kb{display:flex;flex-direction:column;gap:7px;align-items:center;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.kb .kr{display:flex;gap:5px;justify-content:center;width:100%}
+.kb button{flex:1 1 0;max-width:58px;min-width:0;height:58px;padding:0;border:0;border-radius:8px;background:#D3D8E4;color:#1B2440;font:700 20px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 0 #B8BFCE}
+.kb button.s1{background:#787C7E;color:#fff;box-shadow:0 2px 0 #5d6062} .kb button.s2{background:#D9A100;color:#fff;box-shadow:0 2px 0 #a97e00} .kb button.s3{background:#2E8B57;color:#fff;box-shadow:0 2px 0 #1f6a40}
+.kbleg{font-size:15px;color:#2A3A5C;text-align:center;margin:8px 0 6px} .kbleg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin:0 3px 0 9px;vertical-align:-1px}
+.kbslot{font-size:15px;margin:6px 0;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap} .kbslot button{width:34px;height:34px;border:2px solid #2E8B57;border-radius:6px;background:#fff;font:700 15px system-ui;color:#1B2440;cursor:pointer} .kbslot button.on{background:#2E8B57;color:#fff}
+.kbcount{border-top:1px solid #C9D3E6;margin-top:10px;padding-top:10px;font-size:17px;color:#2A3A5C;text-align:center} .kbcount b{font-size:34px;color:#2E8B57;margin-right:6px}
+.kbhint{max-width:620px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:8px;padding:10px 12px;border:2px solid #1B2440;border-radius:10px;background:#fff;font:700 15.5px Georgia,serif;color:#1B2440;text-align:left;cursor:pointer}
+.kbhint span{font:400 13.5px system-ui;color:#2A5BD7;text-decoration:underline;white-space:nowrap}
+.kbhint.open{display:block;border-color:#2E8B57;background:#EEF6F0;cursor:default;font-weight:400} .kbhint.open small{display:block;font:400 12.5px system-ui;color:#4a556e;margin-bottom:2px} .kbhint.open b{letter-spacing:1px}
+.kblinks{margin-top:12px;font-size:15px;align-items:center;text-align:center;display:flex;flex-direction:column;gap:8px} .kblinks a{color:#2A3A5C}
+.kbwords{margin-top:8px;max-height:200px;overflow:auto;border:1px solid #C9D3E6;border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.7;letter-spacing:1px;text-transform:uppercase;background:#fff}
+@media(max-width:480px){.kb button{height:50px;font-size:17px;border-radius:6px} .kb .kr{gap:4px} .kbcount{text-align:left} .kbcount b{font-size:28px}}
+.kbmoved{margin:14px 0;font-size:14.5px;color:#2A3A5C}
 .welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
 </style>
 </head>
@@ -429,7 +450,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.36</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.37</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -703,6 +724,53 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
 // v2.17: welcome card, once a day on the first visit of the day, for the first 20 days visited. Counts the days this device has visited (same private count as above).
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
 // back=true: this device visited before the day count existed (Oct 27), so its real number is unknown: say "Welcome back!" with no number or dots.
+// v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
+function buildKbCard(el){
+  el.classList.add('kbcard'); document.body.classList.add('adslim');
+  const K={}, G={}; let open1=false, open2=false, openL=false, h2='', h2job=0;
+  const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
+  el.innerHTML=`<div class="wt">Stuck on today's Wordle?</div><div class="ws">Copy your Wordle keyboard here. Your hints come from your own game.</div>
+    <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
+    <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times</div>
+    <div id="kbSlots"></div><div class="kbcount" id="kbCount"></div><div id="kbHints"></div><button class="x" aria-label="Close">×</button>`;
+  const fit=()=>{ const g=[],y=[],gr=[]; for(const c in K){ if(K[c]===1) g.push(c); else if(K[c]===2) y.push(c); else if(K[c]===3) gr.push(c); }
+    return USUAL.filter(w=>g.every(c=>!w.includes(c)) && y.every(c=>w.includes(c)) && gr.every(c=> G[c]>=0 ? w[G[c]]===c : w.includes(c))); };
+  const any=()=>Object.keys(K).some(c=>K[c]>0);
+  const esc=t=>t.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  function render(){
+    el.querySelectorAll('#kb button').forEach(b=>{ const v=K[b.dataset.k]||0; b.className=v?'s'+v:''; });
+    const greens=Object.keys(K).filter(c=>K[c]===3);
+    el.querySelector('#kbSlots').innerHTML=greens.map(c=>`<div class="kbslot">Where is your green <b>${c.toUpperCase()}</b>? ${[0,1,2,3,4].map(i=>`<button type="button" data-g="${c}" data-i="${i}" class="${G[c]===i?'on':''}">${i+1}</button>`).join('')}</div>`).join('');
+    const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
+    if(!any()){ cnt.innerHTML=`<b>${USUAL.length.toLocaleString('en-US')}</b>words to start. Each key you tap narrows it.`; H.innerHTML=''; return; }
+    cnt.innerHTML = n ? `<b>${n.toLocaleString('en-US')}</b>${n===1?'word fits':'words fit'} your keyboard` : `<b>0</b>No usual word fits. Check your key colors.`;
+    if(!n){ H.innerHTML=''; return; }
+    const {P}=probs(c); const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1;
+    let t1='';
+    if(open1){ if(n===1) t1='Only one word fits your keyboard. If you want it, open the list below.';
+      else { let best=null,bd=9,bn=0; for(const ch of 'abcdefghijklmnopqrstuvwxyz'){ if(K[ch]) continue; let p=0,k=0; for(const w of c) if(w.includes(ch)){ p+=(P.get(w)||0); k++; } const d=Math.abs(p/tot-0.5); if(k>0 && k<n && d<bd){ bd=d; best=ch; bn=k; } }
+        t1 = best ? `<b>${best.toUpperCase()}</b>. It is in ${bn.toLocaleString('en-US')} of the ${n.toLocaleString('en-US')} words, so it splits them best.` : 'The words left use the same letters. Try the next hint.'; } }
+    H.innerHTML=(open1?`<div class="kbhint open"><small>Hint 1: A letter to test next</small>${t1}</div>`:`<button type="button" class="kbhint" id="kbH1">Hint 1: A letter to test next <span>Tap to see</span></button>`)
+      +(open2?`<div class="kbhint open"><small>Hint 2: Smartest next guess</small>${h2||'Thinking…'}</div>`:`<button type="button" class="kbhint" id="kbH2">Hint 2: Smartest next guess <span>Tap to see</span></button>`)
+      +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${n.toLocaleString('en-US')} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${(n-120).toLocaleString('en-US')} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
+  }
+  function hint2(){ const c=fit(); const my=++h2job; h2=''; if(!c.length) return;
+    if(c.length===1){ h2='Only one word fits. Open the list below to see it.'; render(); return; }
+    const {P}=probs(c);
+    runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:3}).then(r=>{ if(my!==h2job) return;
+      h2 = r && r.g>=0 ? `<b>${ALLW[r.g].toUpperCase()}</b>. ${c.includes(ALLW[r.g])?'It could be the answer, and it':'It'} tells the ${c.length.toLocaleString('en-US')} words apart best.` : 'Add your guesses below for a next word.'; render(); }); }
+  el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
+    if(t.dataset.k){ const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) delete G[c]; open1=open2=openL=false; h2job++; track('kb-tap'); render(); }
+    else if(t.dataset.g){ const c=t.dataset.g, i=+t.dataset.i; G[c]= G[c]===i ? -1 : i; open1=open2=openL=false; h2job++; render(); }
+    else if(t.id==='kbH1'){ open1=true; track('kb-hint1'); render(); }
+    else if(t.id==='kbH2'){ open2=true; track('kb-hint2'); render(); hint2(); }
+    else if(t.id==='kbList'){ e.preventDefault(); openL=!openL; if(openL) track('kb-list'); render(); }
+    else if(t.id==='kbType'){ e.preventDefault(); track('kb-to-type'); const g=document.getElementById('guess'); if(g){ g.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>g.focus(),400); } }
+  });
+  render();
+  // the tagline and links leave the header for this visitor and sit lower on the page
+  setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'')}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
+}
 function showWelcome(n, back){ try{
   // v2.18: the greeting follows the device's own clock (nothing leaves the device). Test links can force the hour: ?welcome=3&hour=23
   let hr=new Date().getHours();
@@ -723,8 +791,8 @@ function showWelcome(n, back){ try{
         el.innerHTML=`<div class="wtext"><div class="wt">Already 2 or 3 guesses in?</div><button class="use blue adshot slim" id="adShot">📷 Add a screenshot</button><div class="ws adsub">Or type your guesses below. You'll get your next word, not the answer.</div><div class="wsep"></div><div class="wt">Looking for a good first word?</div><div class="mtiles" aria-label="RAISE">${'RAISE'.split('').map(c=>`<span>${c}</span>`).join('')}</div><div class="ws adsub">A strong first word. Played it? Add your colors and get your smartest next word, no spoilers.</div><button class="use adraise" id="adRaise">I played RAISE: add my colors</button></div><button class="x" aria-label="Close">×</button>`;
         el.querySelector('#adRaise').addEventListener('click',()=>{ track('ad-card-raise'); const g=document.getElementById('guess'); g.value='raise'; document.getElementById('add').click(); });
       } else
-      el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Get a hint from your own game, without the spoiler.</div><button class="use blue adshot" id="adShot">📷 Add a screenshot of your game</button><div class="ws adsub">Take a screenshot in Wordle, then tap the button. Or type your guesses below.</div></div><button class="x" aria-label="Close">×</button>`;   // v2.30 (Idea 1): screenshot first for ad visitors: about 3 taps instead of typing and coloring every guess
-      el.querySelector('#adShot').addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); });
+      { buildKbCard(el); }   // v2.37: "Copy your keyboard" (App designer, Nov 19) replaces the screenshot card for hint searches
+      { const a=el.querySelector('#adShot'); if(a) a.addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); }); }
       track('ad-card-shown');
       (()=>{ const t0=Date.now(); let fired=false; const stop=()=>{ fired=true; document.removeEventListener('click',h,true); };   // v2.35: first-tap count (App designer, Ayman's yes Nov 18): one event for the first tap within 30 s of arrival, then nothing. Click, not pointerdown, so a scroll never counts as a tap
         const h=e=>{ if(fired) return; stop(); if(Date.now()-t0>30000) return; const t=e.target && e.target.closest ? e.target : null; let w='other';
@@ -738,7 +806,7 @@ function showWelcome(n, back){ try{
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
-    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); window.bngAdCard=false; if(typeof update==='function') update(); };   // v2.32: re-show the screenshot box when the ad card closes
+    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); window.bngAdCard=false; document.body.classList.remove('adslim'); { const m=document.getElementById('kbMoved'); if(m) m.remove(); } if(typeof update==='function') update(); };   // v2.32: re-show the screenshot box when the ad card closes
     const lift=()=>setTimeout(close,350);
     el.querySelector('.x').addEventListener('click',close);
     };   // v2.28: only the x closes the card, so nothing moves under the player's finger (it used to close on any tap, shifting the page)
