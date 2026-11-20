@@ -353,6 +353,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
 .kb button.s1{background:#787C7E;color:#fff;box-shadow:0 2px 0 #5d6062} .kb button.s2{background:#D9A100;color:#fff;box-shadow:0 2px 0 #a97e00} .kb button.s3{background:#2E8B57;color:#fff;box-shadow:0 2px 0 #1f6a40}
 .kbleg{font-size:15px;color:#2A3A5C;text-align:center;margin:8px 0 6px} .kbleg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin:0 3px 0 9px;vertical-align:-1px}
 .kbrow{font-size:15px;color:#2A3A5C;text-align:center;margin:10px 0 6px} .kbs{display:flex;gap:6px;justify-content:center;margin-bottom:4px} .kbs button{width:46px;height:46px;border:2px dashed #9AA6BD;border-radius:6px;background:#fff;font:700 20px system-ui,sans-serif;color:#fff;cursor:pointer;padding:0} .kbs button.on{border:2px solid #2E8B57;background:#2E8B57}
+.kbhint.open span.kbrep{display:block;margin-top:4px;font:400 15px Georgia,serif;color:#7A4A00;text-decoration:none;white-space:normal} .kbhint.open span.kbnote{color:#4a556e;text-decoration:none;white-space:normal} p.rep{margin:6px 0 8px;font-size:15.5px;color:#7A4A00;background:#FFF4D6;border-radius:8px;padding:6px 10px}
 .kbleg a{margin-left:12px;color:#2A5BD7;font-weight:700;white-space:nowrap} .kbnote{display:block;font:400 13px system-ui,sans-serif;color:#4a556e;margin-top:3px}
 .kbfold .kbbody{display:none} .welcome.act.kbcard.kbfold .wt{font-size:17px;text-align:left} #kbOpen{font:400 14.5px system-ui,sans-serif;color:#2A5BD7;margin-left:8px;white-space:nowrap}
 @media(max-width:480px){.kbrow,.kbs{justify-content:flex-start;text-align:left}}
@@ -453,7 +454,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.42</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.43</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -730,6 +731,16 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
 // v2.17: welcome card, once a day on the first visit of the day, for the first 20 days visited. Counts the days this device has visited (same private count as above).
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
 // back=true: this device visited before the day count existed (Oct 27), so its real number is unknown: say "Welcome back!" with no number or dots.
+// v2.43 (Ayman, Nov 20): a repeated-letter line, counted only from the words that still fit what the player entered (the site never knows the answer). Shown when 2 to 60 words fit and at least one of them repeats a letter. Repeats are how streaks die (PRIMP after PRICY).
+function repeatLine(c){
+  const n=c.length; if(n<2 || n>60) return '';
+  const rep=w=>{ const m={}; for(const ch of w) m[ch]=(m[ch]||0)+1; return Object.keys(m).filter(ch=>m[ch]>1); };
+  const R=c.map(rep), k=R.filter(r=>r.length).length; if(!k) return '';
+  const nw=`${n} words that fit`;
+  if(k===n){ const common=[...'abcdefghijklmnopqrstuvwxyz'].filter(ch=>R.every(r=>r.includes(ch)));
+    return common.length ? `Every word that fits uses ${common.map(x=>x.toUpperCase()).join(' and ')} twice.` : `Every word that fits repeats a letter.`; }
+  return `${k} of the ${nw} ${k===1?'repeats':'repeat'} a letter.`;
+}
 // v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
 function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
@@ -763,6 +774,7 @@ function buildKbCard(el){
         const even = best && Math.min(bn,n-bn) >= Math.max(1, n*0.2);
         t1 = !best ? 'The words left use the same letters. Try the next hint.'
            : `<b>${best.toUpperCase()}</b>. It is in ${N(bn)} of the ${N(n)} words` + (even ? ', so it splits them best.' : '. No letter splits these words evenly, so Hint 2 will help more.'); } }
+    if(open1 && n>1){ const rl=repeatLine(c); if(rl) t1+=`<span class="kbrep">${rl}</span>`; }
     H.innerHTML=(open1?`<div class="kbhint open"><small>Hint 1: A letter to test next</small>${t1}</div>`:`<button type="button" class="kbhint" id="kbH1">Hint 1: A letter to test next <span>Tap to see</span></button>`)
       +(open2?`<div class="kbhint open"><small>Hint 2: Smartest next guess</small>${h2||'Thinking…'}</div>`:`<button type="button" class="kbhint" id="kbH2">Hint 2: Smartest next guess <span>Tap to see</span></button>`)
       +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
@@ -1188,6 +1200,7 @@ async function suggest(cands,P,my){
   const wins=[...cands].filter(w=>w!==bw && (P.get(w)||0)>=WIN_MIN && (P.get(w)||0)>pw).sort((a,b)=>(P.get(b)-P.get(a))||a.localeCompare(b)).slice(0,2);
   let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p>`;
   if(wins.length) html+=`<p class="safe">${BOT?'Beat-the-bot pick: the fewest guesses on average.':res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The steady pick: it never runs out of guesses, whatever the answer.'}</p>`;
+  { const rl=repeatLine(cands); if(rl) html+=`<p class="rep">🔁 ${rl}</p>`; }   // v2.43
   html+=`<button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
   if(wins.length) html+=`<div class="win" id="winBox"><p class="wh">Or go for the win</p><p class="ws">${wins.length===1?'The likeliest answer. It':'The two likeliest answers. One'} could finish it now; a miss leaves more words to sort out.</p>${wins.map(w=>`<div class="opt" data-w="${w}">${tilesHtml(w).replace('class="big"','class="big sm"')}<p><b>${Math.round(P.get(w)*100)}% chance it's the answer.</b> <span class="wn">Working it out…</span></p><button class="use" data-use="${w}" data-kind="win">Use this guess</button></div>`).join('')}</div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
