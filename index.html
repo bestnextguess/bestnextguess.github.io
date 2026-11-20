@@ -450,7 +450,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.39</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.40</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -919,9 +919,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePicker(); });
 function probs(cands){
   const fresh=cands.filter(w=>!PAST.has(w)), rep=cands.filter(w=>PAST.has(w));
   const P=new Map(); let fr, rr;
-  if(mode==='archive'){
-    if(rep.length){ fr=0; rr=1; } else { fr=1; rr=0; }
-  } else { fr = !fresh.length ? 0 : rep.length ? 1-REPEAT_RATE : 1; rr = !rep.length ? 0 : fresh.length ? REPEAT_RATE : 1; }
+  { fr = !fresh.length ? 0 : rep.length ? 1-REPEAT_RATE : 1; rr = !rep.length ? 0 : fresh.length ? REPEAT_RATE : 1; }
   const f1=fresh.filter(w=>!T2SET.has(w)), f2=fresh.filter(w=>T2SET.has(w));
   const raw=w=>T2SET.has(w) ? T2_SHARE*T2W.get(w)/T2.length : (1-T2_SHARE)/Math.max(1,ANS.length-PAST.size)*(AW.get(w)||1)*(PTSET.has(w)?PT_W:1);
   const tot=fresh.reduce((s,w)=>s+raw(w),0);
@@ -978,7 +976,7 @@ function update(){
   document.getElementById('bar').innerHTML=backup?'<i style="width:100%;background:var(--x)"></i>':`<i style="width:${fw}%;background:var(--g)"></i><i style="width:${rw}%;background:var(--y)"></i>`;
   const vrare = cands.length>0 && !IDX.has(cands[0]);   // v2.24.3: last-resort words (every other word Wordle accepts) get their own label
   document.getElementById('legend').textContent = !cands.length ? '' : vrare ? 'Very rare words all share the odds equally.' : backup ? 'Rarer words all share the odds equally.'
-     : mode==='archive' ? 'Older puzzle: its answer was already used, so only repeats get odds.'
+     : (mode==='archive' && fresh.length && rep.length) ? `Older puzzle: never-used words still get ${fw}% of the odds, because the newest answers (today's, sometimes yesterday's) aren't in the history yet. Repeats get ${rw}%.`
      : (fresh.length&&rep.length) ? `Estimated odds: never-used words share ${fw}%, repeats ${rw}% (about 1 in 10 answers since Feb 2, 2026 was a repeat).${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% of that (bigger slices for familiar ones)${SHARE_LIVE?': their share of brand-new answers in the last 60 days':''}.`:''}` : fresh.length ? `Only never-used words fit, so they share all the odds.${pr.f2.length?` Less common words get ${Math.round(T2_SHARE*100)}% (bigger slices for familiar ones).`:''}` : rep.length ? 'Only repeats fit, so they share all the odds.' : '';
   const ban=document.getElementById('banner');
   if(rows.length && !cands.length) ban.innerHTML='<div class="banner">No word fits these colors. Check each tile and tap to fix any that are wrong.</div>';
