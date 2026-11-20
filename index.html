@@ -801,6 +801,8 @@ function showWelcome(n, back){ try{
         document.addEventListener('click',h,true); setTimeout(()=>{ if(!fired) stop(); },30000); })();
     } else
     el.innerHTML=`<div class="wtext"><div class="wt">👋 New here? Type your first Wordle guess.</div><div class="ws">Then tap each tile to match its Wordle color to get your best next word.</div></div><button class="x" aria-label="Close">×</button>`; }
+  else if(!back && n>=2 && (()=>{ try{ return localStorage.getItem('bng-used-days')===null && localStorage.getItem('bng-games-v1')===null; }catch(e){ return false; } })()){   // v2.37: came back but has never used the helper on this device (any source): the keyboard card instead of the visit greeting
+    el.classList.add('act'); window.bngAdCard=true; const sb=document.getElementById('shotBar'); if(sb) sb.hidden=true; buildKbCard(el); track('kb-return-shown'); }
   else el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">${greet} Welcome back!</div><div class="ws">${us}Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
   : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">${greet} This is your ${ord} visit!</div><div class="ws">${us}Great to see you again!</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
