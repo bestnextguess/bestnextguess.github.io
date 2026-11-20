@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>if(!/[?&]ref=/.test(location.search)) location.replace(location.pathname+'?ref=google-ad-wordlehint&welcome=1');</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX v2.30 (screenshot first for ad visitors) · Best Next Guess</title>
+<title>SANDBOX Copy your keyboard card (on top of live v2.36) · Best Next Guess</title>
 <meta name="description" content="Free Wordle hint without the spoiler: enter your guesses and colors, see every word that still fits and your smartest next guess. Works in normal and hard mode. No ads, ever.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -144,7 +145,7 @@ footer p{margin:6px 0}
 .chkres .use{margin-top:8px}
 .nextpeek .pw.pkw.pkfix{color:#C2410C}
 .nextpeek .pw.pkw.pknew{color:var(--blue)}
-.nextpeek .pw.pkw.pkask{color:var(--ink,#1F2A44);font-style:normal;font-weight:700}
+.nextpeek .pw.pkw.pkask{color:var(--ink,#1F2A44);font-style:normal;font-weight:700;white-space:normal;line-height:20px;overflow-wrap:break-word}   /* v2.31: wraps instead of running under the button on phones with larger text (Ad rep's 2.29.1 fix) */
 @media (max-width:340px){ .nextpeek .pw.pkw.pkask{font-size:13px} }
 .askq{font-weight:700;font-size:19px;margin:4px 0 6px}   /* v2.27: the colors question */
 .answers{margin-top:24px}
@@ -335,18 +336,39 @@ td.p{text-align:right;font-weight:700}
 .welcome .wbadge .wave{font-size:30px}
 .welcome .adshot{display:block;width:100%;margin:10px 0 6px;padding:12px 14px;font-size:17px}   /* v2.30 */
 .welcome .adsub{font-size:14px;color:var(--muted,#5B6478)}
+.welcome .adshot.slim{font-size:16px;padding:10px 14px}   /* v2.34: keyword card */
+.welcome .wsep{border-top:1px solid #D5DCE8;margin:12px 0}
+.welcome .mtiles{display:flex;gap:4px;margin:6px 0 4px}.welcome .mtiles span{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#787C7E;color:#fff;font-weight:700;font-size:18px;border-radius:3px}
+.welcome .adraise{display:block;width:100%;margin:8px 0 2px;font-size:16px;padding:10px 14px}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
+/* sandbox: "Copy your keyboard" card (App designer, Nov 19) */
+body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
+.kbcard{display:block;padding:10px 12px 12px}
+.kbcard .wt{font-size:18px;margin-right:28px} .kbcard .ws{font-size:14.5px;color:#2A3A5C;margin:2px 0 8px}
+.kb{display:flex;flex-direction:column;gap:5px;align-items:center;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.kb .kr{display:flex;gap:4px;justify-content:center;width:100%}
+.kb button{flex:1 1 0;max-width:38px;min-width:0;height:42px;padding:0;border:0;border-radius:6px;background:#D3D8E4;color:#1B2440;font:700 15px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 0 #B8BFCE}
+.kb button.s1{background:#787C7E;color:#fff;box-shadow:0 2px 0 #5d6062} .kb button.s2{background:#D9A100;color:#fff;box-shadow:0 2px 0 #a97e00} .kb button.s3{background:#2E8B57;color:#fff;box-shadow:0 2px 0 #1f6a40}
+.kbleg{font-size:13px;color:#2A3A5C;text-align:center;margin:8px 0 6px} .kbleg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin:0 3px 0 9px;vertical-align:-1px}
+.kbslot{font-size:14px;margin:4px 0;display:flex;align-items:center;gap:5px;flex-wrap:wrap} .kbslot button{width:30px;height:32px;border:2px solid #2E8B57;border-radius:6px;background:#fff;font:700 15px system-ui;color:#1B2440;cursor:pointer} .kbslot button.on{background:#2E8B57;color:#fff}
+.kbcount{border-top:1px solid #C9D3E6;margin-top:8px;padding-top:8px;font-size:15px;color:#2A3A5C} .kbcount b{font-size:26px;color:#2E8B57;margin-right:6px}
+.kbhint{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:8px;padding:10px 12px;border:2px solid #1B2440;border-radius:10px;background:#fff;font:700 15.5px Georgia,serif;color:#1B2440;text-align:left;cursor:pointer}
+.kbhint span{font:400 13.5px system-ui;color:#2A5BD7;text-decoration:underline;white-space:nowrap}
+.kbhint.open{display:block;border-color:#2E8B57;background:#EEF6F0;cursor:default;font-weight:400} .kbhint.open small{display:block;font:400 12.5px system-ui;color:#4a556e;margin-bottom:2px} .kbhint.open b{letter-spacing:1px}
+.kblinks{margin-top:10px;font-size:14px;display:flex;flex-direction:column;gap:8px} .kblinks a{color:#2A3A5C}
+.kbwords{margin-top:8px;max-height:200px;overflow:auto;border:1px solid #C9D3E6;border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.7;letter-spacing:1px;text-transform:uppercase;background:#fff}
+.kbmoved{margin:14px 0;font-size:14.5px;color:#2A3A5C}
 .welcome .x{position:absolute;right:8px;top:4px;background:none;border:0;font-size:24px;color:#8a93a3;cursor:pointer;padding:4px 8px}
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: test copy of v2.30 (screenshot first for ad visitors), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })();</script>
-<script>document.getElementById("sbxFresh").onclick=function(e){e.preventDefault(); try{Object.keys(localStorage).filter(function(k){return k.indexOf("sbx-")===0}).forEach(function(k){localStorage.removeItem(k)})}catch(x){} location.reload();};</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: "Copy your keyboard" hint card, on top of live v2.36, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })();</script>
 <div class="strip"></div>
 <main>
 <header class="top">
   <img class="logo" src="logo.svg" alt="Best Next Guess logo">
   <h1>Best Next Guess</h1>
+  <a href="sandbox-about.html#owner" id="botBadge" hidden title="Beat the bot is on (tap to change)" style="margin-left:8px;font-size:15px;font-weight:700;text-decoration:none;background:var(--blue);color:#fff;border-radius:999px;padding:3px 10px;align-self:center;white-space:nowrap">🤖 Beat the bot</a>
   <div class="side">
     <p class="tagm">Wordle hint without the spoiler. Type your guesses and colors, get your smartest next word.</p>
     <span class="free">Free. No ads. Always.</span>
@@ -386,7 +408,7 @@ td.p{text-align:right;font-weight:700}
       <input id="guess" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TYPE GUESS" aria-label="Type a five-letter guess">
       <button class="btn" id="add">Add guess</button>
     </div>
-    <div class="shotbar" id="shotBar" hidden><b>Already played today?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>   <!-- v2.29: under the type box, so the type box is on a small phone's first screen -->
+    <div class="shotbar" id="shotBar" hidden><b>Stuck on today's Wordle?</b><button class="use blue" id="shotBtn">📷 Use a screenshot</button><button class="linkbtn" id="typeBtn">or type it in</button></div>   <!-- v2.29: under the type box, so the type box is on a small phone's first screen -->
     <div class="optrow" role="group" aria-label="Game mode"><span class="ol">Mode <button class="info" id="modeInfoBtn" aria-label="What do Normal and Hard mean?" aria-expanded="false" aria-controls="modeInfo">ⓘ</button></span>
       <button class="chip" data-h="0" title="Any word can be your next guess.">Normal</button>
       <button class="chip" data-h="1" title="Like Wordle's Hard Mode: your next guess must reuse every green and yellow letter.">Hard</button>
@@ -426,7 +448,7 @@ td.p{text-align:right;font-weight:700}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.30</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.36 + keyboard card (sandbox)</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -700,6 +722,53 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
 // v2.17: welcome card, once a day on the first visit of the day, for the first 20 days visited. Counts the days this device has visited (same private count as above).
 // Goes away on the x or on any tap, click or key anywhere on the page (whatever was tapped still works).
 // back=true: this device visited before the day count existed (Oct 27), so its real number is unknown: say "Welcome back!" with no number or dots.
+// sandbox: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
+function buildKbCard(el){
+  el.classList.add('kbcard'); document.body.classList.add('adslim');
+  const K={}, G={}; let open1=false, open2=false, openL=false, h2='', h2job=0;
+  const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
+  el.innerHTML=`<div class="wt">Stuck on today's Wordle?</div><div class="ws">Copy your Wordle keyboard here. Your hints come from your own game.</div>
+    <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
+    <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times</div>
+    <div id="kbSlots"></div><div class="kbcount" id="kbCount"></div><div id="kbHints"></div><button class="x" aria-label="Close">×</button>`;
+  const fit=()=>{ const g=[],y=[],gr=[]; for(const c in K){ if(K[c]===1) g.push(c); else if(K[c]===2) y.push(c); else if(K[c]===3) gr.push(c); }
+    return USUAL.filter(w=>g.every(c=>!w.includes(c)) && y.every(c=>w.includes(c)) && gr.every(c=> G[c]>=0 ? w[G[c]]===c : w.includes(c))); };
+  const any=()=>Object.keys(K).some(c=>K[c]>0);
+  const esc=t=>t.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  function render(){
+    el.querySelectorAll('#kb button').forEach(b=>{ const v=K[b.dataset.k]||0; b.className=v?'s'+v:''; });
+    const greens=Object.keys(K).filter(c=>K[c]===3);
+    el.querySelector('#kbSlots').innerHTML=greens.map(c=>`<div class="kbslot">Where is your green <b>${c.toUpperCase()}</b>? ${[0,1,2,3,4].map(i=>`<button type="button" data-g="${c}" data-i="${i}" class="${G[c]===i?'on':''}">${i+1}</button>`).join('')}</div>`).join('');
+    const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
+    if(!any()){ cnt.innerHTML=`<b>${USUAL.length.toLocaleString('en-US')}</b>words to start. Each key you tap narrows it.`; H.innerHTML=''; return; }
+    cnt.innerHTML = n ? `<b>${n.toLocaleString('en-US')}</b>${n===1?'word fits':'words fit'} your keyboard` : `<b>0</b>No usual word fits. Check your key colors.`;
+    if(!n){ H.innerHTML=''; return; }
+    const {P}=probs(c); const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1;
+    let t1='';
+    if(open1){ if(n===1) t1='Only one word fits your keyboard. If you want it, open the list below.';
+      else { let best=null,bd=9,bn=0; for(const ch of 'abcdefghijklmnopqrstuvwxyz'){ if(K[ch]) continue; let p=0,k=0; for(const w of c) if(w.includes(ch)){ p+=(P.get(w)||0); k++; } const d=Math.abs(p/tot-0.5); if(k>0 && k<n && d<bd){ bd=d; best=ch; bn=k; } }
+        t1 = best ? `<b>${best.toUpperCase()}</b>. It is in ${bn.toLocaleString('en-US')} of the ${n.toLocaleString('en-US')} words, so it splits them best.` : 'The words left use the same letters. Try the next hint.'; } }
+    H.innerHTML=(open1?`<div class="kbhint open"><small>Hint 1: A letter to test next</small>${t1}</div>`:`<button type="button" class="kbhint" id="kbH1">Hint 1: A letter to test next <span>Tap to see</span></button>`)
+      +(open2?`<div class="kbhint open"><small>Hint 2: Smartest next guess</small>${h2||'Thinking…'}</div>`:`<button type="button" class="kbhint" id="kbH2">Hint 2: Smartest next guess <span>Tap to see</span></button>`)
+      +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${n.toLocaleString('en-US')} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${(n-120).toLocaleString('en-US')} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
+  }
+  function hint2(){ const c=fit(); const my=++h2job; h2=''; if(!c.length) return;
+    if(c.length===1){ h2='Only one word fits. Open the list below to see it.'; render(); return; }
+    const {P}=probs(c);
+    runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:3}).then(r=>{ if(my!==h2job) return;
+      h2 = r && r.g>=0 ? `<b>${ALLW[r.g].toUpperCase()}</b>. ${c.includes(ALLW[r.g])?'It could be the answer, and it':'It'} tells the ${c.length.toLocaleString('en-US')} words apart best.` : 'Add your guesses below for a next word.'; render(); }); }
+  el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
+    if(t.dataset.k){ const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) delete G[c]; open1=open2=openL=false; h2job++; track('kb-tap'); render(); }
+    else if(t.dataset.g){ const c=t.dataset.g, i=+t.dataset.i; G[c]= G[c]===i ? -1 : i; open1=open2=openL=false; h2job++; render(); }
+    else if(t.id==='kbH1'){ open1=true; track('kb-hint1'); render(); }
+    else if(t.id==='kbH2'){ open2=true; track('kb-hint2'); render(); hint2(); }
+    else if(t.id==='kbList'){ e.preventDefault(); openL=!openL; if(openL) track('kb-list'); render(); }
+    else if(t.id==='kbType'){ e.preventDefault(); track('kb-to-type'); const g=document.getElementById('guess'); if(g){ g.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>g.focus(),400); } }
+  });
+  render();
+  // the tagline and links leave the header for this visitor and sit lower on the page
+  setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'')}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
+}
 function showWelcome(n, back){ try{
   // v2.18: the greeting follows the device's own clock (nothing leaves the device). Test links can force the hour: ?welcome=3&hour=23
   let hr=new Date().getHours();
@@ -714,10 +783,20 @@ function showWelcome(n, back){ try{
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
   if(!back && n===1){ el.classList.add('act');   // v2.22: the very first visit says what to do; greetings start on visit 2
-    if(REF==='google-ad'){   // v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
-      el.innerHTML=`<div class="wtext"><div class="wt">Stuck on today's Wordle?</div><div class="ws">Get a hint from your own game, without the spoiler.</div><button class="use blue adshot" id="adShot">📷 Add a screenshot of your game</button><div class="ws adsub">Take a screenshot in Wordle, then tap the button. Or type your guesses below.</div></div><button class="x" aria-label="Close">×</button>`;   // v2.30 (Idea 1): screenshot first for ad visitors: about 3 taps instead of typing and coloring every guess
-      el.querySelector('#adShot').addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); });
+    if(REF.toLowerCase().startsWith('google-ad')){   // v2.31: any google-ad tag (google-ad-<keyword> from keyword tagging); v2.26.5: visitors from the Google ad searched for a hint mid-game: greet them as players already stuck, not as beginners
+      window.bngAdCard=true; const sb=document.getElementById('shotBar'); if(sb) sb.hidden=true;   // v2.34: no second screenshot box while the ad card is open (it showed on arrival)
+      if(/startingword|startword|firstword|tips/.test(REF.toLowerCase())){   // v2.34: searched for a first word or tips (App designer's keyword card): mid-game help on top, a first word below
+        el.innerHTML=`<div class="wtext"><div class="wt">Already 2 or 3 guesses in?</div><button class="use blue adshot slim" id="adShot">📷 Add a screenshot</button><div class="ws adsub">Or type your guesses below. You'll get your next word, not the answer.</div><div class="wsep"></div><div class="wt">Looking for a good first word?</div><div class="mtiles" aria-label="RAISE">${'RAISE'.split('').map(c=>`<span>${c}</span>`).join('')}</div><div class="ws adsub">A strong first word. Played it? Add your colors and get your smartest next word, no spoilers.</div><button class="use adraise" id="adRaise">I played RAISE: add my colors</button></div><button class="x" aria-label="Close">×</button>`;
+        el.querySelector('#adRaise').addEventListener('click',()=>{ track('ad-card-raise'); const g=document.getElementById('guess'); g.value='raise'; document.getElementById('add').click(); });
+      } else
+      { buildKbCard(el); }   // sandbox: "Copy your keyboard" (App designer, Nov 19) replaces the screenshot card for hint searches
+      { const a=el.querySelector('#adShot'); if(a) a.addEventListener('click',()=>{ track('ad-card-shot'); pickShot(); }); }
       track('ad-card-shown');
+      (()=>{ const t0=Date.now(); let fired=false; const stop=()=>{ fired=true; document.removeEventListener('click',h,true); };   // v2.35: first-tap count (App designer, Ayman's yes Nov 18): one event for the first tap within 30 s of arrival, then nothing. Click, not pointerdown, so a scroll never counts as a tap
+        const h=e=>{ if(fired) return; stop(); if(Date.now()-t0>30000) return; const t=e.target && e.target.closest ? e.target : null; let w='other';
+          if(t){ if(t.closest('.welcome .x')) w='x'; else if(t.closest('.tile')) w='tile'; else if(t.closest('a')) w='link'; else if(t.closest('input,textarea,select')) w='box'; else if(t.closest('button,[role=button],label')) w='button'; }
+          track('ad-first-tap-'+w); };
+        document.addEventListener('click',h,true); setTimeout(()=>{ if(!fired) stop(); },30000); })();
     } else
     el.innerHTML=`<div class="wtext"><div class="wt">👋 New here? Type your first Wordle guess.</div><div class="ws">Then tap each tile to match its Wordle color to get your best next word.</div></div><button class="x" aria-label="Close">×</button>`; }
   else el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">${greet} Welcome back!</div><div class="ws">${us}Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
@@ -725,7 +804,7 @@ function showWelcome(n, back){ try{
   const go=()=>{ const h=document.querySelector('header.top'); if(!h) return; document.querySelectorAll('.welcome').forEach(e=>e.remove()); h.after(el);
     // Close AFTER the tap has done its job (on click, not on touch-down), so the page doesn't shift under the finger and the tap lands where it was aimed.
     // iPhone Safari sends no click for taps on blank areas, so a finger lift (pointerup) also closes it, 350 ms later (after any click has landed). A scroll ends in pointercancel, not pointerup, so scrolling doesn't close it.
-    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); };
+    let done=false; const close=()=>{ if(done) return; done=true; document.removeEventListener('click',close,true); document.removeEventListener('keydown',close,true); document.removeEventListener('pointerup',lift,true); el.remove(); window.bngAdCard=false; document.body.classList.remove('adslim'); { const m=document.getElementById('kbMoved'); if(m) m.remove(); } if(typeof update==='function') update(); };   // v2.32: re-show the screenshot box when the ad card closes
     const lift=()=>setTimeout(close,350);
     el.querySelector('.x').addEventListener('click',close);
     };   // v2.28: only the x closes the card, so nothing moves under the player's finger (it used to close on any tap, shifting the page)
@@ -740,6 +819,9 @@ const KEY = 'sbx-state-v1';
 let checkMode=false;   // visitor chose "Already played today? Check my game"
 let walk=null, walkSeen=null;   // v2.10: step through a finished game one guess at a time ({step, sig}); step===rows.length is the summary
 const gameSig=()=>JSON.stringify(rows.map(r=>[r.w,r.c]));
+let seen1=null;   // v2.33: board where the player chose to see the one word left
+const hide1=c=>c.length===1 && rows.length>0 && !demo && !inWalk() && !rows[rows.length-1].c.every(v=>v===2) && seen1!==gameSig();   // v2.33: when only one word fits it is the answer: ask before showing it ("without the spoiler", for everyone)
+function show1(){ seen1=gameSig(); track('see-one'); update(); }
 const inWalk=()=>!!(walk && walk.step<rows.length);
 const vrows=()=>inWalk()?rows.slice(0,walk.step+1):rows;   // the rows on view: during a walk, only up to the current guess
 let howtoDone=false; try{ const s0=JSON.parse(sessionStorage.getItem(KEY)||'null'); howtoDone=localStorage.getItem('sbx-howto')==='1' || !!(s0 && s0.rows && s0.rows.length); }catch(e){}
@@ -860,8 +942,8 @@ function update(){
   document.getElementById('tapNote').hidden = inWalk();
   { const l=rows[rows.length-1], repShare = !!l && l.c.every(v=>v===2) && rows.every(r=>fb(r.w,l.w)===code(r.c)) && ANSSET.has(l.w);   // v2.22: the game report will show its own share card (same test as baseReport's R.ok)
     document.getElementById('shareLine').hidden = demo || rows.length<2 || inWalk() || repShare; }   // v2.29: from the 2nd guess (after the visitor got some help). v2.19: share link appears after the first guess (not on the untouched page, not in the demo or walkthrough)
-  document.getElementById('shotBar').hidden = !!demo;   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
-  document.querySelector('#shotBar b').textContent = mode==='today' ? 'Already played today?' : 'Already played this puzzle?';   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
+  document.getElementById('shotBar').hidden = !!demo || !!window.bngAdCard || !!document.getElementById('adShot');   // v2.32: hidden while the ad card's own screenshot button is on screen (no duplicate heading/button)   // v2.28: stays after the first guess, so the board doesn't jump up (a mid-game screenshot still works)   // v2.11.1: shown for older puzzles too
+  document.querySelector('#shotBar b').textContent = mode==='today' ? 'Stuck on today\'s Wordle?' : 'Already played this puzzle?';   // v2.30: was 'Already played today?' (Ayman, Nov 17)   // v2.11: the screenshot button sits above both cards, visible on a phone without scrolling   // v2.10: the board is read-only while stepping through
   if(demo) document.getElementById('demoExit').onclick=exitDemo;
   document.querySelectorAll('[data-h]').forEach(b=>{ const on=(b.dataset.h==='1')===hard; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
   document.querySelectorAll('[data-m]').forEach(b=>{ b.classList.toggle('on',b.dataset.m===mode); b.setAttribute('aria-pressed',b.dataset.m===mode); });
@@ -901,6 +983,7 @@ function update(){
   const list=document.getElementById('list'), more=document.getElementById('more');
   let shown=Math.min(sorted.length,60);
   function drawList(){
+    if(hide1(sorted)){ list.innerHTML='<tr><td colspan="3" class="w"><button class="chip" id="see1l">Only 1 word fits. Tap to see it.</button></td></tr>'; more.innerHTML=''; document.getElementById('see1l').onclick=show1; return; }   // v2.33
     list.innerHTML=sorted.slice(0,shown).map(w=>{
       const isRep=PAST.has(w), isT2=!isRep&&T2SET.has(w);
       const cls=backup?'k':(isRep?'':isT2?'t':'f'), pill=vrare?'<span class="pill pb">very rare word</span>':backup?'<span class="pill pb">rarer word</span>':isRep?'<span class="pill py">repeat</span>':isT2?'<span class="pill pt">less common</span>':'<span class="pill pg">never used</span>';
@@ -921,6 +1004,7 @@ function setPeek(w){   // v2.22: phones: "Your next move: WORD [Use it]" right u
   // both keep the box's place so nothing below it jumps; null (nothing more to suggest: empty board, solved, no guesses left) hides it
   const el=document.getElementById('nextPeek'); if(!el) return;
   if(!w || demo || checkMode){ el.hidden=true; el.innerHTML=''; return; }   // not in the example game, nor when typing in a game already played
+  if(w && w.one){ el.innerHTML=`<span class="pl">Only 1 word fits</span><span class="pw pkw pkask">Tap to see it</span><button class="use" id="peekOne">Show it</button>`; el.hidden=false; document.getElementById('peekOne').onclick=show1; return; }   // v2.33: the one word left is the answer: shown only on a tap
   if(w && w.ask){ el.innerHTML=`<span class="pl">Now set the colors</span><span class="pw pkw pkask">Tap each tile above</span><button class="use" id="peekOk">${w.btn==='It was all gray'?'All gray':'Colors set'}</button>`; el.hidden=false; return; }   // v2.27: phones: the colors step, right under the board
   if(w && typeof w==='object'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw ${w.cls||''}">${w.txt}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }   // v2.25: a short note pointing down to the no-fit card
   if(w==='wait' || w==='nofit'){ el.innerHTML=`<span class="pl">Your next move</span><span class="pw pkw">${w==='wait'?'working it out…':'set the tile colors above'}</span><button class="use ph" disabled tabindex="-1" aria-hidden="true">Use it</button>`; el.hidden=false; return; }
@@ -1038,6 +1122,7 @@ async function suggest(cands,P,my){
     if(demo || inWalk() || (last.fresh && prevFit)){ setPeek(rows.length>=6 ? null : 'nofit'); box.innerHTML='<p class="empty">No suggestion yet: no word fits these colors.</p>'; return; }   // a new guess the player hasn't colored yet, and it is the reason nothing fits: unchanged
     noFitCard(box); return; }   // v2.25
   if(rows.length>=6){ setPeek(null); box.innerHTML='<p class="empty">No guesses left for this puzzle. Tap <b>Start over</b> to begin a new one.</p>'; return; }   // v2.22: before the 1-2 words branch (it showed a button that couldn't add a 7th guess)
+  if(hide1(cands)){ setPeek({one:true}); box.innerHTML='<p class="k">Only 1 word fits</p><p>That word is the answer. Want one more try on your own first?</p><button class="use" id="see1b">Show it</button>'; document.getElementById('see1b').onclick=show1; return; }   // v2.33
   if(cands.length<=2){
     const best=[...cands].sort((a,b)=>P.get(b)-P.get(a))[0];
     const rare = (demo || !USUAL.includes(best)) ? [] : X3.filter(fits);   // v2.24.2: very rare words (last-resort list) that also fit; shown, never picked
@@ -1062,7 +1147,7 @@ async function suggest(cands,P,my){
   // v2.20: "Or go for the win": the likeliest answers (10% or better) when the engine's pick isn't one of them, each with its own numbers
   const wins=[...cands].filter(w=>w!==bw && (P.get(w)||0)>=WIN_MIN && (P.get(w)||0)>pw).sort((a,b)=>(P.get(b)-P.get(a))||a.localeCompare(b)).slice(0,2);
   let html=`<p class="k">Best next guess</p>${tilesHtml(bw)}<p>Finishes in <b class="n">${fmtG(res.exp)}</b> on average, counting this one. ${chance}</p>`;
-  if(wins.length) html+=`<p class="safe">${res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The steady pick: it never runs out of guesses, whatever the answer.'}</p>`;
+  if(wins.length) html+=`<p class="safe">${BOT?'Beat-the-bot pick: the fewest guesses on average.':res.pf>0?'The safest pick: the fewest ways to run out of guesses.':'The steady pick: it never runs out of guesses, whatever the answer.'}</p>`;
   html+=`<button class="use" data-use="${bw}" data-kind="split">Use this guess</button>`;
   if(wins.length) html+=`<div class="win" id="winBox"><p class="wh">Or go for the win</p><p class="ws">${wins.length===1?'The likeliest answer. It':'The two likeliest answers. One'} could finish it now; a miss leaves more words to sort out.</p>${wins.map(w=>`<div class="opt" data-w="${w}">${tilesHtml(w).replace('class="big"','class="big sm"')}<p><b>${Math.round(P.get(w)*100)}% chance it's the answer.</b> <span class="wn">Working it out…</span></p><button class="use" data-use="${w}" data-kind="win">Use this guess</button></div>`).join('')}</div>`;
   if(hard) html+='<p class="note">Hard mode: suggestions reuse every green and yellow letter and plan around the guesses you have left.</p>';
@@ -1098,7 +1183,7 @@ async function fillWins(wins,cands,P,my,res){   // v2.20: for each offered word,
 }
 let sideWorker=null, sidePending=null;
 function stopSide(){ if(sideWorker){ sideWorker.terminate(); sideWorker=null; } if(sidePending){ const p=sidePending; sidePending=null; p(null); } }   // v2.20: drop any side job from an older board
-function runSide(req){   // v2.20: a second worker for the side calculations, so the main suggestion is never delayed
+function runSide(req){ withLam(req);   // v2.20: a second worker for the side calculations, so the main suggestion is never delayed
   return new Promise(resolve=>{
     const inline=()=>{ try{ resolve(runInline(req)); }catch(e){ resolve(null); } };
     if(!workerOk){ setTimeout(inline,0); return; }
@@ -1122,11 +1207,14 @@ function makeWorker(){
     return w;
   }catch(e){ workerOk=false; return null; }
 }
-function runInline(req){
+// v2.36: owner-only "Beat the bot" mode (About page switch, shown only on devices that don't count visits). A loss costs 2 extra guesses instead of 100.
+const BOT=(()=>{ try{ return localStorage.getItem('skipgc')==='t' && localStorage.getItem('sbx-botmode')==='t'; }catch(e){ return false; } })();
+const withLam=req=>{ if(BOT && req && !req.init) req.lam=2; return req; };
+function runInline(req){ withLam(req);
   if(!inlineEngine){ inlineEngine=(new Function(ENGINE_SRC+'\nreturn engine;'))(); inlineEngine.init(ALLW,USUAL.length,FTAB); }
   return inlineEngine.choose(req);
 }
-function runEngine(req){
+function runEngine(req){ withLam(req);
   if(pending){ worker.terminate(); worker=null; const p=pending; pending=null; p(null); }   // a newer board replaces the old job
   return new Promise(resolve=>{
     if(workerOk && !worker) worker=makeWorker();
@@ -1240,10 +1328,11 @@ function shotPreview(found){
   ov.innerHTML=`<div class="shotbox"><b>Is this your game?</b>${rowsH}<p class="shotnote">${odd?'<b>One word isn\'t in our word list, so check its letters.</b> ':''}Read from your screenshot on this device. If a letter or a row is wrong, tap Cancel and type your game instead.</p><div class="shotbtns"><button class="use" id="shotNext">Next</button><button class="chip" id="shotCancel">Cancel</button></div></div>`;
   document.body.appendChild(ov);
   const close=()=>ov.remove();
-  document.getElementById('shotCancel').onclick=close;
+  document.getElementById('shotCancel').onclick=()=>{ track('shot-cancel'); close(); };   // v2.34: count cancelled screenshot previews
   ov.onclick=e=>{ if(e.target===ov) close(); };
   const esc_=e=>{ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',esc_); } }; document.addEventListener('keydown',esc_);
-  document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); const lr=found[found.length-1]; checkMode = found.length>=6 || lr.c.every(v=>v===2); rows=found.map(r=>({w:r.w, c:r.c.slice(), ok:true})); track(checkMode?'shot-read':'shot-read-mid'); update(); };   // v2.26.5: an unfinished board keeps playing (next-move box shows); only a finished one goes to the report
+  document.getElementById('shotNext').onclick=()=>{ close(); if(demo){ demo=false; ownRows=null; } doneHowto(); const lr=found[found.length-1]; checkMode = found.length>=6 || lr.c.every(v=>v===2); rows=found.map(r=>({w:r.w, c:r.c.slice(), ok:true})); track(checkMode?'shot-read':'shot-read-mid'); update();
+    if(innerWidth<800) setTimeout(()=>{ const pk=document.getElementById('nextPeek'), t=(pk && !pk.hidden) ? pk : document.getElementById('board'); if(t) t.scrollIntoView({block:'center',behavior:'smooth'}); }, 60); };   // v2.32: small phones: the result loaded below the screen edge, so a screenshot seemed to do nothing (App designer, iPhone SE)   // v2.26.5: an unfinished board keeps playing (next-move box shows); only a finished one goes to the report
   document.getElementById('shotNext').focus();
 }
 function pickShot(){
@@ -1252,7 +1341,7 @@ function pickShot(){
     fi.onchange=()=>{ const f=fi.files&&fi.files[0]; fi.value=''; if(!f) return;
       const url=URL.createObjectURL(f), img=new Image();
       img.onload=()=>{ let found=null; try{ found=readShot(img); }catch(e){} URL.revokeObjectURL(url);
-        if(found && found.length) shotPreview(found); else { track('shot-fail'); alertBox('Couldn\'t find a Wordle board in that picture. Try a screenshot of the finished game, or type your guesses instead.'); } };
+        if(found && found.length) shotPreview(found); else { track('shot-fail'); alertBox('Couldn\'t find a Wordle board in that picture. Try a screenshot of your Wordle board, or type your guesses instead.'); } };
       img.onerror=()=>{ URL.revokeObjectURL(url); alertBox('That file couldn\'t be opened as a picture.'); };
       img.src=url; };
   }
@@ -1741,6 +1830,7 @@ fetch('past.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():Promise.reject()).the
   if(words.length>1000){ PAST=new Set(words); update(); }
 }).catch(()=>{});
 
+if(BOT){ const bb=document.getElementById('botBadge'); if(bb) bb.hidden=false; }   // v2.36
 load(); update(); refreshShare();
 setTimeout(()=>{ if(document.visibilityState==='visible') track('f-stay30'); },30000);   // v2.6.3 funnel: still here after 30 s
 // v2.6.2: owner switch. Tap the version number 5 times within 4 seconds to stop (or restart) counting visits from this device.
