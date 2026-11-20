@@ -450,7 +450,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.40</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.41</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -751,8 +751,11 @@ function buildKbCard(el){
     const {P}=probs(c); const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1;
     let t1='';
     if(open1){ if(n===1) t1='Only one word fits your keyboard. If you want it, open the list below.';
-      else { let best=null,bd=9,bn=0; for(const ch of 'abcdefghijklmnopqrstuvwxyz'){ if(K[ch]) continue; let p=0,k=0; for(const w of c) if(w.includes(ch)){ p+=(P.get(w)||0); k++; } const d=Math.abs(p/tot-0.5); if(k>0 && k<n && d<bd){ bd=d; best=ch; bn=k; } }
-        t1 = best ? `<b>${best.toUpperCase()}</b>. It is in ${bn.toLocaleString('en-US')} of the ${n.toLocaleString('en-US')} words, so it splits them best.` : 'The words left use the same letters. Try the next hint.'; } }
+      else { let best=null,bd=1e9,bp=9,bn=0;   // v2.41: the letter is chosen by word count (closest to half the words), odds only break ties, so the sentence below is always true
+        for(const ch of 'abcdefghijklmnopqrstuvwxyz'){ if(K[ch]) continue; let p=0,k=0; for(const w of c) if(w.includes(ch)){ p+=(P.get(w)||0); k++; } if(k===0 || k===n) continue; const d=Math.abs(k-n/2), dp=Math.abs(p/tot-0.5); if(d<bd || (d===bd && dp<bp)){ bd=d; bp=dp; best=ch; bn=k; } }
+        const even = best && Math.min(bn,n-bn) >= Math.max(1, n*0.2);
+        t1 = !best ? 'The words left use the same letters. Try the next hint.'
+           : `<b>${best.toUpperCase()}</b>. It is in ${bn.toLocaleString('en-US')} of the ${n.toLocaleString('en-US')} words` + (even ? ', so it splits them best.' : '. No letter splits these words evenly, so Hint 2 will help more.'); } }
     H.innerHTML=(open1?`<div class="kbhint open"><small>Hint 1: A letter to test next</small>${t1}</div>`:`<button type="button" class="kbhint" id="kbH1">Hint 1: A letter to test next <span>Tap to see</span></button>`)
       +(open2?`<div class="kbhint open"><small>Hint 2: Smartest next guess</small>${h2||'Thinking…'}</div>`:`<button type="button" class="kbhint" id="kbH2">Hint 2: Smartest next guess <span>Tap to see</span></button>`)
       +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${n.toLocaleString('en-US')} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${(n-120).toLocaleString('en-US')} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
@@ -760,8 +763,21 @@ function buildKbCard(el){
   function hint2(){ const c=fit(); const my=++h2job; h2=''; if(!c.length) return;
     if(c.length===1){ h2='Only one word fits. Open the list below to see it.'; render(); return; }
     const {P}=probs(c);
+    if(c.length>1200){ setTimeout(()=>{ if(my!==h2job) return; const g=kbBest(c,P); h2 = g ? `<b>${g.toUpperCase()}</b>. ${c.includes(g)?'It could be the answer, and it':'It'} tells the ${c.length.toLocaleString('en-US')} words apart best.` : 'Add your guesses below for a next word.'; render(); },30); return; }   // v2.41: with few keys copied the full engine takes several seconds; this answers at once
     runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:3}).then(r=>{ if(my!==h2job) return;
-      h2 = r && r.g>=0 ? `<b>${ALLW[r.g].toUpperCase()}</b>. ${c.includes(ALLW[r.g])?'It could be the answer, and it':'It'} tells the ${c.length.toLocaleString('en-US')} words apart best.` : 'Add your guesses below for a next word.'; render(); }); }
+      let g = r && r.g>=0 ? ALLW[r.g] : null;
+      if(g && ![...g].some(ch=>!K[ch])) g=kbBest(c,P);   // v2.41: the keyboard can't see which words were already played. A word made only of letters already marked may be one of them (SANER after playing SANER), so pick the best word that tests at least one new letter
+      h2 = g ? `<b>${g.toUpperCase()}</b>. ${c.includes(g)?'It could be the answer, and it':'It'} tells the ${c.length.toLocaleString('en-US')} words apart best.` : 'Add your guesses below for a next word.'; render(); }); }
+  function kbBest(c,P){   // one step ahead: the guess (with at least one unmarked letter) that leaves the fewest words on average, by the odds
+    const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1, inC=new Set(c); let pool=USUAL.filter(w=>[...w].some(ch=>!K[ch]));   // everyday words only, so the hint is a word people know
+    if(c.length>400){ const fq={}; for(const w of c) for(const ch of new Set(w)) fq[ch]=(fq[ch]||0)+1;   // big groups: first keep the 150 words whose new letters appear in the most candidates, then compare those exactly
+      const cov=w=>{ let v=0; for(const ch of new Set(w)) if(!K[ch]) v+=Math.min(fq[ch]||0, c.length-(fq[ch]||0)); return v; };
+      pool=pool.map(w=>[cov(w),w]).sort((x,y)=>y[0]-x[0]).slice(0,150).map(x=>x[1]); }
+    let best=null, bs=1e18; const cn=new Int32Array(243), ps=new Float64Array(243);
+    for(const g of pool){ cn.fill(0); ps.fill(0); for(const w of c){ const f=fb(g,w); cn[f]++; ps[f]+=(P.get(w)||0); }
+      let sc=0; for(let i=0;i<243;i++) if(cn[i]) sc+=ps[i]/tot*cn[i]; if(inC.has(g)) sc-=(P.get(g)||0)/tot;   // a possible answer gets credit for its own chance of ending the game
+      if(sc<bs){ bs=sc; best=g; } }
+    return best; }
   el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
     if(t.dataset.k){ const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) delete G[c]; open1=open2=openL=false; h2job++; track('kb-tap'); render(); }
     else if(t.dataset.g){ const c=t.dataset.g, i=+t.dataset.i; G[c]= G[c]===i ? -1 : i; open1=open2=openL=false; h2job++; render(); }
