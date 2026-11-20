@@ -459,7 +459,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.47</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.48</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -702,7 +702,7 @@ function recentShare(by, today){   // share of brand-new answers in the last 60 
 function refreshShare(){ loadHistory().then(by=>{ const s=recentShare(by,puzzleToday()); SHARE_LIVE=s!==null; if(s!==null && Math.abs(s-T2_SHARE)>1e-9){ T2_SHARE=s; try{ localStorage.setItem('bng-t2share',String(s)); }catch(e){} update(); } }).catch(()=>{}); }
 const AW = new Map(ANS.map((w,i)=>[w, DATA.aw[i]]));   // v2.7: usual-list weight = exp(0.3·zipf), mean 1: the editor has picked common words first, so DRESS outranks CRESS
 // v2.39 (Ayman, Nov 20): slang spellings and names aren't Wordle answers, but their common-word weight put them at the top of the list (GONNA, WANNA, GOTTA, JAPAN, PETER...). They stay possible (if the colors fit only them, they still show) but get 2% of a normal word's odds. SLAVE and LYNCH: words the NYT took out of the game.
-const NOT_LIKELY = new Set(['gonna','wanna','gotta','kinda','outta','dunno','sorta','lemme','gimme','innit','kiddo','japan','peter','roman','jimmy','maria','terry','roger','ralph','billy','bobby','jenny','molly','willy','sonny','hogan','romeo','paddy','missy','mecca','waldo','slave','lynch']), NL_W = 0.02;
+const NOT_LIKELY = new Set(['gonna','wanna','gotta','kinda','outta','dunno','sorta','lemme','gimme','innit','kiddo','natch','japan','peter','roman','jimmy','maria','terry','roger','ralph','billy','bobby','jenny','molly','willy','sonny','hogan','romeo','paddy','missy','mecca','waldo','slave','lynch']), NL_W = 0.02;
 for(const w of NOT_LIKELY){ if(T2W.has(w)) T2W.set(w, T2W.get(w)*NL_W); if(AW.has(w)) AW.set(w, AW.get(w)*NL_W); }
 const PTSET = new Set(DATA.pt), PT_W = 0.1;   // v2.5: plain past tenses on the usual list (CLUED, TRIED...) get 10% of a normal word's odds: 1 of 11 has been an answer in 1,952 puzzles, vs 80% of the list
 const REPEAT_RATE = 0.11;
@@ -792,14 +792,15 @@ function buildKbCard(el){
   }
   // Hint 2. The keyboard knows which letters were tried, not which words were played or where a yellow letter sat. So the pick is judged only by what its NEW letters would show (marked letters count for nothing), which can never repeat a guess already made (v2.42; 2.41 only caught words with no new letter: SANER after SANER, but not SAFER after SANER).
   function say(g,c){ const need=Object.keys(K).filter(ch=>K[ch]>=2), hardOk = g && need.every(ch=>g.includes(ch)) && SL.every((ch,i)=>!ch || g[i]===ch);
-    h2 = g ? `<b>${g.toUpperCase()}</b>. ${c.includes(g)?'It could be the answer, and it':'It'} tells the ${N(c.length)} words apart best.${hardOk?'':' <span class="kbnote">Playing Hard mode? Add your guesses below instead.</span>'}` : 'Add your guesses below for a next word.'; render(); }
+    const nl=g ? [...new Set([...g].filter(ch=>!K[ch]))].map(x=>x.toUpperCase()) : [], tests = nl.length ? ` It tests ${nl.length===1?nl[0]:nl.slice(0,-1).join(', ')+' and '+nl[nl.length-1]}.` : '';
+    h2 = g ? `<b>${g.toUpperCase()}</b>. ${c.includes(g)?'It could be the answer, and it':'It can\'t be the answer, but it'} tells the ${N(c.length)} words apart best.${c.includes(g)?'':tests}${hardOk?'':' <span class="kbnote">Playing Hard mode? Add your guesses below instead.</span>'}` : 'Add your guesses below for a next word.'; render(); }
   function hint2(){ const c=fit(); const my=++h2job; h2=''; if(!c.length) return;
     if(c.length===1){ h2='Only one word fits. Open the list below to see it.'; render(); return; }
     const {P}=odds(c), placed=new Set(SL.filter(Boolean)), unsure=Object.keys(K).some(ch=>K[ch]===2 || (K[ch]===3 && !placed.has(ch)));
     if(c.length>1200 || unsure){ setTimeout(()=>{ if(my===h2job) say(kbBest(c,P),c); },30); return; }   // few keys copied (the full engine would take seconds), or a yellow or unplaced green key (their spots are unknown)
     runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:3}).then(r=>{ if(my!==h2job) return;
       let g = r && r.g>=0 ? ALLW[r.g] : null;
-      if(g && ([...g].some(ch=>K[ch]===1) || ![...g].some(ch=>!K[ch]))) g=kbBest(c,P);   // a gray key in the pick (App designer: BOOTH with T gray), or no new letter at all
+      if(g && ![...g].some(ch=>!K[ch])) g=kbBest(c,P);   // no new letter at all. v2.48: a pick with a gray key is kept (Ayman's CATCH trap game: the engine's BLOWN, with L gray, splits BATCH, CATCH, HATCH, WATCH, NATCH safely; replacing it gave NATCH, which risks running out of guesses); the sentence now names the letters it tests
       say(g,c); }); }
   function kbBest(c,P){   // one step ahead: the everyday word whose new letters leave the fewest words on average, by the odds
     const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1, inC=new Set(c); let pool=USUAL.filter(w=>[...w].some(ch=>!K[ch]));
@@ -983,6 +984,7 @@ function probs(cands){
   const raw=w=>T2SET.has(w) ? T2_SHARE*T2W.get(w)/T2.length : (1-T2_SHARE)/Math.max(1,ANS.length-PAST.size)*(AW.get(w)||1)*(PTSET.has(w)?PT_W:1);
   const tot=fresh.reduce((s,w)=>s+raw(w),0);
   fresh.forEach(w=>P.set(w, tot>0? fr*raw(w)/tot:0)); rep.forEach(w=>P.set(w, rep.length? rr/rep.length:0));
+  if(cands.some(w=>NOT_LIKELY.has(w)) && cands.length>1){ let z=0; for(const w of cands){ let v=P.get(w)||0; if(NOT_LIKELY.has(w)) v*=NL_W; P.set(w,v); z+=v; } if(z>0) for(const w of cands) P.set(w,P.get(w)/z); }   // v2.48: slang and names keep 2% of their share even when they are the only never-used word left (NATCH among BATCH, CATCH, HATCH, WATCH got the whole 89%)
   return {P,fresh,rep,fr,rr,f1,f2};
 }
 const pct=p=>p>=0.995?'100%':p>=0.095?Math.round(p*100)+'%':p>=0.001?(Math.round(p*1000)/10)+'%':p>0?'<0.1%':'0%';   // v2.4: one decimal below 10%, so near-ties don't round to 1% vs 2%
