@@ -460,7 +460,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.51</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.52</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -838,7 +838,7 @@ function buildKbCard(el){
     return best; }
   const closeHints=()=>{ open1=open2=openL=false; h2=''; h2job++; };
   el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
-    if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; closeHints(); track('kb-tap'); render(); }
+    if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('bng-kb-user','1'); }catch(e){} render(); }
     else if(t.dataset.s){ const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
     else if(t.dataset.left){ LEFT=+t.dataset.left; track('kb-left'); h2=''; h2eng=false; render(); hint2(); }
     else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; for(const c in K) delete K[c]; SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
@@ -858,7 +858,8 @@ function buildKbCard(el){
   setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'')}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
 }
 // v2.51 (Ayman, Nov 21): a regular is a device that has used the helper on 2 or more days. Everyone else keeps the keyboard card, on every visit and every load, in the browser or the installed app.
-function bngRegular(){ try{ let u=[], g=0; try{ u=JSON.parse(localStorage.getItem('bng-used-days')||'[]'); }catch(e){} try{ g=Object.keys(JSON.parse(localStorage.getItem('bng-games-v1')||'{}')).length; }catch(e){}
+function bngRegular(){ try{ if(localStorage.getItem('bng-kb-user')!==null) return false;   /* v2.52 (Ayman, Nov 21): a device that has tapped a keyboard key keeps the keyboard for good, even after it becomes a regular */
+  let u=[], g=0; try{ u=JSON.parse(localStorage.getItem('bng-used-days')||'[]'); }catch(e){} try{ g=Object.keys(JSON.parse(localStorage.getItem('bng-games-v1')||'{}')).length; }catch(e){}
   return u.length>=2 || g>=2; }catch(e){ return true; } }
 function showWelcome(n, back, again){ try{
   if(again && (back || (n>=2 && bngRegular()))) return;   /* a second load on the same day: regulars and early visitors see no card, as before */
