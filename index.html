@@ -460,7 +460,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.50</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.51</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -725,7 +725,7 @@ function track(name, once=true){ if(once && sent.has(name)) return; sent.add(nam
   const today=day(Date.now()), yest=day(Date.now()-864e5);
   const old=['bng-t2share','bng-games-v1','bng-hard'].some(k=>localStorage.getItem(k)!==null);   // signs of a visit before this counter existed
   let v=null; try{ v=JSON.parse(localStorage.getItem('bng-days-v1')||'null'); }catch(e){}
-  if(v && v.last===today) return;   // already counted today
+  if(v && v.last===today){ if(!/[?&]welcome=/.test(location.search)) showWelcome(v.n, !!v.pre, true); return; }   // already counted today. v2.51 (Ayman, Nov 21): the keyboard card still shows on every load for everyone who is not a regular
   const prev=v ? v.last : null, n=v ? v.n+1 : (old ? 2 : 1);
   localStorage.setItem('bng-days-v1', JSON.stringify({first:v?v.first:today, last:today, n, pre:v?v.pre:(old&&!v)}));
   const kind=(matchMedia('(display-mode: standalone)').matches || navigator.standalone) ? '-app' : '-web';
@@ -857,7 +857,11 @@ function buildKbCard(el){
   // the tagline and links leave the header for this visitor and sit lower on the page
   setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'')}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
 }
-function showWelcome(n, back){ try{
+// v2.51 (Ayman, Nov 21): a regular is a device that has used the helper on 2 or more days. Everyone else keeps the keyboard card, on every visit and every load, in the browser or the installed app.
+function bngRegular(){ try{ let u=[], g=0; try{ u=JSON.parse(localStorage.getItem('bng-used-days')||'[]'); }catch(e){} try{ g=Object.keys(JSON.parse(localStorage.getItem('bng-games-v1')||'{}')).length; }catch(e){}
+  return u.length>=2 || g>=2; }catch(e){ return true; } }
+function showWelcome(n, back, again){ try{
+  if(again && (back || (n>=2 && bngRegular()))) return;   /* a second load on the same day: regulars and early visitors see no card, as before */
   // v2.18: the greeting follows the device's own clock (nothing leaves the device). Test links can force the hour: ?welcome=3&hour=23
   let hr=new Date().getHours();
   try{ const qs=new URLSearchParams(location.search); if(/[?&]welcome=/.test(location.search)){ const t=parseInt(qs.get('hour'),10); if(t>=0&&t<=23) hr=t; } }catch(e){}
@@ -866,7 +870,7 @@ function showWelcome(n, back){ try{
   const W=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
   const ord=n<=10 ? W[n-1] : n+((n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
   // One dot per visit, at most 2 rows: rows of 5 for visits 1-10, rows of 10 for visits 11-20. After the 20th visit the card stops showing (they're a regular by then).
-  if(!(n>=1 && n<=20)) return;
+  if(!(n>=1 && n<=20) && (back || bngRegular())) return;
   const per=n<=10?5:10, fill=n, rows=Math.max(1,Math.ceil(fill/per));
   let dots=''; for(let r=0;r<rows;r++){ dots+=`<div class="wrow${per===10?' w10':''}">`; for(let i=1;i<=per;i++) dots+=`<span class="wdot${r*per+i<=fill?' on':''}"></span>`; dots+='</div>'; }
   const el=document.createElement('div'); el.className='welcome'; el.setAttribute('role','status');
@@ -887,7 +891,7 @@ function showWelcome(n, back){ try{
         document.addEventListener('click',h,true); setTimeout(()=>{ if(!fired) stop(); },30000); })();
     } else
     { window.bngAdCard=true; const sb=document.getElementById('shotBar'); if(sb) sb.hidden=true; buildKbCard(el); track('kb-new-shown'); } }   // v2.38 (Ayman, Nov 19): every first-time visitor gets the keyboard card, wherever they came from
-  else if(!back && n>=2 && (()=>{ try{ return localStorage.getItem('bng-used-days')===null && localStorage.getItem('bng-games-v1')===null; }catch(e){ return false; } })()){   // v2.37: came back but has never used the helper on this device (any source): the keyboard card instead of the visit greeting
+  else if(!back && n>=2 && !bngRegular()){   // v2.37: came back but has never used the helper on this device (any source): the keyboard card instead of the visit greeting
     el.classList.add('act'); window.bngAdCard=true; const sb=document.getElementById('shotBar'); if(sb) sb.hidden=true; buildKbCard(el); track('kb-return-shown'); }
   else el.innerHTML=back ? `<div class="wbadge"><b class="wave">👋</b></div><div class="wtext"><div class="wt">${greet} Welcome back!</div><div class="ws">${us}Great to see you again!</div></div><button class="x" aria-label="Close">×</button>`
   : `<div class="wbadge"><span>VISIT</span><b>${n}</b></div><div class="wtext"><div class="wt">${greet} This is your ${ord} visit!</div><div class="ws">${us}Great to see you again!</div><div class="wdots" aria-hidden="true">${dots}</div><div class="wpriv">Counted only on this device.</div></div><button class="x" aria-label="Close">×</button>`;
