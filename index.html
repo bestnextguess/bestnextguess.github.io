@@ -365,6 +365,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
 .kbcount{border-top:1px solid #C9D3E6;margin-top:10px;padding-top:10px;font-size:17px;color:#2A3A5C;text-align:center} .kbcount b{font-size:34px;color:#2E8B57;margin-right:6px}
 .kbhint{max-width:620px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:8px;padding:10px 12px;border:2px solid #1B2440;border-radius:10px;background:#fff;font:700 15.5px Georgia,serif;color:#1B2440;text-align:left;cursor:pointer}
 .kbhint span{font:400 13.5px system-ui;color:#2A5BD7;text-decoration:underline;white-space:nowrap}
+.kbleft{margin-top:6px;font:400 13px system-ui,sans-serif;color:#4a556e} .kbleft button{width:34px;height:30px;margin-left:6px;border:2px solid #9AA6BD;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0} .kbleft button.on{border-color:#1B2440;background:#1B2440;color:#fff}
 .kbhint.open{display:block;border-color:#2E8B57;background:#EEF6F0;cursor:default;font-weight:400} .kbhint.open small{display:block;font:400 12.5px system-ui;color:#4a556e;margin-bottom:2px} .kbhint.open b{letter-spacing:1px}
 .kblinks{margin-top:12px;font-size:15px;align-items:center;text-align:center;display:flex;flex-direction:column;gap:8px} .kblinks a{color:#2A3A5C}
 .kbwords{margin-top:8px;max-height:200px;overflow:auto;border:1px solid #C9D3E6;border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.7;letter-spacing:1px;text-transform:uppercase;background:#fff}
@@ -459,7 +460,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.49</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.50</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -749,7 +750,7 @@ function repeatLine(c){
 // v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
 function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
-  const K={}, SL=[null,null,null,null,null]; let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false;   // K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
+  const K={}, SL=[null,null,null,null,null]; let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false, LEFT=3, h2eng=false;   // LEFT (v2.50): guesses the visitor has left, 3 · 2 · 1; K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
   const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
   el.innerHTML=`<div class="wt" id="kbHead"><span id="kbTitle">Stuck on today's Wordle?</span> <a href="#" id="kbOpen" hidden>Show the keyboard ▾</a></div><div class="kbbody"><div class="ws"><b>Tap the letters you've played.</b> <span class="kbw2">Tap a key again to match its color.</span></div><div class="kbold" id="kbOld" hidden>Older puzzle: using past-answer odds. <a href="#" id="kbToday">Switch to Today's</a></div>
     <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
@@ -787,21 +788,42 @@ function buildKbCard(el){
            : `Try a word with <b>${best.toUpperCase()}</b> next. It is in ${N(bn)} of the ${N(n)} words` + (even ? '.' : '. No letter splits these evenly, so the next-guess hint will help more.'); } }
     if(n>1){ const rl=repeatLine(c); if(rl) t1+=`<span class="kbrep">${rl}</span>`; }
     LT.innerHTML=(example?`<div class="kbex"><b>Example:</b> RAISE, all gray. Tap a key again to match your colors, or Start over.</div>`:'')+`<div class="kbhint open kbl"><small>A letter to try next</small>${t1}</div>`;   // the example line (App designer): after "See how it works" the keyboard isn't the visitor's own game yet   // v2.44 (App designer, Ad rep): the letter hint shows itself from the first key and updates with every tap; a letter to try is not a spoiler. Only the word and the list stay behind a tap
-    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
+    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${h2eng?`<div class="kbleft">Guesses left: ${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
       +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
   }
   // Hint 2. The keyboard knows which letters were tried, not which words were played or where a yellow letter sat. So the pick is judged only by what its NEW letters would show (marked letters count for nothing), which can never repeat a guess already made (v2.42; 2.41 only caught words with no new letter: SANER after SANER, but not SAFER after SANER).
   function say(g,c){ const need=Object.keys(K).filter(ch=>K[ch]>=2), hardOk = g && need.every(ch=>g.includes(ch)) && SL.every((ch,i)=>!ch || g[i]===ch);
     const nl=g ? [...new Set([...g].filter(ch=>!K[ch]))].map(x=>x.toUpperCase()) : [], tests = nl.length ? ` It tests ${nl.length===1?nl[0]:nl.slice(0,-1).join(', ')+' and '+nl[nl.length-1]}.` : '';
-    h2 = g ? `<b>${g.toUpperCase()}</b>. ${c.includes(g)?'It could be the answer, and it':'It can\'t be the answer, but it'} tells the ${N(c.length)} words apart best.${c.includes(g)?'':tests}${hardOk?'':' <span class="kbnote">Playing Hard mode? Add your guesses below instead.</span>'}` : 'Add your guesses below for a next word.'; render(); }
-  function hint2(){ const c=fit(); const my=++h2job; h2=''; if(!c.length) return;
+    const lead = LEFT===1 ? `<b>${g?g.toUpperCase():''}</b>. With one guess left, this is the most likely word.` : LEFT===2 ? `<b>${g?g.toUpperCase():''}</b>. With two guesses left, this gives you the best chance to finish in time.${g&&!c.includes(g)?tests:''}` : `<b>${g?g.toUpperCase():''}</b>. ${g&&c.includes(g)?'It could be the answer, and it':'It can\'t be the answer, but it'} tells the ${N(c.length)} words apart best.${g&&c.includes(g)?'':tests}`;
+    h2 = g ? `${lead}${hardOk?'':' <span class="kbnote">Playing Hard mode? Add your guesses below instead.</span>'}` : 'Add your guesses below for a next word.'; render(); }
+  function hint2(){ const c=fit(); const my=++h2job; h2=''; h2eng=false; if(!c.length) return;
     if(c.length===1){ h2='Only one word fits. Open the list below to see it.'; render(); return; }
     const {P}=odds(c), placed=new Set(SL.filter(Boolean)), unsure=Object.keys(K).some(ch=>K[ch]===2 || (K[ch]===3 && !placed.has(ch)));
     if(c.length>1200 || unsure){ setTimeout(()=>{ if(my===h2job) say(kbBest(c,P),c); },30); return; }   // few keys copied (the full engine would take seconds), or a yellow or unplaced green key (their spots are unknown)
-    runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:3}).then(r=>{ if(my!==h2job) return;
-      let g = r && r.g>=0 ? ALLW[r.g] : null;
-      if(g && ![...g].some(ch=>!K[ch])) g=kbBest(c,P);   // no new letter at all. v2.48: a pick with a gray key is kept (Ayman's CATCH trap game: the engine's BLOWN, with L gray, splits BATCH, CATCH, HATCH, WATCH, NATCH safely; replacing it gave NATCH, which risks running out of guesses); the sentence now names the letters it tests
+    runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:LEFT}).then(r=>{ if(my!==h2job) return;
+      let g = r && r.g>=0 ? ALLW[r.g] : null; h2eng=true;
+      if(g) g=tieBreak(g,c,P);
+      const fresh=w=>[...w].some(ch=>!K[ch]);
+      if(g && LEFT===1){ if(!fresh(g)){ const nw=c.filter(fresh).sort((x,y)=>(P.get(y)||0)-(P.get(x)||0)); if(nw.length) g=nw[0]; } }   /* v2.50: with one guess left the pick must be a word that can be the answer: the likeliest one with a letter not tried yet */
+      else if(g && !fresh(g)) g=kbBest(c,P);   // no new letter at all. v2.48: a pick with a gray key is kept (Ayman's CATCH trap game: the engine's BLOWN, with L gray, splits BATCH, CATCH, HATCH, WATCH, NATCH safely; replacing it gave NATCH, which risks running out of guesses); the sentence now names the letters it tests
       say(g,c); }); }
+  // v2.50 (Ayman, CATCH trap game): when another word splits the words left exactly as well as the engine's pick (same expected guesses, same biggest group, no fewer groups, and with 2 guesses left no lower chance to finish), prefer one with no gray letters, then an everyday word. It never swaps in a worse word.
+  function tieBreak(g,c,P){
+    if(LEFT<2 || c.length>60) return g;
+    const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1, inC=new Set(c), US=new Set(USUAL);
+    const F=n=> n<=1 ? 1 : n===2 ? 1.5 : 1.531+0.266*Math.log(n);
+    const gray=x=>new Set([...x].filter(ch=>K[ch]===1)).size;
+    const stat=x=>{ const m=new Map(); for(const w of c){ const f=fb(x,w), o=m.get(f)||{n:0,p:0}; o.n++; o.p+=(P.get(w)||0); m.set(f,o); }
+      let S=1, mx=0, win2=0; for(const [f,o] of m){ S+=o.p/tot*F(o.n); if(o.n>mx) mx=o.n; if(o.n===1 && f!==242) win2+=o.p/tot; }
+      if(inC.has(x)){ const pp=(P.get(x)||0)/tot; S-=pp; win2+=pp; }
+      return {S,mx,ng:m.size,win2}; };
+    const sg=stat(g), kg=[gray(g), US.has(g)?0:1]; let best=g, bk=null;
+    for(const x of ALLW){ if(x===g) continue; const k=[gray(x), US.has(x)?0:1];
+      if(k[1]>kg[1] || k[0]>kg[0] || (k[0]===kg[0] && k[1]>=kg[1])) continue;   // only a word with fewer gray letters, or a more everyday one, can replace it; an everyday word is never replaced by a rare one
+      const st=stat(x);
+      if(st.S>sg.S+1e-9 || st.mx>sg.mx || st.ng<sg.ng || (LEFT===2 && st.win2<sg.win2-1e-9)) continue;
+      if(!bk || k[0]<bk[0] || (k[0]===bk[0] && (k[1]<bk[1] || (k[1]===bk[1] && st.S<bk[2])))) { best=x; bk=[k[0],k[1],st.S]; } }
+    return best; }
   function kbBest(c,P){   // one step ahead: the everyday word whose new letters leave the fewest words on average, by the odds
     const tot=c.reduce((s,w)=>s+(P.get(w)||0),0)||1, inC=new Set(c); let pool=USUAL.filter(w=>[...w].some(ch=>!K[ch]));
     if(c.length>400){ const fq={}; for(const w of c) for(const ch of new Set(w)) fq[ch]=(fq[ch]||0)+1;   // big groups: first keep the 150 words whose new letters appear in the most candidates, then compare those exactly
@@ -818,7 +840,8 @@ function buildKbCard(el){
   el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
     if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; closeHints(); track('kb-tap'); render(); }
     else if(t.dataset.s){ const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
-    else if(t.id==='kbReset'){ e.preventDefault(); example=false; for(const c in K) delete K[c]; SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
+    else if(t.dataset.left){ LEFT=+t.dataset.left; track('kb-left'); h2=''; h2eng=false; render(); hint2(); }
+    else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; for(const c in K) delete K[c]; SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
     else if(t.id==='kbRaise'){ e.preventDefault(); example=true; for(const c of 'raise') K[c]=1; closeHints(); track('kb-raise'); render(); }   // marks R, A, I, S, E gray; the visitor then taps any that were yellow or green
     else if(t.id==='kbToday'){ e.preventDefault(); const b=document.querySelector('[data-m="today"]'); if(b) b.click(); }
     else if(t.id==='kbOpen'){ e.preventDefault(); reopened=true; fold(false); }
