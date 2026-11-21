@@ -341,7 +341,14 @@ td.p{text-align:right;font-weight:700}
 .welcome .adraise{display:block;width:100%;margin:8px 0 2px;font-size:16px;padding:10px 14px}
 .welcome .wpriv{font-size:12px;color:#8a93a3;margin-top:6px}
 /* v2.37: "Copy your keyboard" card for ad visitors (App designer, Nov 19) */
-body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
+body.adslim header.top .side p{display:none}
+/* v2.53 (App designer, Ayman's choice Nov 21): keyboard visitors get the links back at the top as one short line: "1,981 answers · Past answers · Install app". About stays in the links at the bottom of the page. */
+body.adslim header.top .side nav{display:block;font-size:13px;line-height:20px;white-space:nowrap;margin:0}
+body.adslim header.top nav .nvl, body.adslim header.top nav .navabout, body.adslim header.top nav .sepi{display:none}
+body.adslim header.top nav .nav1{display:inline;margin:0} body.adslim header.top nav .sep1{display:inline}
+body.adslim header.top nav .sep2:has(+ .navgrp #installWrap[hidden]){display:none}
+body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-shadow:none}
+@media(max-width:350px){ body.adslim header.top .side nav{font-size:12px} body.adslim header.top #installBtn{padding:1px 6px} }
 .welcome.act.kbcard{padding:14px 14px 16px}
 @media(max-width:480px){.welcome.act.kbcard{padding:12px 8px 14px}}
 .kbcard{display:block;border-width:3px;box-shadow:0 6px 18px rgba(27,36,64,.16)}
@@ -385,7 +392,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
     <p class="tagm">Wordle hint without the spoiler. Type your guesses and colors, get your smartest next word.</p>
     <span class="free">Free. No ads. Always.</span>
     <p>Wordle hint without the spoiler. Enter your guesses and colors, see every possible answer and your smartest next move.</p>
-    <nav><a href="stats.html" class="nav1">See what <span id="nRev">1,947</span> answers reveal</a><span class="sep1"> · </span><a href="answers.html">Past answers</a> · <span class="navgrp"><a href="about.html">About</a><span id="installWrap"> · <a href="about.html#install" id="installBtn">📲 Install app</a></span></span></nav>
+    <nav><a href="stats.html" class="nav1"><span class="nvl">See what </span><span id="nRev" class="nrev">1,947</span> answers<span class="nvl"> reveal</span></a><span class="sep1"> · </span><a href="answers.html">Past answers</a><span class="sep2"> · </span><span class="navgrp"><a href="about.html" class="navabout">About</a><span id="installWrap"><span class="sepi"> · </span><a href="about.html#install" id="installBtn">📲 Install app</a></span></span></nav>
   </div>
 </header>
 
@@ -460,7 +467,7 @@ body.adslim header.top .side p, body.adslim header.top .side nav{display:none}
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.52</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.53</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -752,7 +759,7 @@ function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
   const K={}, SL=[null,null,null,null,null]; let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false, LEFT=3, h2eng=false;   // LEFT (v2.50): guesses the visitor has left, 3 · 2 · 1; K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
   const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
-  el.innerHTML=`<div class="wt" id="kbHead"><span id="kbTitle">Stuck on today's Wordle?</span> <a href="#" id="kbOpen" hidden>Show the keyboard ▾</a></div><div class="kbbody"><div class="ws"><b>Tap the letters you've played.</b> <span class="kbw2">Tap a key again to match its color.</span></div><div class="kbold" id="kbOld" hidden>Older puzzle: using past-answer odds. <a href="#" id="kbToday">Switch to Today's</a></div>
+  el.innerHTML=`<div class="wt" id="kbHead"><span id="kbTitle">Stuck on today's Wordle?</span> <a href="#" id="kbOpen" hidden>Show the keyboard ▾</a></div><div class="kbbody"><div class="ws"><b>Tap the letters you've played.</b></div><div class="kbold" id="kbOld" hidden>Older puzzle: using past-answer odds. <a href="#" id="kbToday">Switch to Today's</a></div>
     <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
     <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times <a href="#" id="kbReset" hidden>Start over</a></div>
     <div class="kbcount" id="kbCount"></div><div id="kbSlots"></div><div id="kbLetter"></div><div id="kbHints"></div></div><button class="x" aria-label="Close">×</button>`;
@@ -855,7 +862,7 @@ function buildKbCard(el){
   window.bngKbFold=on=>{ if(!el.isConnected) return; if(mode!==lastMode){ lastMode=mode; el.querySelector('#kbOld').hidden = mode!=='archive'; closeHints(); render(); }  /* v2.47 (App designer, Ayman): heading stays fixed; a small line shows the Older odds, with a way back */ if(on && !folded && !reopened){ fold(true); track('kb-folded'); } else if(!on && folded){ fold(false); } };
   render();
   // the tagline and links leave the header for this visitor and sit lower on the page
-  setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'')}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
+  setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'').replace(/(class="nrev">)[^<]*/, (m,a)=>{ const t=new Date(), n=Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5); return a+Math.max(n,1947).toLocaleString('en-US'); })}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
 }
 // v2.51 (Ayman, Nov 21): a regular is a device that has used the helper on 2 or more days. Everyone else keeps the keyboard card, on every visit and every load, in the browser or the installed app.
 function bngRegular(){ try{ if(localStorage.getItem('bng-kb-user')!==null) return false;   /* v2.52 (Ayman, Nov 21): a device that has tapped a keyboard key keeps the keyboard for good, even after it becomes a regular */
