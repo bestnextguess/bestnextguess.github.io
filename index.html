@@ -344,9 +344,11 @@ td.p{text-align:right;font-weight:700}
 body.adslim header.top .side p{display:none}
 /* v2.53 (App designer, Ayman's choice Nov 21): keyboard visitors get the links back at the top as one short line: "1,981 answers · Past answers · Install app". About stays in the links at the bottom of the page. */
 body.adslim header.top .side nav{display:block;font-size:13px;line-height:20px;white-space:nowrap;margin:0}
-body.adslim header.top nav .nvl, body.adslim header.top nav .navabout, body.adslim header.top nav .sepi{display:none}
+.nvs{display:none} body.adslim header.top nav .nvs{display:inline} body.adslim header.top nav .nvf{display:none}
+/* v2.55 (App designer, Ayman's go Nov 21): "Answer stats · Past answers · 📲 Install app" in the browser; inside the installed app the Install button hides itself and About takes its place. */
+body.adslim header.top nav .navabout, body.adslim header.top nav .sepi{display:none}
+body.adslim header.top nav .navgrp:has(#installWrap[hidden]) .navabout{display:inline}
 body.adslim header.top nav .nav1{display:inline;margin:0} body.adslim header.top nav .sep1{display:inline}
-body.adslim header.top nav .sep2:has(+ .navgrp #installWrap[hidden]){display:none}
 body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-shadow:none}
 @media(max-width:350px){ body.adslim header.top .side nav{font-size:12px} body.adslim header.top #installBtn{padding:1px 6px} }
 .welcome.act.kbcard{padding:14px 14px 16px}
@@ -392,7 +394,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
     <p class="tagm">Wordle hint without the spoiler. Type your guesses and colors, get your smartest next word.</p>
     <span class="free">Free. No ads. Always.</span>
     <p>Wordle hint without the spoiler. Enter your guesses and colors, see every possible answer and your smartest next move.</p>
-    <nav><a href="stats.html" class="nav1"><span class="nvl">See what </span><span id="nRev" class="nrev">1,947</span> answers<span class="nvl"> reveal</span></a><span class="sep1"> · </span><a href="answers.html">Past answers</a><span class="sep2"> · </span><span class="navgrp"><a href="about.html" class="navabout">About</a><span id="installWrap"><span class="sepi"> · </span><a href="about.html#install" id="installBtn">📲 Install app</a></span></span></nav>
+    <nav><a href="stats.html" class="nav1"><span class="nvs">Answer stats</span><span class="nvf">See what <span id="nRev" class="nrev">1,947</span> answers reveal</span></a><span class="sep1"> · </span><a href="answers.html">Past answers</a><span class="sep2"> · </span><span class="navgrp"><a href="about.html" class="navabout">About</a><span id="installWrap"><span class="sepi"> · </span><a href="about.html#install" id="installBtn">📲 Install app</a></span></span></nav>
   </div>
 </header>
 
@@ -467,7 +469,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer must already have been used, so only repeats count. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.54</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.55</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
