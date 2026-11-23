@@ -469,7 +469,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer has been used before, so used words share about 89% of the odds. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.59</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.60</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -776,7 +776,7 @@ function buildKbCard(el){
   /* v2.59: the letter hint now sits above the slot rows, so when a tap changes the hint's height the page scrolls by the same amount and the tapped spot stays under the finger (Ayman's Nov 20 "shake") */
   const keep=(sel,y0)=>{ const nb=el.querySelector(sel); if(!nb) return; const d=nb.getBoundingClientRect().top-y0; if(Math.abs(d)>0.5) window.scrollBy({top:d,left:0,behavior:'instant'}); };
   const fit=()=>{ const g=[],y=[],gr=greens(); for(const c in K){ if(K[c]===1) g.push(c); else if(K[c]===2) y.push(c); }
-    return USUAL.filter(w=>g.every(c=>!w.includes(c)) && y.every(c=>w.includes(c)) && gr.every(c=>w.includes(c)) && SL.every((c,i)=>!c || w[i]===c) && Object.keys(YS).every(ch=>K[ch]!==2 || [...YS[ch]].every(i=>w[i]!==ch))); };
+    return USUAL.filter(w=>g.every(c=>!w.includes(c)) && y.every(c=>w.includes(c)) && gr.every(c=>w.includes(c)) && SL.every((c,i)=>!c || w[i]===c) && Object.keys(YS).every(ch=>(K[ch]||0)<2 || [...YS[ch]].every(i=>w[i]!==ch))); };
   const any=()=>Object.keys(K).some(c=>K[c]>0);
   // v2.45: when the Puzzle switch below is on Older, the answer is almost surely a past answer, so the card's odds flip: past answers share 89%, never-used words 11% (the newest answers may not be in the history yet)
   const odds=c=>probs(c);   /* v2.57: probs() itself now flips the split in Older mode */
@@ -788,7 +788,7 @@ function buildKbCard(el){
     el.querySelector('#kbReset').hidden=!any();
     const gr=greens();
     el.querySelector('#kbSlots').innerHTML = gr.length ? `<div class="kbrow">Green letters: tap the slot each one is in.</div><div class="kbs">${[0,1,2,3,4].map(i=>`<button type="button" data-s="${i}" class="${SL[i]?'on':''}" aria-label="Slot ${i+1}">${SL[i]?SL[i].toUpperCase():''}</button>`).join('')}</div>` : '';   // v2.42 (App designer): one row of five slots, under the count, same height for 1 or 5 greens
-    const yl=Object.keys(K).filter(ch=>K[ch]===2).sort();   /* v2.59 (Ayman, Nov 22): yellow letters can be placed too: tap each spot where Wordle showed it yellow */
+    const yl=Object.keys(K).filter(ch=>K[ch]===2 || (K[ch]===3 && YS[ch])).sort();   /* v2.59 (Ayman, Nov 22): yellow letters can be placed too: tap each spot where Wordle showed it yellow */
     el.querySelector('#kbYSlots').innerHTML = yl.length ? `<div class="kbrow">Where was each yellow letter? Tap the spots.</div>${yl.map(ch=>`<div class="kbyr"><b>${ch.toUpperCase()}</b>${[0,1,2,3,4].map(i=>{ const on=YS[ch]&&YS[ch].has(i), gl=SL[i]; return `<button type="button" data-y="${ch}${i}" class="${on?'on':''}" ${gl?'disabled':''} aria-label="${ch.toUpperCase()} was yellow in spot ${i+1}">${i+1}</button>`; }).join('')}</div>`).join('')}` : '';
     const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
     const LT=el.querySelector('#kbLetter'); LT.innerHTML='';
@@ -858,7 +858,7 @@ function buildKbCard(el){
     return best; }
   const closeHints=()=>{ open1=open2=openL=false; h2=''; h2job++; };
   el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
-    if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; if(K[c]!==2) delete YS[c]; closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('bng-kb-user','1'); }catch(e){} render(); }
+    if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; if((K[c]||0)<2) delete YS[c];   /* v2.60 (Ayman): a yellow letter that later turns green keeps its yellow row and marks */ closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('bng-kb-user','1'); }catch(e){} render(); }
     else if(t.dataset.y){ const y0=t.getBoundingClientRect().top, ch=t.dataset.y[0], i=+t.dataset.y[1]; if(!YS[ch]) YS[ch]=new Set(); if(YS[ch].has(i)) YS[ch].delete(i); else YS[ch].add(i); closeHints(); track('kb-yslot'); render(); keep(`[data-y="${t.dataset.y}"]`,y0); }
     else if(t.dataset.s){ const y0=t.getBoundingClientRect().top; setTimeout(()=>keep(`.kbs [data-s="${t.dataset.s}"]`,y0),0); const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
     else if(t.dataset.left){ LEFT=+t.dataset.left; track('kb-left'); h2=''; h2eng=false; render(); hint2(); }
