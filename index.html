@@ -361,7 +361,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
 .kb button{flex:1 1 0;max-width:58px;min-width:0;height:58px;padding:0;border:0;border-radius:8px;background:#D3D8E4;color:#1B2440;font:700 20px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 0 #B8BFCE}
 .kb button.s1{background:#787C7E;color:#fff;box-shadow:0 2px 0 #5d6062} .kb button.s2{background:#D9A100;color:#fff;box-shadow:0 2px 0 #a97e00} .kb button.s3{background:#2E8B57;color:#fff;box-shadow:0 2px 0 #1f6a40}
 .kbleg{font-size:15px;color:#2A3A5C;text-align:center;margin:8px 0 6px} .kbleg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin:0 3px 0 9px;vertical-align:-1px}
-.kbrow{font-size:15px;color:#2A3A5C;text-align:center;margin:10px 0 6px} .kbs{display:flex;gap:6px;justify-content:center;margin-bottom:4px} .kbs button{width:46px;height:46px;border:2px dashed #9AA6BD;border-radius:6px;background:#fff;font:700 20px system-ui,sans-serif;color:#fff;cursor:pointer;padding:0} .kbs button.on{border:2px solid #2E8B57;background:#2E8B57}
+.kbrow{font-size:15px;color:#2A3A5C;text-align:center;margin:10px 0 6px} .kbs{display:flex;gap:6px;justify-content:center;margin-bottom:4px} .kbyr{display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:4px} .kbyr b{width:20px;font:700 16px system-ui,sans-serif;color:#9A7200;text-align:center} .kbyr button{width:34px;height:30px;border:2px dashed #D6C27E;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#B8A160;cursor:pointer;padding:0} .kbyr button.on{background:#D9A100;border:2px solid #D9A100;color:#fff} .kbyr button:disabled{opacity:.3;cursor:default} .kbs button{width:46px;height:46px;border:2px dashed #9AA6BD;border-radius:6px;background:#fff;font:700 20px system-ui,sans-serif;color:#fff;cursor:pointer;padding:0} .kbs button.on{border:2px solid #2E8B57;background:#2E8B57}
 .kbhint.open span.kbrep{display:block;margin-top:4px;font:400 15px Georgia,serif;color:#7A4A00;text-decoration:none;white-space:normal} .kbhint.open span.kbnote{color:#4a556e;text-decoration:none;white-space:normal} p.rep{margin:6px 0 8px;font-size:15.5px;color:#7A4A00;background:#FFF4D6;border-radius:8px;padding:6px 10px}
 .kbhint.kbl{margin-top:8px} .welcome.act.kbcard .kbfirst{padding:6px 10px 7px;text-align:center} .kbfrow{display:flex;align-items:center;justify-content:center;gap:10px;margin:4px 0 3px} .kbfirst .mtiles{margin:0;gap:3px} .kbhint.open .mtiles span{width:27px;height:27px;text-decoration:none;color:#fff;font:700 15px system-ui,sans-serif;white-space:normal} .kbold{font-size:13.5px;color:#4a556e;text-align:center;margin:-6px 0 8px} .kbold a{color:#2A5BD7}
 .kbex{margin-top:8px;font-size:14.5px;color:#7A4A00;background:#FFF4D6;border-radius:8px;padding:6px 10px;text-align:center}
@@ -370,11 +370,11 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
 @media(max-width:340px){.kbw2{display:none} .kb button{height:44px} .kbleg{margin:6px 0 4px} .kbcount{margin-top:4px;padding-top:4px}}   /* smallest phones: keep the letter hint on the first screen */
 .kbleg a{margin-left:12px;color:#2A5BD7;font-weight:700;white-space:nowrap} .kbnote{display:block;font:400 13px system-ui,sans-serif;color:#4a556e;margin-top:3px}
 .kbfold .kbbody{display:none} .welcome.act.kbcard.kbfold .wt{font-size:17px;text-align:left} #kbOpen{font:400 14.5px system-ui,sans-serif;color:#2A5BD7;margin-left:8px;white-space:nowrap}
-@media(max-width:480px){.kbrow,.kbs{justify-content:flex-start;text-align:left}}
+@media(max-width:480px){.kbrow,.kbs,.kbyr{justify-content:flex-start;text-align:left}}
 .kbcount{border-top:1px solid #C9D3E6;margin-top:10px;padding-top:10px;font-size:17px;color:#2A3A5C;text-align:center} .kbcount b{font-size:34px;color:#2E8B57;margin-right:6px}
 .kbhint{max-width:620px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:8px;padding:10px 12px;border:2px solid #1B2440;border-radius:10px;background:#fff;font:700 15.5px Georgia,serif;color:#1B2440;text-align:left;cursor:pointer}
 .kbhint span{font:400 13.5px system-ui;color:#2A5BD7;text-decoration:underline;white-space:nowrap}
-.kbleft{margin-top:6px;font:400 13px system-ui,sans-serif;color:#4a556e} .kbleft button{width:34px;height:30px;margin-left:6px;border:2px solid #9AA6BD;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0} .kbleft button.on{border-color:#1B2440;background:#1B2440;color:#fff}
+.kbleft{margin-top:6px;font:400 13px system-ui,sans-serif;color:#4a556e} .kbleft button{width:34px;height:30px;margin:6px 6px 0 0;border:2px solid #9AA6BD;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0} .kbleft button.on{border-color:#1B2440;background:#1B2440;color:#fff}
 .kbhint.open{display:block;border-color:#2E8B57;background:#EEF6F0;cursor:default;font-weight:400} .kbhint.open small{display:block;font:400 12.5px system-ui;color:#4a556e;margin-bottom:2px} .kbhint.open b{letter-spacing:1px}
 .kblinks{margin-top:12px;font-size:15px;align-items:center;text-align:center;display:flex;flex-direction:column;gap:8px} .kblinks a{color:#2A3A5C}
 .kbwords{margin-top:8px;max-height:200px;overflow:auto;border:1px solid #C9D3E6;border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.7;letter-spacing:1px;text-transform:uppercase;background:#fff}
@@ -469,7 +469,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer has been used before, so used words share about 89% of the odds. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.58</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.59</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -765,15 +765,18 @@ function repeatLine(c){
 // v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
 function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
-  const K={}, SL=[null,null,null,null,null]; let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false, LEFT=3, h2eng=false;   // LEFT (v2.50): guesses the visitor has left, 3 · 2 · 1; K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
+  const K={}, SL=[null,null,null,null,null], YS={};   /* YS (v2.59): yellow letter → the spots where Wordle showed it yellow (so it is not there) */
+   let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false, LEFT=3, h2eng=false;   // LEFT (v2.50): guesses the visitor has left, 3 · 2 · 1; K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
   const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
   el.innerHTML=`<div class="wt" id="kbHead"><span id="kbTitle">Stuck on today's Wordle?</span> <a href="#" id="kbOpen" hidden>Show the keyboard ▾</a></div><div class="kbbody"><div class="ws"><b>Tap the letters you've played.</b></div><div class="kbold" id="kbOld" hidden>Older puzzle: using past-answer odds. <a href="#" id="kbToday">Switch to Today's</a></div>
     <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
     <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times <a href="#" id="kbReset" hidden>Start over</a></div>
-    <div class="kbcount" id="kbCount"></div><div id="kbSlots"></div><div id="kbLetter"></div><div id="kbHints"></div></div><button class="x" aria-label="Close">×</button>`;
+    <div class="kbcount" id="kbCount"></div><div id="kbLetter"></div><div id="kbSlots"></div><div id="kbYSlots"></div><div id="kbHints"></div></div><button class="x" aria-label="Close">×</button>`;
   const greens=()=>Object.keys(K).filter(c=>K[c]===3);
+  /* v2.59: the letter hint now sits above the slot rows, so when a tap changes the hint's height the page scrolls by the same amount and the tapped spot stays under the finger (Ayman's Nov 20 "shake") */
+  const keep=(sel,y0)=>{ const nb=el.querySelector(sel); if(!nb) return; const d=nb.getBoundingClientRect().top-y0; if(Math.abs(d)>0.5) window.scrollBy({top:d,left:0,behavior:'instant'}); };
   const fit=()=>{ const g=[],y=[],gr=greens(); for(const c in K){ if(K[c]===1) g.push(c); else if(K[c]===2) y.push(c); }
-    return USUAL.filter(w=>g.every(c=>!w.includes(c)) && y.every(c=>w.includes(c)) && gr.every(c=>w.includes(c)) && SL.every((c,i)=>!c || w[i]===c)); };
+    return USUAL.filter(w=>g.every(c=>!w.includes(c)) && y.every(c=>w.includes(c)) && gr.every(c=>w.includes(c)) && SL.every((c,i)=>!c || w[i]===c) && Object.keys(YS).every(ch=>K[ch]!==2 || [...YS[ch]].every(i=>w[i]!==ch))); };
   const any=()=>Object.keys(K).some(c=>K[c]>0);
   // v2.45: when the Puzzle switch below is on Older, the answer is almost surely a past answer, so the card's odds flip: past answers share 89%, never-used words 11% (the newest answers may not be in the history yet)
   const odds=c=>probs(c);   /* v2.57: probs() itself now flips the split in Older mode */
@@ -785,6 +788,8 @@ function buildKbCard(el){
     el.querySelector('#kbReset').hidden=!any();
     const gr=greens();
     el.querySelector('#kbSlots').innerHTML = gr.length ? `<div class="kbrow">Green letters: tap the slot each one is in.</div><div class="kbs">${[0,1,2,3,4].map(i=>`<button type="button" data-s="${i}" class="${SL[i]?'on':''}" aria-label="Slot ${i+1}">${SL[i]?SL[i].toUpperCase():''}</button>`).join('')}</div>` : '';   // v2.42 (App designer): one row of five slots, under the count, same height for 1 or 5 greens
+    const yl=Object.keys(K).filter(ch=>K[ch]===2).sort();   /* v2.59 (Ayman, Nov 22): yellow letters can be placed too: tap each spot where Wordle showed it yellow */
+    el.querySelector('#kbYSlots').innerHTML = yl.length ? `<div class="kbrow">Where was each yellow letter? Tap the spots.</div>${yl.map(ch=>`<div class="kbyr"><b>${ch.toUpperCase()}</b>${[0,1,2,3,4].map(i=>{ const on=YS[ch]&&YS[ch].has(i), gl=SL[i]; return `<button type="button" data-y="${ch}${i}" class="${on?'on':''}" ${gl?'disabled':''} aria-label="${ch.toUpperCase()} was yellow in spot ${i+1}">${i+1}</button>`; }).join('')}</div>`).join('')}` : '';
     const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
     const LT=el.querySelector('#kbLetter'); LT.innerHTML='';
     cnt.hidden=!any();
@@ -803,7 +808,7 @@ function buildKbCard(el){
            : `Try a word with <b>${best.toUpperCase()}</b> next. It is in ${N(bn)} of the ${N(n)} words` + (even ? '.' : '. No letter splits these evenly, so the next-guess hint will help more.'); } }
     if(n>1){ const rl=repeatLine(c); if(rl) t1+=`<span class="kbrep">${rl}</span>`; }
     LT.innerHTML=(example?`<div class="kbex"><b>Example:</b> RAISE, all gray. Tap a key again to match your colors, or Start over.</div>`:'')+`<div class="kbhint open kbl"><small>A letter to try next</small>${t1}</div>`;   // the example line (App designer): after "See how it works" the keyboard isn't the visitor's own game yet   // v2.44 (App designer, Ad rep): the letter hint shows itself from the first key and updates with every tap; a letter to try is not a spoiler. Only the word and the list stay behind a tap
-    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${h2eng?`<div class="kbleft">Guesses left: ${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
+    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${h2eng?`<div class="kbleft">How many guesses do you have left?<br>${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
       +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
   }
   // Hint 2. The keyboard knows which letters were tried, not which words were played or where a yellow letter sat. So the pick is judged only by what its NEW letters would show (marked letters count for nothing), which can never repeat a guess already made (v2.42; 2.41 only caught words with no new letter: SANER after SANER, but not SAFER after SANER).
@@ -813,7 +818,7 @@ function buildKbCard(el){
     h2 = g ? `${lead}${hardOk?'':' <span class="kbnote">Playing Hard mode? Add your guesses below instead.</span>'}` : 'Add your guesses below for a next word.'; render(); }
   function hint2(){ const c=fit(); const my=++h2job; h2=''; h2eng=false; if(!c.length) return;
     if(c.length===1){ h2='Only one word fits. Open the list below to see it.'; render(); return; }
-    const {P}=odds(c), placed=new Set(SL.filter(Boolean)), unsure=Object.keys(K).some(ch=>K[ch]===2 || (K[ch]===3 && !placed.has(ch)));
+    const {P}=odds(c), placed=new Set(SL.filter(Boolean)), unsure=Object.keys(K).some(ch=>(K[ch]===2 && !(YS[ch]&&YS[ch].size)) || (K[ch]===3 && !placed.has(ch)));   /* v2.59: a yellow key with its spots marked counts as known */
     if(c.length>1200 || unsure){ setTimeout(()=>{ if(my===h2job) say(kbBest(c,P),c); },30); return; }   // few keys copied (the full engine would take seconds), or a yellow or unplaced green key (their spots are unknown)
     runSide({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)), hist:[], hard:false, left:LEFT}).then(r=>{ if(my!==h2job) return;
       let g = r && r.g>=0 ? ALLW[r.g] : null; h2eng=true;
@@ -853,10 +858,11 @@ function buildKbCard(el){
     return best; }
   const closeHints=()=>{ open1=open2=openL=false; h2=''; h2job++; };
   el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
-    if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('bng-kb-user','1'); }catch(e){} render(); }
-    else if(t.dataset.s){ const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
+    if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; if(K[c]!==2) delete YS[c]; closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('bng-kb-user','1'); }catch(e){} render(); }
+    else if(t.dataset.y){ const y0=t.getBoundingClientRect().top, ch=t.dataset.y[0], i=+t.dataset.y[1]; if(!YS[ch]) YS[ch]=new Set(); if(YS[ch].has(i)) YS[ch].delete(i); else YS[ch].add(i); closeHints(); track('kb-yslot'); render(); keep(`[data-y="${t.dataset.y}"]`,y0); }
+    else if(t.dataset.s){ const y0=t.getBoundingClientRect().top; setTimeout(()=>keep(`.kbs [data-s="${t.dataset.s}"]`,y0),0); const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
     else if(t.dataset.left){ LEFT=+t.dataset.left; track('kb-left'); h2=''; h2eng=false; render(); hint2(); }
-    else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; for(const c in K) delete K[c]; SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
+    else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; for(const c in K) delete K[c]; for(const c in YS) delete YS[c]; SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
     else if(t.id==='kbRaise'){ e.preventDefault(); example=true; for(const c of 'raise') K[c]=1; closeHints(); track('kb-raise'); render(); }   // marks R, A, I, S, E gray; the visitor then taps any that were yellow or green
     else if(t.id==='kbToday'){ e.preventDefault(); const b=document.querySelector('[data-m="today"]'); if(b) b.click(); }
     else if(t.id==='kbOpen'){ e.preventDefault(); reopened=true; fold(false); }
