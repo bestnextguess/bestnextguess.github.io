@@ -469,7 +469,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer has been used before, so used words share about 89% of the odds. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.62</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.63</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -1260,7 +1260,7 @@ async function suggest(cands,P,my){
     hist:rows.map(r=>({w:r.w,c:r.c.slice()})), hard, left:6-rows.length});
   if(my!==job) return;
   if(!res || !res.word){ setPeek(null); return; }
-  const bw=res.word, pw=P.get(bw)||0;
+  const bw=res.word, pw=P.get(bw)||0; if(!demo) rememberPick(rows,hard,bw);
   const fmtG=x=>`about ${x.toFixed(1)} guesses`;
   const chance = pw>=0.005 ? `${Math.round(pw*100)}% estimated chance it's the answer.` : pw>0 ? 'Small estimated chance it\'s the answer.' : 'It can\'t be the answer, but it sets up the fastest finish.';
   // v2.20: "Or go for the win": the likeliest answers (10% or better) when the engine's pick isn't one of them, each with its own numbers
@@ -1518,6 +1518,10 @@ function exitDemo(){ demo=false; rows=ownRows||[]; ownRows=null; update(); inp.f
 // ---------- game report (after a solved game) ----------
 function fitsRows(rs,list){ return list.filter(w=>rs.every(r=>fb(r.w,w)===code(r.c))); }
 function candsFor(rs){ let c=fitsRows(rs,USUAL), backup=false; if(rs.length && !c.length){ c=fitsRows(rs,BAK); backup=true; } if(rs.length && !c.length){ c=fitsRows(rs,X3); backup=true; } return {c,backup}; }   // v2.24: X3 last
+/* v2.63 (Ayman, #1983: next move said PILOT, the report said TOPIC): the engine has a time limit, so near-ties can come out differently on a second run. Remember each pick the page actually showed, per board, and let the report and the helper's game reuse it. */
+const PICKS=(()=>{ try{ const o=JSON.parse(sessionStorage.getItem('bng-picks')||'{}'); return new Map(Object.entries(o)); }catch(e){ return new Map(); } })();
+const pickKey=(rs,hd)=>(typeof mode!=='undefined'?mode:'')+'|'+(hd?1:0)+'|'+rs.map(r=>r.w+r.c.join('')).join(',');
+function rememberPick(rs,hd,w){ try{ PICKS.set(pickKey(rs,hd),w); if(PICKS.size>200) PICKS.delete(PICKS.keys().next().value); sessionStorage.setItem('bng-picks',JSON.stringify(Object.fromEntries(PICKS))); }catch(e){} }
 async function pickAt(rs,c,backup){          // the page's own suggestion for a board (undefined = cancelled)
   if(!rs.length) return 'raise';
   if(!c.length) return null;
@@ -1525,6 +1529,7 @@ async function pickAt(rs,c,backup){          // the page's own suggestion for a 
   if(c.length<=2) return [...c].sort((a,b)=>P.get(b)-P.get(a))[0];
   if(rs.length>=6) return null;
   if(offEngine(c)) return splitPick(c);   // v2.24
+  { const seen=PICKS.get(pickKey(rs,hard)); if(seen) return seen; }
   const res=await runEngine({cand:Int32Array.from(c.map(w=>IDX.get(w))), w:Float64Array.from(c.map(w=>P.get(w)||0)),
     hist:rs.map(r=>({w:r.w,c:r.c.slice()})), hard, left:6-rs.length});
   return res && res.word ? res.word : undefined;
@@ -1672,8 +1677,9 @@ async function fillReport(R,alive,tick){     // skill for each guess, and how th
     if(!alive()) return undefined;
     if(res && res.word && res.best && res.you && res.you[0]){
       const sc=e=>e.c-95*e.pf;               // expected guesses, plus 5 for each chance of running out of guesses
-      st.sug=res.word; st.sugLeft=res.word===ans?0:c.filter(w=>fb(res.word,w)===fb(res.word,ans)).length;
-      st.loss=Math.max(0,sc(res.you[0])-sc(res.best)); st.skill=skillOf(st.loss);
+      const shown=PICKS.get(pickKey(R.rows.slice(0,st.k),R.hard)), sw=shown||res.word;   /* v2.63: judge against the pick the page showed */
+      st.sug=sw; st.sugLeft=sw===ans?0:c.filter(w=>fb(sw,w)===fb(sw,ans)).length;
+      st.loss=st.g===sw?0:Math.max(0,sc(res.you[0])-sc(res.best)); st.skill=skillOf(st.loss);
     }
     tick();
   }
