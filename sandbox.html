@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SANDBOX 2.64 test: second yellow row · Best Next Guess</title>
+<title>SANDBOX x · Best Next Guess</title>
 <meta name="description" content="Free Wordle hint without the spoiler: enter your guesses and colors, see every word that still fits and your smartest next guess. Works in normal and hard mode. No ads, ever.">
 <meta property="og:title" content="Best Next Guess: free, ad-free Wordle helper">
 <meta property="og:description" content="Stuck on a 5-letter word puzzle? Enter your clues and see your smartest next move. Free, no ads, always. Works in normal and hard mode.">
@@ -384,7 +384,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: yellow spots on the keyboard card (2.59 test), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })();</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: second yellow row (2.64 test), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })();</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -791,8 +791,9 @@ function buildKbCard(el){
     const gr=greens();
     el.querySelector('#kbSlots').innerHTML = gr.length ? `<div class="kbrow">Green letters: tap the slot each one is in.</div><div class="kbs">${[0,1,2,3,4].map(i=>`<button type="button" data-s="${i}" class="${SL[i]?'on':''}" aria-label="Slot ${i+1}">${SL[i]?SL[i].toUpperCase():''}</button>`).join('')}</div>` : '';   // v2.42 (App designer): one row of five slots, under the count, same height for 1 or 5 greens
     const yl=Object.keys(K).filter(ch=>K[ch]===2);   /* v2.61: one row of five spots, like the green slots: tap a spot to put a yellow letter there (a letter that later turns green keeps its spots) */
+    while(YR.length>1 && !YR[YR.length-1].some(Boolean)) YR.pop(); if(YR[YR.length-1].some(Boolean) && YR.length<yl.length && YR.length<4) YR.push([null,null,null,null,null]);   /* v2.64 (Ayman: "should not have to click for it"): the next yellow row opens by itself once the last row has a mark and another yellow letter exists */
     const YLAB=['','Second yellow letter in the same spot:','Third yellow letter in the same spot:','Fourth yellow letter in the same spot:'], YLNK=['','+ Two yellow letters in one spot?','+ Three yellow letters in one spot?','+ Four yellow letters in one spot?'];
-    el.querySelector('#kbYSlots').innerHTML = yl.length ? `<div class="kbrow">Yellow letters: tap the slot each one was in.</div>${YR.map((r,ri)=>`${ri?`<div class="kbrow">${YLAB[ri]}</div>`:''}<div class="kbs kbys">${[0,1,2,3,4].map(i=>`<button type="button" data-yr="${ri}" data-ys="${i}" class="${r[i]?'on':''}" ${SL[i]&&!r[i]?'disabled':''} aria-label="Yellow slot ${i+1}${ri?', row '+(ri+1):''}">${r[i]?r[i].toUpperCase():''}</button>`).join('')}</div>`).join('')}${yl.length>YR.length && YR.length<4 && YR[YR.length-1].some(Boolean) ? `<div class="kbrow"><a href="#" id="kbYMore" class="kbymore">${YLNK[YR.length]}</a></div>` : ''}` : '';   /* v2.64: rows never outnumber the yellow letters */
+    el.querySelector('#kbYSlots').innerHTML = yl.length ? `<div class="kbrow">Yellow letters: tap the slot each one was in.</div>${YR.map((r,ri)=>`${ri?`<div class="kbrow">${YLAB[ri]}</div>`:''}<div class="kbs kbys">${[0,1,2,3,4].map(i=>`<button type="button" data-yr="${ri}" data-ys="${i}" class="${r[i]?'on':''}" ${SL[i]&&!r[i]?'disabled':''} aria-label="Yellow slot ${i+1}${ri?', row '+(ri+1):''}">${r[i]?r[i].toUpperCase():''}</button>`).join('')}</div>`).join('')}` : '';   /* v2.64: rows never outnumber the yellow letters */
     const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
     const LT=el.querySelector('#kbLetter'); LT.innerHTML='';
     cnt.hidden=!any();
