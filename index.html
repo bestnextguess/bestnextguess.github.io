@@ -469,7 +469,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer has been used before, so used words share about 89% of the odds. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.66.2</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.66.3</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -765,7 +765,8 @@ function repeatLine(c){
 // v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
 function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
-  const SIMPLE=bngSimple(); let autoT=0, autoSent=false;
+  const SIMPLE=bngSimple(); let autoT=0, autoSent=false, typedOn=false;
+  if(SIMPLE){ try{ if(!/[?&](simple|welcome)=/.test(location.search)) localStorage.setItem('bng-simple','1'); }catch(e){} }   /* v2.66.3 (App designer's review, Ayman's go): whoever starts with the simple start keeps it, even if they type their first game before ever tapping five keys */
   const K={}, SL=[null,null,null,null,null], YR=[[null,null,null,null,null]];   /* v2.64 (Ayman + App designer): YR = yellow rows; row 2, 3 open from a link when two yellow letters share a spot */
   const yAll=()=>YR.flat(), yPack=()=>{ for(let i=0;i<5;i++){ const col=YR.map(r=>r[i]).filter(Boolean); YR.forEach((r,k)=>r[i]=col[k]||null); } while(YR.length>1 && !YR[YR.length-1].some(Boolean)) YR.pop(); }, yTidy=()=>{ for(const r of YR) for(let i=0;i<5;i++) if(r[i] && K[r[i]]!==2) r[i]=null; yPack(); };   /* v2.64 review fix: marks move up within their slot, so no empty row sits above a filled one */   /* row 1 (v2.61, Ayman: "yellow should function the same way" as green): the yellow letter in each of the five spots, so it is NOT there */
    let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false, LEFT=3, h2eng=false, leftUsed=false;   // LEFT (v2.50): guesses the visitor has left, 3 · 2 · 1; K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
@@ -797,6 +798,7 @@ function buildKbCard(el){
     const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
     const LT=el.querySelector('#kbLetter'); LT.innerHTML='';
     cnt.hidden=!any();
+    if(!any() && typedOn){ cnt.innerHTML=''; H.innerHTML=''; LT.innerHTML=''; return; }   /* v2.66.3 (App designer's review): a guess is on the board below, so "Haven't guessed yet?" no longer applies */
     if(!any()){ cnt.innerHTML=''; H.innerHTML='';   // v2.46 (Ad rep, App designer, Ayman): nothing played yet → a first word, the same for everyone; the box turns into the letter hint at the first key
       LT.innerHTML=`<div class="kbhint open kbl kbfirst"><small>Haven't guessed yet? A strong first word</small><div class="kbfrow"><div class="mtiles">${[...'RAISE'].map(x=>`<span>${x}</span>`).join('')}</div></div><div class="kbf2">Play it in Wordle, then tap its letters above for your next hint. <a href="#" id="kbRaise">See how it works</a></div></div>`; return; }
     cnt.innerHTML = n ? `<b>${N(n)}</b>${n===1?'word fits':'words fit'} your keyboard` : `<b>0</b>No usual word fits. Check your key colors.`;
@@ -890,7 +892,7 @@ function buildKbCard(el){
   });
   // v2.42 (App designer): once a guess is entered on the board below, the card folds to its heading, so the page doesn't show two different counts. One tap reopens it, and then it stays open.
   function fold(on){ folded=on; el.classList.toggle('kbfold',on); el.querySelector('#kbOpen').hidden=!on; }
-  window.bngKbFold=on=>{ if(!el.isConnected) return; if(mode!==lastMode){ lastMode=mode; el.querySelector('#kbOld').hidden = mode!=='archive'; closeHints(); render(); autoWord();   /* v2.66.1 (Ayman's test): switching Today's/Older closed the word; for a never-played device it comes back by itself */ }  /* v2.47 (App designer, Ayman): heading stays fixed; a small line shows the Older odds, with a way back */ /* v2.56 (Ayman, Nov 21): the keyboard no longer folds away when a guess is typed below; it stays available */ if(!on && folded){ fold(false); } };
+  window.bngKbFold=on=>{ if(!el.isConnected) return; if(mode!==lastMode){ lastMode=mode; el.querySelector('#kbOld').hidden = mode!=='archive'; closeHints(); render(); autoWord();   /* v2.66.1 (Ayman's test): switching Today's/Older closed the word; for a never-played device it comes back by itself */ }  /* v2.47 (App designer, Ayman): heading stays fixed; a small line shows the Older odds, with a way back */ /* v2.56 (Ayman, Nov 21): the keyboard no longer folds away when a guess is typed below; it stays available */ if(!on && folded){ fold(false); } if(on!==typedOn){ typedOn=on; if(!any()) render(); } };
   render();
   // the tagline and links leave the header for this visitor and sit lower on the page
   setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'').replace(/(class="nrev">)[^<]*/, (m,a)=>{ const t=new Date(), n=Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5); return a+Math.max(n,1947).toLocaleString('en-US'); })}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
@@ -1066,8 +1068,8 @@ const pct=p=>p>=0.995?'100%':p>=0.095?Math.round(p*100)+'%':p>=0.001?(Math.round
 // ---------- main update ----------
 let job=0;
 function update(){
-  if(window.bngKbFold) window.bngKbFold(rows.length>0 && !demo);   // v2.42
   if(demo && !rows.length){ demo=false; rows=ownRows||[]; ownRows=null; }   // example cleared: back to the player's own game
+  if(window.bngKbFold) window.bngKbFold(rows.length>0 && !demo);   // v2.42; v2.66.3: after the line above, so the card sees the player's own game when the example is cleared
   { const l=rows[rows.length-1], done=!!(l && l.c.every(v=>v===2)), sig=gameSig();   // v2.10: a finished game entered after playing starts at guess 1
     if(walk && walk.sig!==sig) walk=null;
     if(!rows.length) walkSeen=null;   // a new game (Start over) can be walked through again
