@@ -376,6 +376,9 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
 .kbhint span{font:400 13.5px system-ui;color:#2A5BD7;text-decoration:underline;white-space:nowrap}
 .kbleft{margin-top:6px;font:400 13px system-ui,sans-serif;color:#4a556e} .kbleft button{width:34px;height:30px;margin:6px 6px 0 0;border:2px solid #9AA6BD;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0} .kbleft button.on{border-color:#1B2440;background:#1B2440;color:#fff}
 .kbhint.open{display:block;border-color:#2E8B57;background:#EEF6F0;cursor:default;font-weight:400} .kbhint.open small{display:block;font:400 12.5px system-ui;color:#4a556e;margin-bottom:2px} .kbhint.open b{letter-spacing:1px}
+.kbgl{display:flex;align-items:center;justify-content:space-between;margin:2px 4px 8px;font-size:15px;color:#2A3A5C} .kbgl[hidden]{display:none} .kbgl button{width:34px;height:30px;margin:0 0 0 6px;border:2px solid #9AA6BD;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0;vertical-align:middle} .kbgl button.on{border-color:#1B2440;background:#1B2440;color:#fff} .kbgl a{color:#2A5BD7;font-weight:700;white-space:nowrap}   /* v2.67 (App designer, Ayman's yes Nov 26): "Guesses left" asked first, right under the keyboard */
+.kbkeep{font:400 14px system-ui,sans-serif;color:#1B2440;background:#EAF1FF;border:1px solid #C5D4F5;border-radius:8px;padding:8px 10px;line-height:1.35;text-align:center;align-self:stretch;margin:0} .kbkeep a,.kblinks .kbkeep a{font-weight:700;color:#2A5BD7;white-space:nowrap} .report .kbkeep{margin:8px 0 10px}
+@media(max-width:350px){ .kbgl{font-size:13px} .kbgl button{width:30px} .kbsimple .kbleg{font-size:13px} }
 .kblinks{margin-top:12px;font-size:15px;align-items:center;text-align:center;display:flex;flex-direction:column;gap:8px} .kblinks a{color:#2A3A5C}
 .kbwords{margin-top:8px;max-height:200px;overflow:auto;border:1px solid #C9D3E6;border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.7;letter-spacing:1px;text-transform:uppercase;background:#fff}
 @media(max-width:480px){.kb button{height:50px;font-size:17px;border-radius:6px} .kb .kr{gap:4px} .kbcount{text-align:left} .kbcount b{font-size:28px}}
@@ -469,7 +472,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer has been used before, so used words share about 89% of the odds. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.66.3</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="stats.html">Wordle stats</a> · <a href="answers.html">Past answers</a> · <a href="about.html">About</a> · <span id="ver">Version 2.67</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -765,7 +768,7 @@ function repeatLine(c){
 // v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
 function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
-  const SIMPLE=bngSimple(); let autoT=0, autoSent=false, typedOn=false;
+  const SIMPLE=bngSimple(); if(SIMPLE) el.classList.add('kbsimple'); let keepSent=false, autoT=0, autoSent=false, typedOn=false;
   if(SIMPLE){ try{ if(!/[?&](simple|welcome)=/.test(location.search)) localStorage.setItem('bng-simple','1'); }catch(e){} }   /* v2.66.3 (App designer's review, Ayman's go): whoever starts with the simple start keeps it, even if they type their first game before ever tapping five keys */
   const K={}, SL=[null,null,null,null,null], YR=[[null,null,null,null,null]];   /* v2.64 (Ayman + App designer): YR = yellow rows; row 2, 3 open from a link when two yellow letters share a spot */
   const yAll=()=>YR.flat(), yPack=()=>{ for(let i=0;i<5;i++){ const col=YR.map(r=>r[i]).filter(Boolean); YR.forEach((r,k)=>r[i]=col[k]||null); } while(YR.length>1 && !YR[YR.length-1].some(Boolean)) YR.pop(); }, yTidy=()=>{ for(const r of YR) for(let i=0;i<5;i++) if(r[i] && K[r[i]]!==2) r[i]=null; yPack(); };   /* v2.64 review fix: marks move up within their slot, so no empty row sits above a filled one */   /* row 1 (v2.61, Ayman: "yellow should function the same way" as green): the yellow letter in each of the five spots, so it is NOT there */
@@ -773,7 +776,7 @@ function buildKbCard(el){
   const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
   el.innerHTML=`<div class="wt" id="kbHead"><span id="kbTitle">Stuck on today's Wordle?</span> <a href="#" id="kbOpen" hidden>Show the keyboard ▾</a></div><div class="kbbody"><div class="ws"><b>Tap the letters you've played${SIMPLE?'</b> to get a word.':'.</b>'}</div><div class="kbold" id="kbOld" hidden>Older puzzle: using past-answer odds. <a href="#" id="kbToday">Switch to Today's</a></div>
     <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
-    <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times <a href="#" id="kbReset" hidden>Start over</a></div>
+    <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times ${SIMPLE?'':'<a href="#" id="kbReset" hidden>Start over</a>'}</div>${SIMPLE?`<div class="kbgl" id="kbGL" hidden><span>Guesses left${[3,2,1].map(x=>`<button type="button" data-left="${x}" aria-label="${x===3?'3 or more':x} guesses left">${x===3?'3+':x}</button>`).join('')}</span><a href="#" id="kbReset" hidden>Start over</a></div>`:''}
     <div class="kbcount" id="kbCount"></div><div id="kbLetter"></div><div id="kbSlots"></div><div id="kbYSlots"></div><div id="kbHints"></div></div><button class="x" aria-label="Close">×</button>`;
   const greens=()=>Object.keys(K).filter(c=>K[c]===3);
   /* v2.59: the letter hint now sits above the slot rows, so when a tap changes the hint's height the page scrolls by the same amount and the tapped spot stays under the finger (Ayman's Nov 20 "shake") */
@@ -789,6 +792,7 @@ function buildKbCard(el){
   function render(){
     el.querySelectorAll('#kb button').forEach(b=>{ const v=K[b.dataset.k]||0; b.className=v?'s'+v:''; });
     el.querySelector('#kbReset').hidden=!any();
+    if(SIMPLE){ const GL=el.querySelector('#kbGL'); GL.hidden=!any(); GL.querySelectorAll('[data-left]').forEach(b=>{ const on=+b.dataset.left===LEFT; b.className=on?'on':''; b.setAttribute('aria-pressed',on); }); }   /* v2.67 */
     const gr=greens();
     el.querySelector('#kbSlots').innerHTML = gr.length ? `<div class="kbrow">Green letters: tap the slot each one is in.</div><div class="kbs">${[0,1,2,3,4].map(i=>`<button type="button" data-s="${i}" class="${SL[i]?'on':''}" aria-label="Slot ${i+1}">${SL[i]?SL[i].toUpperCase():''}</button>`).join('')}</div>` : '';   // v2.42 (App designer): one row of five slots, under the count, same height for 1 or 5 greens
     const yl=Object.keys(K).filter(ch=>K[ch]===2);   /* v2.61: one row of five spots, like the green slots: tap a spot to put a yellow letter there (a letter that later turns green keeps its spots) */
@@ -814,8 +818,10 @@ function buildKbCard(el){
            : `Try a word with <b>${best.toUpperCase()}</b> next. It is in ${N(bn)} of the ${N(n)} words` + (even ? '.' : '. No letter splits these evenly, so the next-guess hint will help more.'); } }
     if(n>1){ const rl=repeatLine(c); if(rl) t1+=`<span class="kbrep">${rl}</span>`; }
     LT.innerHTML=(example?`<div class="kbex"><b>Example:</b> RAISE, all gray. Tap a key again to match your colors, or Start over.</div>`:'')+`<div class="kbhint open kbl"><small>A letter to try next</small>${t1}</div>`;   // the example line (App designer): after "See how it works" the keyboard isn't the visitor's own game yet   // v2.44 (App designer, Ad rep): the letter hint shows itself from the first key and updates with every tap; a letter to try is not a spoiler. Only the word and the list stay behind a tap
-    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${(h2eng||LEFT!==3||leftUsed)?`<div class="kbleft">How many guesses do you have left?<br>${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
-      +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
+    const iw=document.getElementById('installWrap'), keepOn = SIMPLE && open2 && !!h2 && LEFT<3 && iw && !iw.hidden;   /* v2.67 (App designer, Ayman's yes): after the player says 2 or 1 guesses left, one line asks them to keep the site for the next close call. Hidden when it is already installed or the browser can't install */
+    if(keepOn && !keepSent){ keepSent=true; track('kb-keep-shown'); }
+    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${(!SIMPLE && (h2eng||LEFT!==3||leftUsed))?`<div class="kbleft">How many guesses do you have left?<br>${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
+      +`<div class="kblinks">${keepOn?`<div class="kbkeep">Close call? Keep this on your home screen for the next one. <a href="#" id="kbKeep">📲 Install app</a></div>`:''}<a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
   }
   // Hint 2. The keyboard knows which letters were tried, not which words were played or where a yellow letter sat. So the pick is judged only by what its NEW letters would show (marked letters count for nothing), which can never repeat a guess already made (v2.42; 2.41 only caught words with no new letter: SANER after SANER, but not SAFER after SANER).
   function say(g,c,quick){ const LF = quick && LEFT===2 ? 3 : LEFT;   /* v2.64.1: the quick picker doesn't plan for 2 guesses left, so it doesn't claim to */
@@ -879,7 +885,8 @@ function buildKbCard(el){
     if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; if(K[c]!==2) yTidy();   /* v2.62 (Ayman): when a key stops being yellow (green, gray or blank), its yellow slots clear and no longer count */ closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('bng-kb-user','1'); }catch(e){} render(); }
     else if(t.dataset.ys){ const y0=t.getBoundingClientRect().top, ri=+(t.dataset.yr||0), i=+t.dataset.ys, R=YR[ri], ys=Object.keys(K).filter(ch=>K[ch]===2), here=new Set(YR.filter((r,k)=>k!==ri).map(r=>r[i]).filter(Boolean)), used=new Set(YR.flatMap((r,k)=>r.filter((x,j)=>x && !(k===ri && j===i)))), ord=ys.filter(x=>!used.has(x)).concat(ys.filter(x=>used.has(x))).filter(x=>SL[i]!==x && !here.has(x)), at=ord.indexOf(R[i]); R[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track(ri?'kb-yslot'+(ri+1):'kb-yslot'); render(); keep(`.kbys [data-yr="${ri}"][data-ys="${i}"]`,y0); }   /* v2.64: a spot can't hold the same letter twice across rows */   /* v2.61: same as the green slots: each tap shows the next yellow letter (letters not yet placed first), then blank */
     else if(t.dataset.s){ const y0=t.getBoundingClientRect().top; setTimeout(()=>keep(`.kbs [data-s="${t.dataset.s}"]`,y0),0); const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
-    else if(t.dataset.left){ LEFT=+t.dataset.left; leftUsed=true;   /* v2.64.1: once used, the 3·2·1 buttons stay */ track('kb-left'); h2=''; h2eng=false; render(); hint2(); }
+    else if(t.dataset.left){ LEFT=+t.dataset.left; leftUsed=true;   /* v2.64.1: once used, the 3·2·1 buttons stay */ track('kb-left'); h2=''; h2eng=false; h2job++; render(); if(SIMPLE && open2 && !autoSent){ autoSent=true; track('kb-auto'); } if(!SIMPLE || open2) hint2(); else autoWord(); }   /* v2.67: on a simple device the buttons sit under the keyboard, so the word box may still be closed */
+    else if(t.id==='kbKeep'){ e.preventDefault(); track('kb-keep-tap'); const ib=document.getElementById('installBtn'); if(ib) ib.click(); }
     else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; leftUsed=false; for(const c in K) delete K[c]; YR.length=1; YR[0].fill(null); SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
     else if(t.id==='kbRaise'){ e.preventDefault(); example=true; for(const c of 'raise') K[c]=1; closeHints(); track('kb-raise'); render(); }   // marks R, A, I, S, E gray; the visitor then taps any that were yellow or green
     else if(t.id==='kbToday'){ e.preventDefault(); const b=document.querySelector('[data-m="today"]'); if(b) b.click(); }
@@ -1917,6 +1924,11 @@ function todayCardHtml(R){
   track('older-to-today-shown');
   return `<div class="todaycard"><b>Playing today's Wordle too?</b>Start a fresh board for today's puzzle and get your smartest next guess as you go. Today's games build your streak and your score against the helper.<br><button class="btn" id="toToday">Start today's puzzle</button></div>`;
 }
+// v2.67 (App designer, Ayman's yes Nov 26): a typed game solved on guess 5 or 6 was a close call. One line asks the player to keep the site on their home screen. Only for devices on the simple start; hidden when installed or when the browser can't install.
+let reportKeepSent=false;
+function reportKeepHtml(R){ try{ const iw=document.getElementById('installWrap'); if(!R.ok || R.n<5 || !bngSimple() || !iw || iw.hidden || matchMedia('(display-mode: standalone)').matches || navigator.standalone) return '';
+  if(!reportKeepSent){ reportKeepSent=true; track('report-keep-shown'); }
+  return `<p class="kbkeep">Close call? Keep this on your home screen for the next one. <a href="#" id="rKeep">📲 Install app</a></p>`; }catch(e){ return ''; } }
 function installCardHtml(){
   if(matchMedia('(display-mode: standalone)').matches || navigator.standalone) return '';
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1957,6 +1969,7 @@ function renderReport(box,R){
   box.innerHTML=`<div class="report">
     <p class="solvedHead">Solved in ${R.n} 🎉${R.hard?' <small>Hard mode</small>':''}</p>
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
+    ${reportKeepHtml(R)}
     ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
     ${scoreHtml(R)}${todayCardHtml(R)}${R.ok && R.ready ? shareAppHtml() : ''}
@@ -1966,6 +1979,7 @@ function renderReport(box,R){
     const id=d.dataset.sec; if(d.open){ openSecs.add(id); track(id==='steps'?'replay':'report-'+id); } else openSecs.delete(id);
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
+  { const rk=document.getElementById('rKeep'); if(rk) rk.onclick=ev=>{ ev.preventDefault(); track('report-keep-tap',false); document.getElementById('installBtn').click(); }; }
   const ib=document.getElementById('instNow'); if(ib) ib.onclick=()=>{ track('install-report',false); document.getElementById('installBtn').click(); };
   const sa=document.getElementById('shareApp'); if(sa) sa.onclick=()=>shareApp(sa,'card');
   const tt=document.getElementById('toToday'); if(tt) tt.onclick=()=>{ track('older-to-today'); mode='today'; rows=[]; demo=false; ownRows=null; checkMode=false; update(); try{ inp.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} inp.focus(); };
