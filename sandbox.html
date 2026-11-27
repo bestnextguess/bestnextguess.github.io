@@ -374,8 +374,12 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
 .kbcount{border-top:1px solid #C9D3E6;margin-top:10px;padding-top:10px;font-size:17px;color:#2A3A5C;text-align:center} .kbcount b{font-size:34px;color:#2E8B57;margin-right:6px}
 .kbhint{max-width:620px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:8px;padding:10px 12px;border:2px solid #1B2440;border-radius:10px;background:#fff;font:700 15.5px Georgia,serif;color:#1B2440;text-align:left;cursor:pointer}
 .kbhint span{font:400 13.5px system-ui;color:#2A5BD7;text-decoration:underline;white-space:nowrap}
+.kbask{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px;width:100%;max-width:620px;height:52px;margin:8px auto;padding:4px 12px;background:#2A5BD7;border:2px solid #2A5BD7;border-radius:12px;color:#fff;font:700 19px system-ui,sans-serif;text-align:center;line-height:1.15;cursor:pointer} .kbask small{font:400 13px system-ui,sans-serif;color:#fff} .kbhint.open.stale{opacity:.5} .kbstale{max-width:620px;margin:6px auto 0;font:400 14px system-ui,sans-serif;color:#8A5A00;text-align:center}   /* v2.70 */
 .kbleft{margin-top:6px;font:400 13px system-ui,sans-serif;color:#4a556e} .kbleft button{width:34px;height:30px;margin:6px 6px 0 0;border:2px solid #9AA6BD;border-radius:6px;background:#fff;font:700 14px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0} .kbleft button.on{border-color:#1B2440;background:#1B2440;color:#fff}
 .kbhint.open{display:block;border-color:#2E8B57;background:#EEF6F0;cursor:default;font-weight:400} .kbhint.open small{display:block;font:400 12.5px system-ui;color:#4a556e;margin-bottom:2px} .kbhint.open b{letter-spacing:1px}
+.kbgl{display:flex;align-items:center;justify-content:center;margin:4px 4px 10px;font-size:17px;font-weight:700;color:#1B2440} .kbgl[hidden]{display:none} .kbgl span{white-space:nowrap} .kbgl button{width:56px;height:40px;margin:0 0 0 8px;border:2px solid #9AA6BD;border-radius:8px;background:#fff;font:700 18px system-ui,sans-serif;color:#1B2440;cursor:pointer;padding:0;vertical-align:middle} .kbgl button.on{border-color:#1B2440;background:#1B2440;color:#fff} .kbstart{display:block;width:max-content;margin:12px auto 0;padding:2px 6px;font-size:15px;color:#2A5BD7;font-weight:700} .kbstart[hidden]{display:none}   /* v2.68 (App designer, Ayman's "build" Nov 26): the row is big, centered and there on arrival; "Start over" moved to the bottom of the card */   /* v2.67 (App designer, Ayman's yes Nov 26): "Guesses left" asked first, right under the keyboard */
+.kbkeep{font:400 14px system-ui,sans-serif;color:#1B2440;background:#EAF1FF;border:1px solid #C5D4F5;border-radius:8px;padding:8px 10px;line-height:1.35;text-align:center;align-self:stretch;margin:0} .kbkeep a,.kblinks .kbkeep a{font-weight:700;color:#2A5BD7;white-space:nowrap} .report .kbkeep{margin:8px 0 10px}
+@media(max-width:365px){ .kbgl{font-size:15px;margin-left:0;margin-right:0} .kbgl button{width:48px;margin-left:6px} .kbsimple .kbleg{font-size:13px} }
 .kblinks{margin-top:12px;font-size:15px;align-items:center;text-align:center;display:flex;flex-direction:column;gap:8px} .kblinks a{color:#2A3A5C}
 .kbwords{margin-top:8px;max-height:200px;overflow:auto;border:1px solid #C9D3E6;border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.7;letter-spacing:1px;text-transform:uppercase;background:#fff}
 @media(max-width:480px){.kb button{height:50px;font-size:17px;border-radius:6px} .kb .kr{gap:4px} .kbcount{text-align:left} .kbcount b{font-size:28px}}
@@ -384,7 +388,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
 </style>
 </head>
 <body>
-<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX: simpler start (2.66 test), not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })(); (function(){ const f=document.getElementById('sbxFresh'); if(f) f.addEventListener('click',e=>{ e.preventDefault(); try{ Object.keys(localStorage).filter(k=>k.startsWith('sbx-')).forEach(k=>localStorage.removeItem(k)); sessionStorage.clear(); }catch(x){} location.reload(); }); })();   /* sandbox: Start fresh forgets this device's sandbox games and settings */</script>
+<style>html{scroll-padding-top:70px}</style><div style="position:sticky;top:0;z-index:100;background:#C0392B;color:#fff;font:700 15px/1.4 Arial,sans-serif;text-align:center;padding:8px 12px">SANDBOX 2.70: tap for next best guess, not the live site. <a href="/" style="color:#fff">Go to the live site</a> · <a href="#" id="sbxFresh" style="color:#fff">Start fresh</a></div><script>/* sandbox only: always a first-time visitor from the ad */ (function(){ try{ const q=new URLSearchParams(location.search); if(!q.has('ref')||!q.has('welcome')||!q.has('simple')){ q.set('ref', q.get('ref')||'google-ad'); q.set('welcome','1'); q.set('simple','1'); history.replaceState(null,'',location.pathname+'?'+q.toString()); } }catch(e){} })(); (function(){ const f=document.getElementById('sbxFresh'); if(f) f.addEventListener('click',e=>{ e.preventDefault(); try{ Object.keys(localStorage).filter(k=>k.startsWith('sbx-')).forEach(k=>localStorage.removeItem(k)); sessionStorage.clear(); }catch(x){} location.reload(); }); })();   /* sandbox: Start fresh forgets this device's sandbox games and settings */</script>
 <div class="strip"></div>
 <main>
 <header class="top">
@@ -470,7 +474,7 @@ body.adslim header.top #installBtn{padding:1px 8px;gap:4px;line-height:17px;box-
   <p><b>Free, no ads, always.</b> No sign-up, no app store, works on any phone or computer.</p>
   <p><b>How the odds work:</b> the percentages are estimates from answer history. Since Feb 2, 2026, about 1 in 10 daily answers has been a repeat, so never-used words share about 89% of the odds and repeats about 11%, split again among whichever words still fit. For an older puzzle, the answer has been used before, so used words share about 89% of the odds. The next move is the word that should finish the puzzle in the fewest guesses: it plans ahead, works out small groups of words exactly, and keeps track of how many guesses you have left.</p>
   <p><b>How good is it:</b> in a test of all 2,315 original Wordle answers (Normal mode, every answer equally likely, opening with SALET), its picks average 3.427 guesses. Perfect play, the lowest average possible, is 3.421, so it comes within 0.2%.</p>
-  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.66</span> · © 2026 Ayman Mikhail</p>
+  <p>Not affiliated with or endorsed by The New York Times. Past answers update automatically every day. Anonymous visit counts via GoatCounter (no cookies, no personal data). <a href="sandbox-stats.html">Wordle stats</a> · <a href="sandbox-answers.html">Past answers</a> · <a href="sandbox-about.html">About</a> · <span id="ver">Version 2.70</span> · © 2026 Ayman Mikhail</p>
 </footer>
 </main>
 
@@ -766,15 +770,15 @@ function repeatLine(c){
 // v2.37: "Copy your keyboard" card. The visitor copies the key colors from their own Wordle keyboard; hints come only from those keys. The site never knows the day's answer.
 function buildKbCard(el){
   el.classList.add('kbcard'); document.body.classList.add('adslim');
-  const SIMPLE=bngSimple(); let autoT=0, autoSent=false;
+  const SIMPLE=bngSimple(); if(SIMPLE) el.classList.add('kbsimple'); let keepSent=false, autoT=0, autoSent=false, typedOn=false;
+  if(SIMPLE){ try{ if(!/[?&](simple|welcome)=/.test(location.search)) localStorage.setItem('sbx-simple','1'); }catch(e){} }   /* v2.66.3 (App designer's review, Ayman's go): whoever starts with the simple start keeps it, even if they type their first game before ever tapping five keys */
   const K={}, SL=[null,null,null,null,null], YR=[[null,null,null,null,null]];   /* v2.64 (Ayman + App designer): YR = yellow rows; row 2, 3 open from a link when two yellow letters share a spot */
   const yAll=()=>YR.flat(), yPack=()=>{ for(let i=0;i<5;i++){ const col=YR.map(r=>r[i]).filter(Boolean); YR.forEach((r,k)=>r[i]=col[k]||null); } while(YR.length>1 && !YR[YR.length-1].some(Boolean)) YR.pop(); }, yTidy=()=>{ for(const r of YR) for(let i=0;i<5;i++) if(r[i] && K[r[i]]!==2) r[i]=null; yPack(); };   /* v2.64 review fix: marks move up within their slot, so no empty row sits above a filled one */   /* row 1 (v2.61, Ayman: "yellow should function the same way" as green): the yellow letter in each of the five spots, so it is NOT there */
    let open1=false, open2=false, openL=false, h2='', h2job=0, folded=false, reopened=false, example=false, LEFT=3, h2eng=false, leftUsed=false;   // LEFT (v2.50): guesses the visitor has left, 3 · 2 · 1; K: key → 1 gray, 2 yellow, 3 green · SL: the green letter placed in each of the five slots (v2.42)
   const ROWS=['qwertyuiop','asdfghjkl','zxcvbnm'];
   el.innerHTML=`<div class="wt" id="kbHead"><span id="kbTitle">Stuck on today's Wordle?</span> <a href="#" id="kbOpen" hidden>Show the keyboard ▾</a></div><div class="kbbody"><div class="ws"><b>Tap the letters you've played${SIMPLE?'</b> to get a word.':'.</b>'}</div><div class="kbold" id="kbOld" hidden>Older puzzle: using past-answer odds. <a href="#" id="kbToday">Switch to Today's</a></div>
     <div class="kb" id="kb">${ROWS.map(r=>`<div class="kr">${[...r].map(c=>`<button type="button" data-k="${c}" aria-label="${c.toUpperCase()}">${c.toUpperCase()}</button>`).join('')}</div>`).join('')}</div>
-    <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times <a href="#" id="kbReset" hidden>Start over</a></div>
-    <div class="kbcount" id="kbCount"></div><div id="kbLetter"></div><div id="kbSlots"></div><div id="kbYSlots"></div><div id="kbHints"></div></div><button class="x" aria-label="Close">×</button>`;
+    <div class="kbleg">Tap a key: <i style="background:#787C7E"></i>once <i style="background:#D9A100"></i>twice <i style="background:#2E8B57"></i>three times ${SIMPLE?'':'<a href="#" id="kbReset" hidden>Start over</a>'}</div>${SIMPLE?`<div id="kbSlots"></div><div id="kbYSlots"></div><div class="kbgl" id="kbGL"><span>Guesses left?${[3,2,1].map(x=>`<button type="button" data-left="${x}" aria-label="${x===3?'3 or more':x} guesses left">${x===3?'3+':x}</button>`).join('')}</span></div><button type="button" class="kbask" id="kbAsk">Tap for next best guess ›<small>Mark your letters and colors first.</small></button><div id="kbWord"></div><div class="kbcount" id="kbCount"></div><div id="kbLetter"></div><div id="kbHints"></div><a href="#" id="kbReset" class="kbstart" hidden>Start over</a>`:`<div class="kbcount" id="kbCount"></div><div id="kbLetter"></div><div id="kbSlots"></div><div id="kbYSlots"></div><div id="kbHints"></div>`}</div><button class="x" aria-label="Close">×</button>`;
   const greens=()=>Object.keys(K).filter(c=>K[c]===3);
   /* v2.59: the letter hint now sits above the slot rows, so when a tap changes the hint's height the page scrolls by the same amount and the tapped spot stays under the finger (Ayman's Nov 20 "shake") */
   const keep=(sel,y0)=>{ const nb=el.querySelector(sel); if(!nb) return; const d=nb.getBoundingClientRect().top-y0; if(Math.abs(d)>0.5) window.scrollBy({top:d,left:0,behavior:'instant'}); };
@@ -789,6 +793,8 @@ function buildKbCard(el){
   function render(){
     el.querySelectorAll('#kb button').forEach(b=>{ const v=K[b.dataset.k]||0; b.className=v?'s'+v:''; });
     el.querySelector('#kbReset').hidden=!any();
+    if(SIMPLE){ if(!any() && open2) clearWord(); el.querySelector('#kbWord').innerHTML = open2 ? `<div class="kbhint open${stale?' stale':''}"><small>Smartest next guess</small>${h2||'Thinking…'}</div>${stale?'<div class="kbstale">Your letters changed. Tap the button for a new word.</div>':''}` : askMsg ? `<div class="kbstale">${any()?'No usual word fits. Check your key colors.':'Tap the letters you\'ve played first.'}</div>` : ''; }   /* v2.70 */
+    if(SIMPLE){ const GL=el.querySelector('#kbGL'); GL.querySelectorAll('[data-left]').forEach(b=>{ const on=+b.dataset.left===LEFT; b.className=on?'on':''; b.setAttribute('aria-pressed',on); }); }   /* v2.67 */
     const gr=greens();
     el.querySelector('#kbSlots').innerHTML = gr.length ? `<div class="kbrow">Green letters: tap the slot each one is in.</div><div class="kbs">${[0,1,2,3,4].map(i=>`<button type="button" data-s="${i}" class="${SL[i]?'on':''}" aria-label="Slot ${i+1}">${SL[i]?SL[i].toUpperCase():''}</button>`).join('')}</div>` : '';   // v2.42 (App designer): one row of five slots, under the count, same height for 1 or 5 greens
     const yl=Object.keys(K).filter(ch=>K[ch]===2);   /* v2.61: one row of five spots, like the green slots: tap a spot to put a yellow letter there (a letter that later turns green keeps its spots) */
@@ -798,6 +804,7 @@ function buildKbCard(el){
     const c=fit(), n=c.length, cnt=el.querySelector('#kbCount'), H=el.querySelector('#kbHints');
     const LT=el.querySelector('#kbLetter'); LT.innerHTML='';
     cnt.hidden=!any();
+    if(!any() && typedOn){ cnt.innerHTML=''; H.innerHTML=''; LT.innerHTML=''; return; }   /* v2.66.3 (App designer's review): a guess is on the board below, so "Haven't guessed yet?" no longer applies */
     if(!any()){ cnt.innerHTML=''; H.innerHTML='';   // v2.46 (Ad rep, App designer, Ayman): nothing played yet → a first word, the same for everyone; the box turns into the letter hint at the first key
       LT.innerHTML=`<div class="kbhint open kbl kbfirst"><small>Haven't guessed yet? A strong first word</small><div class="kbfrow"><div class="mtiles">${[...'RAISE'].map(x=>`<span>${x}</span>`).join('')}</div></div><div class="kbf2">Play it in Wordle, then tap its letters above for your next hint. <a href="#" id="kbRaise">See how it works</a></div></div>`; return; }
     cnt.innerHTML = n ? `<b>${N(n)}</b>${n===1?'word fits':'words fit'} your keyboard` : `<b>0</b>No usual word fits. Check your key colors.`;
@@ -813,14 +820,16 @@ function buildKbCard(el){
            : `Try a word with <b>${best.toUpperCase()}</b> next. It is in ${N(bn)} of the ${N(n)} words` + (even ? '.' : '. No letter splits these evenly, so the next-guess hint will help more.'); } }
     if(n>1){ const rl=repeatLine(c); if(rl) t1+=`<span class="kbrep">${rl}</span>`; }
     LT.innerHTML=(example?`<div class="kbex"><b>Example:</b> RAISE, all gray. Tap a key again to match your colors, or Start over.</div>`:'')+`<div class="kbhint open kbl"><small>A letter to try next</small>${t1}</div>`;   // the example line (App designer): after "See how it works" the keyboard isn't the visitor's own game yet   // v2.44 (App designer, Ad rep): the letter hint shows itself from the first key and updates with every tap; a letter to try is not a spoiler. Only the word and the list stay behind a tap
-    H.innerHTML=(open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${(h2eng||LEFT!==3||leftUsed)?`<div class="kbleft">How many guesses do you have left?<br>${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
-      +`<div class="kblinks"><a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
+    const iw=document.getElementById('installWrap'), keepOn = SIMPLE && open2 && !!h2 && !stale && LEFT<3 && iw && !iw.hidden;   /* v2.67 (App designer, Ayman's yes): after the player says 2 or 1 guesses left, one line asks them to keep the site for the next close call. Hidden when it is already installed or the browser can't install */
+    if(keepOn && !keepSent){ keepSent=true; track('kb-keep-shown'); }
+    H.innerHTML=(SIMPLE?'':open2?`<div class="kbhint open"><small>Smartest next guess</small>${h2||'Thinking…'}${(!SIMPLE && (h2eng||LEFT!==3||leftUsed))?`<div class="kbleft">How many guesses do you have left?<br>${[3,2,1].map(x=>`<button type="button" data-left="${x}" class="${x===LEFT?'on':''}" aria-pressed="${x===LEFT}">${x}</button>`).join('')}</div>`:''}</div>`:`<button type="button" class="kbhint" id="kbH2">Smartest next guess <span>Tap to see</span></button>`)
+      +`<div class="kblinks">${keepOn?`<div class="kbkeep">Close call? Keep this on your home screen for the next one. <a href="#" id="kbKeep">📲 Install app</a></div>`:''}<a href="#" id="kbList">${openL?'Hide the words':`Show the ${N(n)} ${n===1?'word':'words'} (spoiler)`}</a>${openL?`<div class="kbwords">${c.slice().sort((a,b)=>(P.get(b)||0)-(P.get(a)||0)).slice(0,120).map(esc).join(' &nbsp;')}${n>120?` <span style="text-transform:none;letter-spacing:0;color:#555">… and ${N(n-120)} more</span>`:''}</div>`:''}<a href="#" id="kbType">Narrow it further: add your guesses and colors below ↓</a></div>`;
   }
   // Hint 2. The keyboard knows which letters were tried, not which words were played or where a yellow letter sat. So the pick is judged only by what its NEW letters would show (marked letters count for nothing), which can never repeat a guess already made (v2.42; 2.41 only caught words with no new letter: SANER after SANER, but not SAFER after SANER).
   function say(g,c,quick){ const LF = quick && LEFT===2 ? 3 : LEFT;   /* v2.64.1: the quick picker doesn't plan for 2 guesses left, so it doesn't claim to */
     const need=Object.keys(K).filter(ch=>K[ch]>=2), hardOk = g && need.every(ch=>g.includes(ch)) && SL.every((ch,i)=>!ch || g[i]===ch);
     const nl=g ? [...new Set([...g].filter(ch=>!K[ch]))].map(x=>x.toUpperCase()) : [], tests = nl.length ? ` It tests ${nl.length===1?nl[0]:nl.slice(0,-1).join(', ')+' and '+nl[nl.length-1]}.` : '';
-    const mk=Object.keys(K).filter(ch=>K[ch]), allGray5 = SIMPLE && LF===3 && g && mk.length===5 && mk.every(ch=>K[ch]===1);   /* v2.66: five letters tapped once each. The visitor may not have set colors yet, so the sentence claims only what is true either way */
+    const mk=Object.keys(K).filter(ch=>K[ch]), allGray5 = false && SIMPLE && LF===3 && g && mk.length===5 && mk.every(ch=>K[ch]===1);   /* v2.66: five letters tapped once each. The visitor may not have set colors yet, so the sentence claims only what is true either way */
     const lead = allGray5 ? `<b>${g.toUpperCase()}</b>: a good next word. It tests ${nl.length} new letter${nl.length===1?'':'s'}. <span class="kbnote">Was any letter yellow or green? Tap it again for a sharper word.</span>` : LF===1 ? `<b>${g?g.toUpperCase():''}</b>. With one guess left, this is the most likely word.` : LF===2 ? `<b>${g?g.toUpperCase():''}</b>. With two guesses left, this gives you the best chance to finish in time.${g&&!c.includes(g)?tests:''}` : `<b>${g?g.toUpperCase():''}</b>. ${g&&c.includes(g)?'It could be the answer, and it':'It can\'t be the answer, but it'} tells the ${N(c.length)} words apart best.${g&&c.includes(g)?'':tests}`;
     h2 = g ? `${lead}${hardOk?'':' <span class="kbnote">Playing Hard mode? Add your guesses below instead.</span>'}` : 'Add your guesses below for a next word.'; render(); }
   function hint2(){ const c=fit(); const my=++h2job; h2=''; h2eng=false; if(!c.length) return;
@@ -870,28 +879,31 @@ function buildKbCard(el){
       if(sc<bs){ bs=sc; best=g; } } return true; };
     if(!alive){ run(0); return best; }
     return new Promise(res=>{ const go=()=>{ if(!alive()) return; if(run(performance.now()+12)) res(best); else setTimeout(go,0); }; go(); }); }
-  const closeHints=()=>{ open1=open2=openL=false; h2=''; h2job++; };
-  // v2.66: for a device that has never played, once five letters are marked the "Smartest next guess" box opens by itself (a short pause lets quick taps finish first)
-  function autoWord(){ clearTimeout(autoT); if(!SIMPLE || Object.keys(K).filter(ch=>K[ch]).length<5 || !fit().length) return;
-    open2=true; h2=''; render(); const my=h2job; autoT=setTimeout(()=>{ if(my!==h2job || !open2 || !el.isConnected || el.hidden) return; if(!autoSent){ autoSent=true; track('kb-auto'); } hint2(); },600); }
+  let stale=false, askMsg=false;
+  /* v2.70 (Ayman, Nov 26): on a simple device the site never offers a word by itself. The player marks letters, colors and slots, then taps the button. A word already on screen stays, grayed, until the button is tapped again */
+  const closeHints=()=>{ if(SIMPLE){ open1=openL=false; askMsg=false; h2job++; if(open2){ if(h2) stale=true; else open2=false; } return; } open1=open2=openL=false; h2=''; h2job++; };
+  const clearWord=()=>{ open2=false; h2=''; stale=false; askMsg=false; };
+  function autoWord(){}   /* v2.70: no automatic word any more (was v2.66 to v2.69) */
   el.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t || t.classList.contains('x')) return;
     if(t.dataset.k){ example=false; const c=t.dataset.k; K[c]=((K[c]||0)+1)%4; if(K[c]!==3) for(let i=0;i<5;i++) if(SL[i]===c) SL[i]=null; if(K[c]!==2) yTidy();   /* v2.62 (Ayman): when a key stops being yellow (green, gray or blank), its yellow slots clear and no longer count */ closeHints(); track('kb-tap'); try{ if(!/[?&]welcome=/.test(location.search)) localStorage.setItem('sbx-kb-user','1'); }catch(e){} render(); }
     else if(t.dataset.ys){ const y0=t.getBoundingClientRect().top, ri=+(t.dataset.yr||0), i=+t.dataset.ys, R=YR[ri], ys=Object.keys(K).filter(ch=>K[ch]===2), here=new Set(YR.filter((r,k)=>k!==ri).map(r=>r[i]).filter(Boolean)), used=new Set(YR.flatMap((r,k)=>r.filter((x,j)=>x && !(k===ri && j===i)))), ord=ys.filter(x=>!used.has(x)).concat(ys.filter(x=>used.has(x))).filter(x=>SL[i]!==x && !here.has(x)), at=ord.indexOf(R[i]); R[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track(ri?'kb-yslot'+(ri+1):'kb-yslot'); render(); keep(`.kbys [data-yr="${ri}"][data-ys="${i}"]`,y0); }   /* v2.64: a spot can't hold the same letter twice across rows */   /* v2.61: same as the green slots: each tap shows the next yellow letter (letters not yet placed first), then blank */
     else if(t.dataset.s){ const y0=t.getBoundingClientRect().top; setTimeout(()=>keep(`.kbs [data-s="${t.dataset.s}"]`,y0),0); const i=+t.dataset.s, used=new Set(SL.filter((x,j)=>x && j!==i)), gr=greens(), ord=gr.filter(x=>!used.has(x)).concat(gr.filter(x=>used.has(x))), at=ord.indexOf(SL[i]); SL[i] = at+1<ord.length ? ord[at+1] : null; closeHints(); track('kb-slot'); render(); }   // v2.45 (Ayman): a slot offers the green letters not placed yet first, then the placed ones (for a double letter), then empty
-    else if(t.dataset.left){ LEFT=+t.dataset.left; leftUsed=true;   /* v2.64.1: once used, the 3·2·1 buttons stay */ track('kb-left'); h2=''; h2eng=false; render(); hint2(); }
-    else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; leftUsed=false; for(const c in K) delete K[c]; YR.length=1; YR[0].fill(null); SL.fill(null); closeHints(); track('kb-reset'); render(); }   // v2.42 (Ayman): Start over
-    else if(t.id==='kbRaise'){ e.preventDefault(); example=true; for(const c of 'raise') K[c]=1; closeHints(); track('kb-raise'); render(); }   // marks R, A, I, S, E gray; the visitor then taps any that were yellow or green
+    else if(t.dataset.left){ LEFT=+t.dataset.left; leftUsed=true;   /* v2.64.1: once used, the 3·2·1 buttons stay */ track('kb-left'); if(SIMPLE){ closeHints(); render(); } else { h2=''; h2eng=false; h2job++; render(); hint2(); } }   /* v2.67: on a simple device the buttons sit under the keyboard, so the word box may still be closed */
+    else if(t.id==='kbKeep'){ e.preventDefault(); track('kb-keep-tap'); const ib=document.getElementById('installBtn'); if(ib) ib.click(); }
+    else if(t.id==='kbReset'){ e.preventDefault(); example=false; LEFT=3; leftUsed=false; for(const c in K) delete K[c]; YR.length=1; YR[0].fill(null); SL.fill(null); closeHints(); clearWord(); track('kb-reset'); render(); if(SIMPLE && el.getBoundingClientRect().top<0) el.scrollIntoView({block:'start'}); }   // v2.42 (Ayman): Start over
+    else if(t.id==='kbRaise'){ e.preventDefault(); example=true; for(const c of 'raise') K[c]=1; closeHints(); clearWord(); track('kb-raise'); render(); }   // marks R, A, I, S, E gray; the visitor then taps any that were yellow or green
     else if(t.id==='kbToday'){ e.preventDefault(); const b=document.querySelector('[data-m="today"]'); if(b) b.click(); }
     else if(t.id==='kbOpen'){ e.preventDefault(); reopened=true; fold(false); }
     else if(t.id==='kbH1'){ open1=true; track('kb-hint1'); render(); }
     else if(t.id==='kbH2'){ open2=true; track('kb-hint2'); render(); hint2(); }
+    else if(t.id==='kbAsk'){ h2job++; if(!any() || !fit().length){ clearWord(); askMsg=true; render(); } else { askMsg=false; stale=false; open2=true; h2=''; h2eng=false; track('kb-ask'); render(); hint2(); } }   /* v2.70: the only thing that ever shows or changes the word on a simple device */
     else if(t.id==='kbList'){ e.preventDefault(); openL=!openL; if(openL) track('kb-list'); render(); }
     else if(t.id==='kbType'){ e.preventDefault(); track('kb-to-type'); const g=document.getElementById('guess'); if(g){ g.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>g.focus(),400); } }
     if(SIMPLE && (t.dataset.k || t.dataset.ys || t.dataset.s || t.id==='kbRaise')) autoWord();
   });
   // v2.42 (App designer): once a guess is entered on the board below, the card folds to its heading, so the page doesn't show two different counts. One tap reopens it, and then it stays open.
   function fold(on){ folded=on; el.classList.toggle('kbfold',on); el.querySelector('#kbOpen').hidden=!on; }
-  window.bngKbFold=on=>{ if(!el.isConnected) return; if(mode!==lastMode){ lastMode=mode; el.querySelector('#kbOld').hidden = mode!=='archive'; closeHints(); render(); }  /* v2.47 (App designer, Ayman): heading stays fixed; a small line shows the Older odds, with a way back */ /* v2.56 (Ayman, Nov 21): the keyboard no longer folds away when a guess is typed below; it stays available */ if(!on && folded){ fold(false); } };
+  window.bngKbFold=on=>{ if(!el.isConnected) return; if(mode!==lastMode){ lastMode=mode; el.querySelector('#kbOld').hidden = mode!=='archive'; closeHints(); render(); autoWord(true);   /* v2.66.1 (Ayman's test): switching Today's/Older closed the word; for a never-played device it comes back by itself */ }  /* v2.47 (App designer, Ayman): heading stays fixed; a small line shows the Older odds, with a way back */ /* v2.56 (Ayman, Nov 21): the keyboard no longer folds away when a guess is typed below; it stays available */ if(!on && folded){ fold(false); } if(on!==typedOn){ typedOn=on; if(!any()) render(); } };
   render();
   // the tagline and links leave the header for this visitor and sit lower on the page
   setTimeout(()=>{ try{ const side=document.querySelector('header.top .side'), ft=document.querySelector('footer'); if(side && ft && !document.getElementById('kbMoved')){ const d=document.createElement('div'); d.id='kbMoved'; d.className='kbmoved'; const p=side.querySelector('p:not(.tagm)'), nv=side.querySelector('nav'); d.innerHTML=(p?`<p>${p.innerHTML}</p>`:'')+(nv?`<p>${nv.innerHTML.replace(/id="[^"]*"/g,'').replace(/(class="nrev">)[^<]*/, (m,a)=>{ const t=new Date(), n=Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2021,5,19))/864e5); return a+Math.max(n,1947).toLocaleString('en-US'); })}</p>`:''); ft.parentNode.insertBefore(d,ft); } }catch(e){} },0);
@@ -899,6 +911,7 @@ function buildKbCard(el){
 // v2.51 (Ayman, Nov 21): a regular is a device that has used the helper on 2 or more days. Everyone else keeps the keyboard card, on every visit and every load, in the browser or the installed app.
 // v2.66 (App designer + Ayman, Nov 25): a simpler start for a device that has never played (no day used, no saved game). It taps the letters of its guess and the word shows by itself. Anyone who has played keeps the page as it was. ?simple=1 / ?simple=0 force it for testing.
 function bngSimple(){ try{ const q=location.search; if(/[?&]simple=0/.test(q)) return false; if(/[?&]simple=1/.test(q)) return true;
+  if(localStorage.getItem('sbx-simple')!==null) return true;   /* v2.66.2 (Ayman, Nov 26: "the site doesn't change for them going forward"): a device that has had the word shown by itself keeps it for good, even after it types games or becomes a regular */
   let u=[], g=0; try{ u=JSON.parse(localStorage.getItem('sbx-used-days')||'[]'); }catch(e){} try{ g=Object.keys(JSON.parse(localStorage.getItem('sbx-games-v1')||'{}')).length; }catch(e){}
   return u.length===0 && g===0; }catch(e){ return false; } }
 function bngRegular(){ try{ if(localStorage.getItem('sbx-kb-user')!==null) return false;   /* v2.52 (Ayman, Nov 21): a device that has tapped a keyboard key keeps the keyboard for good, even after it becomes a regular */
@@ -1066,8 +1079,8 @@ const pct=p=>p>=0.995?'100%':p>=0.095?Math.round(p*100)+'%':p>=0.001?(Math.round
 // ---------- main update ----------
 let job=0;
 function update(){
-  if(window.bngKbFold) window.bngKbFold(rows.length>0 && !demo);   // v2.42
   if(demo && !rows.length){ demo=false; rows=ownRows||[]; ownRows=null; }   // example cleared: back to the player's own game
+  if(window.bngKbFold) window.bngKbFold(rows.length>0 && !demo);   // v2.42; v2.66.3: after the line above, so the card sees the player's own game when the example is cleared
   { const l=rows[rows.length-1], done=!!(l && l.c.every(v=>v===2)), sig=gameSig();   // v2.10: a finished game entered after playing starts at guess 1
     if(walk && walk.sig!==sig) walk=null;
     if(!rows.length) walkSeen=null;   // a new game (Start over) can be walked through again
@@ -1915,6 +1928,11 @@ function todayCardHtml(R){
   track('older-to-today-shown');
   return `<div class="todaycard"><b>Playing today's Wordle too?</b>Start a fresh board for today's puzzle and get your smartest next guess as you go. Today's games build your streak and your score against the helper.<br><button class="btn" id="toToday">Start today's puzzle</button></div>`;
 }
+// v2.67 (App designer, Ayman's yes Nov 26): a typed game solved on guess 5 or 6 was a close call. One line asks the player to keep the site on their home screen. Only for devices on the simple start; hidden when installed or when the browser can't install.
+let reportKeepSent=false;
+function reportKeepHtml(R){ try{ const iw=document.getElementById('installWrap'); if(!R.ok || R.n<5 || !bngSimple() || !iw || iw.hidden || matchMedia('(display-mode: standalone)').matches || navigator.standalone) return '';
+  if(!reportKeepSent){ reportKeepSent=true; track('report-keep-shown'); }
+  return `<p class="kbkeep">Close call? Keep this on your home screen for the next one. <a href="#" id="rKeep">📲 Install app</a></p>`; }catch(e){ return ''; } }
 function installCardHtml(){
   if(matchMedia('(display-mode: standalone)').matches || navigator.standalone) return '';
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1955,6 +1973,7 @@ function renderReport(box,R){
   box.innerHTML=`<div class="report">
     <p class="solvedHead">Solved in ${R.n} 🎉${R.hard?' <small>Hard mode</small>':''}</p>
     ${verdict?`<p class="verdict">${verdict}</p>`:''}
+    ${reportKeepHtml(R)}
     ${R.ok?'<button class="linkbtn wagain" id="walkAgain">Step through it guess by guess ›</button>':''}
     ${stepsHtml(R)}
     ${scoreHtml(R)}${todayCardHtml(R)}${R.ok && R.ready ? shareAppHtml() : ''}
@@ -1964,6 +1983,7 @@ function renderReport(box,R){
     const id=d.dataset.sec; if(d.open){ openSecs.add(id); track(id==='steps'?'replay':'report-'+id); } else openSecs.delete(id);
   }));
   const ts=document.getElementById('toStats'); if(ts) ts.onclick=()=>track('stats-from-solved',false);
+  { const rk=document.getElementById('rKeep'); if(rk) rk.onclick=ev=>{ ev.preventDefault(); track('report-keep-tap',false); document.getElementById('installBtn').click(); }; }
   const ib=document.getElementById('instNow'); if(ib) ib.onclick=()=>{ track('install-report',false); document.getElementById('installBtn').click(); };
   const sa=document.getElementById('shareApp'); if(sa) sa.onclick=()=>shareApp(sa,'card');
   const tt=document.getElementById('toToday'); if(tt) tt.onclick=()=>{ track('older-to-today'); mode='today'; rows=[]; demo=false; ownRows=null; checkMode=false; update(); try{ inp.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} inp.focus(); };
